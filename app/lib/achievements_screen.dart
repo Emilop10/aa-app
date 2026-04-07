@@ -3,22 +3,18 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-// Modelo para los Logros
 class Milestone {
   final String name;
   final Duration duration;
   final IconData icon;
-
   Milestone({required this.name, required this.duration, required this.icon});
 }
 
-// Modelo para el desglose de tiempo
 class _TimeBreakdown {
   final int years;
   final int months;
   final int days;
   final Duration totalDuration;
-
   _TimeBreakdown({
     required this.years,
     required this.months,
@@ -39,7 +35,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   _TimeBreakdown? timeBreakdown;
   Timer? _timer;
 
-  // --- ¡NUEVO! Lista de logros extendida hasta 20 años ---
+  static const kPrimary = Color(0xFFF97316);
+  static const kSurface = Color(0xFFFFF7ED);
+  static const kBorder = Color(0xFFFED7AA);
+  static const kTextPrimary = Color(0xFF431407);
+  static const kTextSecondary = Color(0xFF92400E);
+
   final List<Milestone> _allMilestones = [
     Milestone(name: '24 Horas', duration: const Duration(days: 1), icon: Icons.shield_outlined),
     Milestone(name: '1 Semana', duration: const Duration(days: 7), icon: Icons.celebration_outlined),
@@ -77,13 +78,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       years--;
       months += 12;
     }
-
     if (days < 0) {
       months--;
       DateTime lastDayOfPreviousMonth = DateTime(end.year, end.month, 0);
       days += lastDayOfPreviousMonth.day;
     }
-    
     return _TimeBreakdown(
       years: years,
       months: months,
@@ -94,7 +93,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   Future<void> _loadSobrietyDate() async {
     final prefs = await SharedPreferences.getInstance();
-    // Forzamos la relectura de la fecha
     final dateString = prefs.getString('sobrietyDate');
     if (dateString != null) {
       if (mounted) {
@@ -119,13 +117,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mis Logros"),
-      ),
+      appBar: AppBar(title: const Text("Mis Logros")),
       body: sobrietyDate == null
           ? _buildSetDateMessage()
           : _buildCounterAndAchievements(),
@@ -135,92 +131,16 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   Widget _buildSetDateMessage() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Text(
-          "Establece tu fecha de sobriedad en la pantalla de 'Inicio' para ver tus logros.",
-          style: TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCounterAndAchievements() {
-    final breakdown = timeBreakdown!;
-    
-    Milestone? nextMilestone = _allMilestones.firstWhere(
-      (m) => m.duration > breakdown.totalDuration,
-      orElse: () => _allMilestones.last,
-    );
-    
-    double progressToNext = 0;
-    if (nextMilestone.duration > breakdown.totalDuration) {
-       final durationToNext = nextMilestone.duration;
-       final previousMilestoneDuration = _allMilestones.lastWhere(
-         (m) => m.duration < nextMilestone.duration,
-         orElse: () => Milestone(name: '', duration: Duration.zero, icon: Icons.error)
-       ).duration;
-       
-       final totalSteps = (durationToNext - previousMilestoneDuration).inSeconds;
-       final currentSteps = (breakdown.totalDuration - previousMilestoneDuration).inSeconds;
-       progressToNext = totalSteps > 0 ? (currentSteps / totalSteps).clamp(0.0, 1.0) : 1.0;
-    } else {
-      progressToNext = 1.0;
-    }
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularPercentIndicator(
-              radius: 120,
-              lineWidth: 18,
-              percent: progressToNext,
-              center: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "${breakdown.years} ${breakdown.years == 1 ? 'año' : 'años'}",
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "${breakdown.months} ${breakdown.months == 1 ? 'mes' : 'meses'}",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Text(
-                    "${breakdown.days} ${breakdown.days == 1 ? 'día' : 'días'}",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
-              ),
-              progressColor: Theme.of(context).primaryColor,
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            const SizedBox(height: 24),
+            Icon(Icons.emoji_events_outlined, size: 60, color: kPrimary.withOpacity(0.5)),
+            const SizedBox(height: 20),
             Text(
-              "Próximo logro: ${nextMilestone.name}",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 32),
-            const Divider(),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Logros Desbloqueados",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12.0,
-              runSpacing: 12.0,
-              children: _allMilestones.map((milestone) {
-                final bool isAchieved = breakdown.totalDuration >= milestone.duration;
-                return _buildMilestoneChip(milestone, isAchieved);
-              }).toList(),
+              "Establece tu fecha de sobriedad en 'Inicio' para ver tus logros.",
+              style: TextStyle(fontSize: 18, color: kTextSecondary),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -228,17 +148,192 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     );
   }
 
-  Widget _buildMilestoneChip(Milestone milestone, bool isAchieved) {
-    final theme = Theme.of(context);
-    final color = isAchieved ? theme.primaryColor : Colors.grey[400];
-    final textColor = isAchieved ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : Colors.white;
+  Widget _buildCounterAndAchievements() {
+    final breakdown = timeBreakdown!;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Chip(
-      avatar: Icon(milestone.icon, color: textColor, size: 20),
-      label: Text(milestone.name),
-      labelStyle: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-      backgroundColor: color,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    Milestone? nextMilestone = _allMilestones.firstWhere(
+      (m) => m.duration > breakdown.totalDuration,
+      orElse: () => _allMilestones.last,
+    );
+
+    double progressToNext = 0;
+    if (nextMilestone.duration > breakdown.totalDuration) {
+      final previousMilestoneDuration = _allMilestones.lastWhere(
+        (m) => m.duration < nextMilestone.duration,
+        orElse: () => Milestone(name: '', duration: Duration.zero, icon: Icons.error),
+      ).duration;
+      final totalSteps = (nextMilestone.duration - previousMilestoneDuration).inSeconds;
+      final currentSteps = (breakdown.totalDuration - previousMilestoneDuration).inSeconds;
+      progressToNext = totalSteps > 0 ? (currentSteps / totalSteps).clamp(0.0, 1.0) : 1.0;
+    } else {
+      progressToNext = 1.0;
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // ── Header con círculo de progreso ──
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFEA580C), Color(0xFFF97316)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(32),
+                bottomRight: Radius.circular(32),
+              ),
+            ),
+            child: Column(
+              children: [
+                CircularPercentIndicator(
+                  radius: 100,
+                  lineWidth: 14,
+                  percent: progressToNext,
+                  center: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${breakdown.years}a",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "${breakdown.months}m ${breakdown.days}d",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  progressColor: Colors.white,
+                  backgroundColor: Colors.white.withOpacity(0.25),
+                  circularStrokeCap: CircularStrokeCap.round,
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "Próximo logro: ${nextMilestone.name}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Lista de logros ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Todos los logros",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : kTextPrimary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                ..._allMilestones.map((milestone) {
+                  final bool isAchieved = breakdown.totalDuration >= milestone.duration;
+                  return _buildMilestoneCard(milestone, isAchieved, isDarkMode);
+                }).toList(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMilestoneCard(Milestone milestone, bool isAchieved, bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: isAchieved
+            ? (isDarkMode ? const Color(0xFF2D1506) : kSurface)
+            : (isDarkMode ? const Color(0xFF1C1C1C) : const Color(0xFFF5F5F5)),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isAchieved
+              ? (isDarkMode ? const Color(0xFF92400E) : kBorder)
+              : (isDarkMode ? Colors.grey[800]! : Colors.grey[200]!),
+          width: isAchieved ? 1.5 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Ícono
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: isAchieved
+                  ? kPrimary
+                  : (isDarkMode ? Colors.grey[800] : Colors.grey[200]),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isAchieved ? milestone.icon : Icons.lock_outline,
+              color: isAchieved ? Colors.white : Colors.grey,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          // Nombre
+          Expanded(
+            child: Text(
+              milestone.name,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isAchieved ? FontWeight.w600 : FontWeight.normal,
+                color: isAchieved
+                    ? (isDarkMode ? Colors.white : kTextPrimary)
+                    : Colors.grey,
+              ),
+            ),
+          ),
+          // Badge o flecha
+          if (isAchieved)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: kPrimary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                "✓ Logrado",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          else
+            Icon(Icons.lock_outline, color: Colors.grey[400], size: 18),
+        ],
+      ),
     );
   }
 }

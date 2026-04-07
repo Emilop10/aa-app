@@ -3,7 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'daily_readings.dart'; // ¡NUEVO! Importamos la pantalla de destino.
+import 'daily_readings.dart';
 
 class NotificationService {
   NotificationService._privateConstructor();
@@ -11,10 +11,9 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   tz.Location? _localLocation;
 
-  // ¡MODIFICADO! Ahora el init recibe una clave de navegación.
   Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     await _configureLocalTimeZone();
 
@@ -33,12 +32,10 @@ class NotificationService {
       iOS: initializationSettingsIOS,
     );
 
-    // ¡CAMBIO CLAVE! Añadimos el manejador de toques.
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) async {
         if (response.payload != null && response.payload == 'daily_reflection') {
-          // Usamos la clave de navegación para ir a la pantalla de reflexiones.
           navigatorKey.currentState?.push(
             MaterialPageRoute(builder: (context) => const DailyReadings()),
           );
@@ -71,15 +68,14 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      // ¡NUEVO! Añadimos un 'payload' para identificar esta notificación.
       payload: 'daily_reflection',
     );
   }
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
     final tz.TZDateTime now = tz.TZDateTime.now(_localLocation!);
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(_localLocation!, now.year, now.month, now.day, time.hour, time.minute);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+        _localLocation!, now.year, now.month, now.day, time.hour, time.minute);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -88,5 +84,10 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  // Detecta si la app fue abierta desde una notificación (app cerrada)
+  Future<NotificationAppLaunchDetails?> getAppLaunchDetails() async {
+    return await _flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   }
 }
