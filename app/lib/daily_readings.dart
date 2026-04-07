@@ -4,9 +4,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:share_plus/share_plus.dart'; // ¡NUEVO! Importamos el paquete para compartir.
+import 'package:share_plus/share_plus.dart';
 
-// Modelo para hacer el código más limpio y legible
 class DailyReading {
   final String title;
   final String content;
@@ -63,12 +62,21 @@ class _DailyReadingsState extends State<DailyReadings> {
     }
   }
 
+  // ✅ FIX: busca por mes y día, ignorando el año
+  DailyReading? _getReadingForDay(DateTime day) {
+    final key = _dailyReadings.keys.firstWhere(
+      (date) => date.month == day.month && date.day == day.day,
+      orElse: () => DateTime(0),
+    );
+    return key.year == 0 ? null : _dailyReadings[key];
+  }
+
   String _formatDate(DateTime date) {
-    final formattedDate = DateFormat('EEEE d \'de\' MMMM \'de\' y', 'es_ES').format(date);
+    final formattedDate =
+        DateFormat('EEEE d \'de\' MMMM \'de\' y', 'es_ES').format(date);
     return formattedDate[0].toUpperCase() + formattedDate.substring(1);
   }
 
-  // ¡NUEVO! Función para compartir la lectura.
   void _shareReading(DailyReading reading) {
     final String textToShare =
         'Reflexión del día:\n\n*${reading.title}*\n\n${reading.content}';
@@ -78,7 +86,10 @@ class _DailyReadingsState extends State<DailyReadings> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final reading = _selectedDay != null ? _dailyReadings[_normalizeDate(_selectedDay!)] : null;
+
+    // ✅ FIX: usa _getReadingForDay en lugar de buscar por clave directa
+    final reading =
+        _selectedDay != null ? _getReadingForDay(_selectedDay!) : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -110,7 +121,8 @@ class _DailyReadingsState extends State<DailyReadings> {
             const SizedBox(height: 20),
             Text(
               'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
-              style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -120,13 +132,11 @@ class _DailyReadingsState extends State<DailyReadings> {
   }
 
   Widget _buildReadingContent(DailyReading reading, ThemeData theme) {
-    // Usamos un Stack para poder superponer el botón de compartir.
     return Stack(
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Fecha
             Text(
               _formatDate(_selectedDay!),
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -135,7 +145,6 @@ class _DailyReadingsState extends State<DailyReadings> {
               ),
             ),
             const SizedBox(height: 12),
-            // Título de la lectura
             Text(
               reading.title,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -143,7 +152,6 @@ class _DailyReadingsState extends State<DailyReadings> {
               ),
             ),
             const Divider(height: 30, thickness: 1),
-            // Contenido de la lectura
             Text(
               reading.content,
               style: theme.textTheme.bodyLarge?.copyWith(
@@ -154,7 +162,6 @@ class _DailyReadingsState extends State<DailyReadings> {
             ),
           ],
         ),
-        // ¡NUEVO! Botón de compartir en la esquina superior derecha.
         Positioned(
           top: -8,
           right: -8,
@@ -175,7 +182,8 @@ class _DailyReadingsState extends State<DailyReadings> {
       child: Center(
         child: Text(
           'No hay lectura disponible para esta fecha.',
-          style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(color: Colors.grey),
         ),
       ),
     );
@@ -190,7 +198,8 @@ class _DailyReadingsState extends State<DailyReadings> {
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: theme.cardColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -201,7 +210,8 @@ class _DailyReadingsState extends State<DailyReadings> {
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
                   focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                  selectedDayPredicate: (day) =>
+                      isSameDay(_selectedDay, day),
                   onDaySelected: (selectedDay, focusedDay) {
                     setState(() {
                       _selectedDay = selectedDay;
@@ -218,19 +228,34 @@ class _DailyReadingsState extends State<DailyReadings> {
                       color: theme.primaryColor,
                       shape: BoxShape.circle,
                     ),
-                    defaultTextStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black87),
-                    weekendTextStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black87),
-                    outsideTextStyle: TextStyle(color: isDarkMode ? Colors.white30 : Colors.black26),
+                    defaultTextStyle: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white70
+                            : Colors.black87),
+                    weekendTextStyle: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white70
+                            : Colors.black87),
+                    outsideTextStyle: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white30
+                            : Colors.black26),
                   ),
                   headerStyle: HeaderStyle(
-                    titleTextStyle: TextStyle(color: theme.textTheme.bodyLarge!.color, fontSize: 18),
+                    titleTextStyle: TextStyle(
+                        color: theme.textTheme.bodyLarge!.color,
+                        fontSize: 18),
                     formatButtonVisible: false,
-                    leftChevronIcon: Icon(Icons.chevron_left, color: theme.iconTheme.color),
-                    rightChevronIcon: Icon(Icons.chevron_right, color: theme.iconTheme.color),
+                    leftChevronIcon: Icon(Icons.chevron_left,
+                        color: theme.iconTheme.color),
+                    rightChevronIcon: Icon(Icons.chevron_right,
+                        color: theme.iconTheme.color),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: TextStyle(color: theme.primaryColor),
-                    weekendStyle: TextStyle(color: theme.primaryColor.withOpacity(0.7)),
+                    weekdayStyle:
+                        TextStyle(color: theme.primaryColor),
+                    weekendStyle: TextStyle(
+                        color: theme.primaryColor.withOpacity(0.7)),
                   ),
                 ),
               ],
