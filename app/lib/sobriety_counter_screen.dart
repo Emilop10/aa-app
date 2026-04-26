@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
@@ -21,13 +20,19 @@ class SobrietyCounter extends StatefulWidget {
 }
 
 class _TimeBreakdown {
-  final int years, months, days;
-  _TimeBreakdown({required this.years, required this.months, required this.days});
+  final int years, months, days, totalDays;
+  _TimeBreakdown({
+    required this.years,
+    required this.months,
+    required this.days,
+    required this.totalDays,
+  });
 }
 
 class _SobrietyCounterState extends State<SobrietyCounter> {
   DateTime? sobrietyDate;
-  _TimeBreakdown timeBreakdown = _TimeBreakdown(years: 0, months: 0, days: 0);
+  _TimeBreakdown timeBreakdown =
+      _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
 
   @override
@@ -51,7 +56,9 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
       months--;
       days += DateTime(end.year, end.month, 0).day;
     }
-    return _TimeBreakdown(years: years, months: months, days: days);
+    final totalDays = end.difference(start).inDays;
+    return _TimeBreakdown(
+        years: years, months: months, days: days, totalDays: totalDays);
   }
 
   Future<void> _loadSobrietyDate() async {
@@ -100,6 +107,12 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
     }
   }
 
+  // Formatea números con coma de miles: 5516 → "5,516"
+  String _fmt(int n) => n.toString().replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (m) => '${m[1]},',
+      );
+
   @override
   Widget build(BuildContext context) {
     final isDark      = Theme.of(context).brightness == Brightness.dark;
@@ -110,7 +123,6 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      // ── AppBar: crema/oscuro (NO naranja) para separarse del hero ──
       appBar: AppBar(
         title: Text(
           "Contador de Sobriedad",
@@ -135,7 +147,6 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
     );
   }
 
-  // ── Estado vacío (sin fecha) ──────────────────────────────────────
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Padding(
@@ -161,21 +172,23 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
     );
   }
 
-  // ── Cuerpo principal ─────────────────────────────────────────────
   Widget _buildBody(
-    bool isDark, Color textPrim, Color surfColor, Color borderColor) {
+      bool isDark, Color textPrim, Color surfColor, Color borderColor) {
 
-    final yr  = (timeBreakdown.months / 12 + timeBreakdown.days / 360).clamp(0.0, 1.0);
-    final mo  = (timeBreakdown.months / 12.0).clamp(0.0, 1.0);
-    final day = (timeBreakdown.days   / 30.44).clamp(0.0, 1.0);
+    final tb = timeBreakdown;
+
+    final String yLabel = '${tb.years} ${tb.years   == 1 ? "año"  : "años"}';
+    final String mLabel = '${tb.months} ${tb.months == 1 ? "mes"  : "meses"}';
+    final String dLabel = '${tb.days} ${tb.days     == 1 ? "día"  : "días"}';
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          // ── Hero naranja con rings blancos ────────────────────
+
+          // ── Hero tipo póster ─────────────────────────────────
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 40),
+            padding: const EdgeInsets.fromLTRB(24, 44, 24, 36),
             decoration: const BoxDecoration(
               color: _kOrange,
               borderRadius: BorderRadius.only(
@@ -183,62 +196,61 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
                 bottomRight: Radius.circular(32),
               ),
             ),
-            child: Stack(
-              alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CircularPercentIndicator(
-                  radius: 140, lineWidth: 14,
-                  percent: yr,
-                  progressColor: Colors.white.withOpacity(0.9),
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  circularStrokeCap: CircularStrokeCap.round,
+
+                // Número grande — el protagonista
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    _fmt(tb.totalDays),
+                    style: const TextStyle(
+                      fontSize: 96,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.0,
+                      letterSpacing: -2,
+                    ),
+                  ),
                 ),
-                CircularPercentIndicator(
-                  radius: 110, lineWidth: 14,
-                  percent: mo,
-                  progressColor: Colors.white.withOpacity(0.7),
-                  backgroundColor: Colors.white.withOpacity(0.15),
-                  circularStrokeCap: CircularStrokeCap.round,
+
+                const SizedBox(height: 6),
+
+                // Etiqueta principal
+                Text(
+                  'días sobrio/a',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white.withOpacity(0.85),
+                    letterSpacing: 0.5,
+                  ),
                 ),
-                CircularPercentIndicator(
-                  radius: 80, lineWidth: 14,
-                  percent: day,
-                  progressColor: Colors.white.withOpacity(0.5),
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  circularStrokeCap: CircularStrokeCap.round,
+
+                const SizedBox(height: 20),
+
+                // Línea divisora sutil
+                Container(
+                  width: 48,
+                  height: 1.5,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${timeBreakdown.years} "
-                      "${timeBreakdown.years == 1 ? 'año' : 'años'}",
-                      style: const TextStyle(
-                        fontSize: 28, fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      "${timeBreakdown.months} "
-                      "${timeBreakdown.months == 1 ? 'mes' : 'meses'}",
-                      style: TextStyle(fontSize: 18,
-                          color: Colors.white.withOpacity(0.9)),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      "${timeBreakdown.days} "
-                      "${timeBreakdown.days == 1 ? 'día' : 'días'}",
-                      style: TextStyle(fontSize: 18,
-                          color: Colors.white.withOpacity(0.9)),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "sobrio/a y contando",
-                      style: TextStyle(
-                        fontSize: 14, fontStyle: FontStyle.italic,
-                        color: Colors.white.withOpacity(0.85)),
-                    ),
-                  ],
+
+                const SizedBox(height: 20),
+
+                // Desglose: años · meses · días
+                Text(
+                  '$yLabel  ·  $mLabel  ·  $dLabel',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white.withOpacity(0.75),
+                    letterSpacing: 0.3,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -251,7 +263,7 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
               children: [
                 _StatCard(
                   icon: Icons.emoji_events_outlined,
-                  value: timeBreakdown.years,
+                  value: tb.years,
                   label: "Años",
                   surfColor: surfColor,
                   borderColor: borderColor,
@@ -260,7 +272,7 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
                 const SizedBox(width: 10),
                 _StatCard(
                   icon: Icons.calendar_month_outlined,
-                  value: timeBreakdown.months,
+                  value: tb.months,
                   label: "Meses",
                   surfColor: surfColor,
                   borderColor: borderColor,
@@ -269,7 +281,7 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
                 const SizedBox(width: 10),
                 _StatCard(
                   icon: Icons.today_outlined,
-                  value: timeBreakdown.days,
+                  value: tb.days,
                   label: "Días",
                   surfColor: surfColor,
                   borderColor: borderColor,
@@ -284,38 +296,40 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               decoration: BoxDecoration(
                 color: surfColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: borderColor),
               ),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    '\u201C\u201C',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: _kOrange,
-                      height: 0.8,
+                  const Icon(Icons.format_quote, color: _kOrange, size: 28),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Un día a la vez',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        color: textPrim,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Un día a la vez',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontStyle: FontStyle.italic,
-                      color: textPrim,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
+                  const SizedBox(width: 8),
+                  Transform.scale(
+                    scaleX: -1,
+                    child: const Icon(Icons.format_quote, color: _kOrange, size: 28),
                   ),
                 ],
               ),
             ),
           ),
+
         ],
       ),
     );
@@ -363,10 +377,6 @@ class _StatCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
-              '',
-              // el label se pasa abajo
-            ),
             Text(
               label,
               style: const TextStyle(fontSize: 12, color: _kTextSec),
