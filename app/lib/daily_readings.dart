@@ -6,13 +6,18 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:share_plus/share_plus.dart';
 
+// Modelo para hacer el código más limpio y legible
 class DailyReading {
   final String title;
   final String content;
+
   DailyReading({required this.title, required this.content});
 
   factory DailyReading.fromJson(Map<String, dynamic> json) {
-    return DailyReading(title: json['title'], content: json['content']);
+    return DailyReading(
+      title: json['title'],
+      content: json['content'],
+    );
   }
 }
 
@@ -28,33 +33,29 @@ class _DailyReadingsState extends State<DailyReadings> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  static const kPrimary = Color(0xFFF97316);
-  static const kPrimaryDark = Color(0xFFEA580C);
-  static const kSurface = Color(0xFFFFF7ED);
-  static const kBorder = Color(0xFFFED7AA);
-  static const kTextPrimary = Color(0xFF431407);
-  static const kTextSecondary = Color(0xFF92400E);
-
   @override
   void initState() {
     super.initState();
     initializeDateFormatting('es_ES', null);
     _selectedDay = _normalizeDate(DateTime.now());
-    _focusedDay = _selectedDay!;
+    _focusedDay  = _selectedDay!;
     _loadDailyReadings();
   }
 
-  DateTime _normalizeDate(DateTime date) =>
-      DateTime(date.year, date.month, date.day);
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
 
   Future<void> _loadDailyReadings() async {
     final jsonString = await rootBundle.loadString('assets/daily_readings.json');
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
     final Map<DateTime, DailyReading> loadedReadings = {};
+
     jsonMap.forEach((key, value) {
       final date = DateTime.parse(key);
       loadedReadings[_normalizeDate(date)] = DailyReading.fromJson(value);
     });
+
     if (mounted) {
       setState(() {
         _dailyReadings = loadedReadings;
@@ -62,9 +63,19 @@ class _DailyReadingsState extends State<DailyReadings> {
     }
   }
 
+  // ── FIX: busca por mes y día ignorando el año del JSON ──────────
+  DailyReading? _getReadingForDay(DateTime day) {
+    for (final entry in _dailyReadings.entries) {
+      if (entry.key.month == day.month && entry.key.day == day.day) {
+        return entry.value;
+      }
+    }
+    return null;
+  }
+
   String _formatDate(DateTime date) {
     final formattedDate =
-        DateFormat("EEEE d 'de' MMMM 'de' y", 'es_ES').format(date);
+        DateFormat('EEEE d \'de\' MMMM \'de\' y', 'es_ES').format(date);
     return formattedDate[0].toUpperCase() + formattedDate.substring(1);
   }
 
@@ -76,198 +87,127 @@ class _DailyReadingsState extends State<DailyReadings> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final reading = _selectedDay != null
-        ? _dailyReadings[_normalizeDate(_selectedDay!)]
-        : null;
+    final theme = Theme.of(context);
+
+    // ── FIX: usa _getReadingForDay en lugar de búsqueda directa ───
+    final reading =
+        _selectedDay != null ? _getReadingForDay(_selectedDay!) : null;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // ── AppBar con gradiente naranja ──
-          SliverAppBar(
-            expandedHeight: 130,
-            pinned: true,
-            backgroundColor: kPrimary,
-            iconTheme: const IconThemeData(color: Colors.white),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.calendar_today, color: Colors.white),
-                onPressed: () => _showCalendarDialog(context),
-                tooltip: 'Seleccionar Fecha',
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-              title: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Reflexiones Diarias',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (_selectedDay != null)
-                    Text(
-                      _formatDate(_selectedDay!),
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 10,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [kPrimaryDark, kPrimary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // ── Contenido ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Tarjeta de lectura
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? const Color(0xFF2D1506) : kSurface,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: isDarkMode
-                            ? const Color(0xFF92400E)
-                            : kBorder,
-                        width: 1,
-                      ),
-                    ),
-                    child: reading != null
-                        ? _buildReadingContent(reading, isDarkMode)
-                        : _buildNoReadingAvailable(isDarkMode),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc.',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isDarkMode
-                          ? Colors.white.withOpacity(0.35)
-                          : Colors.grey[500],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
+      appBar: AppBar(
+        title: const Text('Reflexiones Diarias'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () => _showCalendarDialog(context),
+            tooltip: 'Seleccionar Fecha',
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: reading != null
+                    ? _buildReadingContent(reading, theme)
+                    : _buildNoReadingAvailable(theme),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildReadingContent(DailyReading reading, bool isDarkMode) {
-    return Padding(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Título con botón compartir
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  reading.title,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : kTextPrimary,
-                  ),
-                ),
+  Widget _buildReadingContent(DailyReading reading, ThemeData theme) {
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Fecha
+            Text(
+              _formatDate(_selectedDay!),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.primaryColor,
+                fontWeight: FontWeight.bold,
               ),
-              IconButton(
-                icon: const Icon(Icons.share_outlined),
-                color: kPrimary,
-                onPressed: () => _shareReading(reading),
-                tooltip: 'Compartir reflexión',
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+            ),
+            const SizedBox(height: 12),
+            // Título
+            Text(
+              reading.title,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Línea divisoria naranja
-          Container(
-            height: 2,
-            width: 48,
-            decoration: BoxDecoration(
-              color: kPrimary,
-              borderRadius: BorderRadius.circular(2),
             ),
-          ),
-          const SizedBox(height: 18),
-          // Contenido
-          Text(
-            reading.content,
-            style: TextStyle(
-              fontSize: 17,
-              height: 1.7,
-              color: isDarkMode
-                  ? Colors.white.withOpacity(0.85)
-                  : kTextPrimary,
+            const Divider(height: 30, thickness: 1),
+            // Contenido
+            Text(
+              reading.content,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                height: 1.6,
+                fontSize: 17,
+              ),
+              textAlign: TextAlign.left,
             ),
+          ],
+        ),
+        // Botón de compartir
+        Positioned(
+          top: -8,
+          right: -8,
+          child: IconButton(
+            icon: Icon(Icons.share, color: theme.primaryColor),
+            onPressed: () => _shareReading(reading),
+            tooltip: 'Compartir reflexión',
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildNoReadingAvailable(bool isDarkMode) {
+  Widget _buildNoReadingAvailable(ThemeData theme) {
     return SizedBox(
       width: double.infinity,
       height: 200,
       child: Center(
         child: Text(
           'No hay lectura disponible para esta fecha.',
-          style: TextStyle(
-            fontSize: 16,
-            color: isDarkMode ? Colors.white38 : Colors.grey,
-          ),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(color: Colors.grey),
         ),
       ),
     );
   }
 
   void _showCalendarDialog(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme     = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: isDarkMode
-              ? const Color(0xFF2D1506)
-              : Colors.white,
+          backgroundColor: theme.cardColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+              borderRadius: BorderRadius.circular(12)),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -281,49 +221,48 @@ class _DailyReadingsState extends State<DailyReadings> {
                   onDaySelected: (selectedDay, focusedDay) {
                     setState(() {
                       _selectedDay = selectedDay;
-                      _focusedDay = focusedDay;
+                      _focusedDay  = focusedDay;
                     });
                     Navigator.of(context).pop();
                   },
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(
-                      color: kPrimary.withOpacity(0.4),
+                      color: theme.primaryColor.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    selectedDecoration: const BoxDecoration(
-                      color: kPrimary,
+                    selectedDecoration: BoxDecoration(
+                      color: theme.primaryColor,
                       shape: BoxShape.circle,
                     ),
                     defaultTextStyle: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
+                        color: isDarkMode
+                            ? Colors.white70
+                            : Colors.black87),
                     weekendTextStyle: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
+                        color: isDarkMode
+                            ? Colors.white70
+                            : Colors.black87),
                     outsideTextStyle: TextStyle(
-                      color: isDarkMode ? Colors.white24 : Colors.black26,
-                    ),
+                        color: isDarkMode
+                            ? Colors.white30
+                            : Colors.black26),
                   ),
                   headerStyle: HeaderStyle(
                     titleTextStyle: TextStyle(
-                      color: isDarkMode ? Colors.white : kTextPrimary,
-                      fontSize: 18,
-                    ),
+                        color: theme.textTheme.bodyLarge!.color,
+                        fontSize: 18),
                     formatButtonVisible: false,
-                    leftChevronIcon: Icon(
-                      Icons.chevron_left,
-                      color: isDarkMode ? Colors.white70 : kPrimary,
-                    ),
-                    rightChevronIcon: Icon(
-                      Icons.chevron_right,
-                      color: isDarkMode ? Colors.white70 : kPrimary,
-                    ),
+                    leftChevronIcon: Icon(Icons.chevron_left,
+                        color: theme.iconTheme.color),
+                    rightChevronIcon: Icon(Icons.chevron_right,
+                        color: theme.iconTheme.color),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: const TextStyle(color: kPrimary),
+                    weekdayStyle:
+                        TextStyle(color: theme.primaryColor),
                     weekendStyle: TextStyle(
-                      color: kPrimary.withOpacity(0.7),
-                    ),
+                        color:
+                            theme.primaryColor.withOpacity(0.7)),
                   ),
                 ),
               ],

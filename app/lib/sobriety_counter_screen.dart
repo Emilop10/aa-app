@@ -3,18 +3,25 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
+// ─── Paleta "Cálido & Humano" ───────────────────────────
+const _kOrange   = Color(0xFFF97316);
+const _kCream    = Color(0xFFFFFBF5);
+const _kSurface  = Color(0xFFFFF7ED);
+const _kBorder   = Color(0xFFFED7AA);
+const _kTextPrim = Color(0xFF431407);
+const _kTextSec  = Color(0xFF92400E);
+const _kDarkBg   = Color(0xFF1A0800);
+const _kDarkSurf = Color(0xFF2D1506);
+
 class SobrietyCounter extends StatefulWidget {
   final VoidCallback onDateChanged;
   const SobrietyCounter({super.key, required this.onDateChanged});
-
   @override
   _SobrietyCounterState createState() => _SobrietyCounterState();
 }
 
 class _TimeBreakdown {
-  final int years;
-  final int months;
-  final int days;
+  final int years, months, days;
   _TimeBreakdown({required this.years, required this.months, required this.days});
 }
 
@@ -22,16 +29,6 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
   DateTime? sobrietyDate;
   _TimeBreakdown timeBreakdown = _TimeBreakdown(years: 0, months: 0, days: 0);
   Timer? _timer;
-
-  // Paleta cálida
-  static const kPrimary = Color(0xFFF97316);
-  static const kPrimaryDark = Color(0xFFEA580C);
-  static const kRing2 = Color(0xFFFB923C);
-  static const kRing3 = Color(0xFFFED7AA);
-  static const kSurface = Color(0xFFFFF7ED);
-  static const kBorder = Color(0xFFFED7AA);
-  static const kTextPrimary = Color(0xFF431407);
-  static const kTextSecondary = Color(0xFF92400E);
 
   @override
   void initState() {
@@ -46,74 +43,58 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
   }
 
   _TimeBreakdown _calculateYearsMonthsDays(DateTime start, DateTime end) {
-    int years = end.year - start.year;
+    int years  = end.year  - start.year;
     int months = end.month - start.month;
-    int days = end.day - start.day;
-
-    if (months < 0 || (months == 0 && days < 0)) {
-      years--;
-      months += 12;
-    }
+    int days   = end.day   - start.day;
+    if (months < 0 || (months == 0 && days < 0)) { years--; months += 12; }
     if (days < 0) {
       months--;
-      DateTime lastDayOfPreviousMonth = DateTime(end.year, end.month, 0);
-      days += lastDayOfPreviousMonth.day;
+      days += DateTime(end.year, end.month, 0).day;
     }
     return _TimeBreakdown(years: years, months: months, days: days);
   }
 
   Future<void> _loadSobrietyDate() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs      = await SharedPreferences.getInstance();
     final dateString = prefs.getString('sobrietyDate');
-    if (dateString != null) {
-      if (mounted) {
-        setState(() {
-          sobrietyDate = DateTime.parse(dateString);
-          timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
-          _startTimer();
-        });
-      }
+    if (dateString != null && mounted) {
+      setState(() {
+        sobrietyDate  = DateTime.parse(dateString);
+        timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
+        _startTimer();
+      });
     }
   }
 
   void _startTimer() {
     _timer?.cancel();
     if (sobrietyDate != null) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (mounted) {
-          setState(() {
-            timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
-          });
-        }
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() => timeBreakdown =
+            _calculateYearsMonthsDays(sobrietyDate!, DateTime.now()));
       });
     }
   }
 
   Future<void> _setSobrietyDate(BuildContext context) async {
-    final pickedDate = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: sobrietyDate ?? DateTime.now(),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: kPrimary,
-              onPrimary: Colors.white,
-            ),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: Theme.of(ctx).colorScheme.copyWith(
+            primary: _kOrange, onPrimary: Colors.white,
           ),
-          child: child!,
-        );
-      },
+        ),
+        child: child!,
+      ),
     );
-
-    if (pickedDate != null) {
+    if (picked != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('sobrietyDate', pickedDate.toIso8601String());
-      setState(() {
-        sobrietyDate = pickedDate;
-      });
+      await prefs.setString('sobrietyDate', picked.toIso8601String());
+      setState(() => sobrietyDate = picked);
       _startTimer();
       widget.onDateChanged();
     }
@@ -121,215 +102,56 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final ringBg = isDarkMode
-        ? Colors.white.withOpacity(0.1)
-        : kRing3.withOpacity(0.4);
-
-    final double yearsProgress =
-        (timeBreakdown.months / 12) + (timeBreakdown.days / (12 * 30));
-    final double monthsProgress = timeBreakdown.months / 12.0;
-    final double daysProgress = timeBreakdown.days / 30.44;
+    final isDark      = Theme.of(context).brightness == Brightness.dark;
+    final bgColor     = isDark ? _kDarkBg   : _kCream;
+    final surfColor   = isDark ? _kDarkSurf : _kSurface;
+    final borderColor = isDark ? Colors.white.withOpacity(0.1) : _kBorder;
+    final textPrim    = isDark ? Colors.white : _kTextPrim;
 
     return Scaffold(
+      backgroundColor: bgColor,
+      // ── AppBar: crema/oscuro (NO naranja) para separarse del hero ──
       appBar: AppBar(
-        title: const Text("Contador de Sobriedad"),
+        title: Text(
+          "Contador de Sobriedad",
+          style: TextStyle(
+            color: textPrim,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: surfColor,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today, color: _kOrange),
             onPressed: () => _setSobrietyDate(context),
           ),
         ],
       ),
       body: sobrietyDate == null
-          ? _buildEmpty(context, isDarkMode)
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  // ── Hero con anillos ──
-                  Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [kPrimaryDark, kPrimary],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(36),
-                        bottomRight: Radius.circular(36),
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 48),
-                    child: SizedBox(
-                      height: 320,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircularPercentIndicator(
-                            radius: 150,
-                            lineWidth: 14,
-                            percent: yearsProgress.clamp(0.0, 1.0),
-                            progressColor: Colors.white,
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                            circularStrokeCap: CircularStrokeCap.round,
-                          ),
-                          CircularPercentIndicator(
-                            radius: 118,
-                            lineWidth: 14,
-                            percent: monthsProgress.clamp(0.0, 1.0),
-                            progressColor: kRing3,
-                            backgroundColor: Colors.white.withOpacity(0.15),
-                            circularStrokeCap: CircularStrokeCap.round,
-                          ),
-                          CircularPercentIndicator(
-                            radius: 86,
-                            lineWidth: 14,
-                            percent: daysProgress.clamp(0.0, 1.0),
-                            progressColor: kRing2,
-                            backgroundColor: Colors.white.withOpacity(0.1),
-                            circularStrokeCap: CircularStrokeCap.round,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "${timeBreakdown.years} ${timeBreakdown.years == 1 ? 'año' : 'años'}",
-                                style: const TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                "${timeBreakdown.months} ${timeBreakdown.months == 1 ? 'mes' : 'meses'}",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white.withOpacity(0.85),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                "${timeBreakdown.days} ${timeBreakdown.days == 1 ? 'día' : 'días'}",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white.withOpacity(0.85),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                "sobrio/a y contando",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.white.withOpacity(0.65),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // ── Tarjetas de estadísticas ──
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                    child: Row(
-                      children: [
-                        _statCard(
-                          context,
-                          isDarkMode,
-                          label: "Años",
-                          value: "${timeBreakdown.years}",
-                          icon: Icons.workspace_premium_outlined,
-                        ),
-                        const SizedBox(width: 12),
-                        _statCard(
-                          context,
-                          isDarkMode,
-                          label: "Meses",
-                          value: "${timeBreakdown.months}",
-                          icon: Icons.calendar_month_outlined,
-                        ),
-                        const SizedBox(width: 12),
-                        _statCard(
-                          context,
-                          isDarkMode,
-                          label: "Días",
-                          value: "${timeBreakdown.days}",
-                          icon: Icons.today_outlined,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // ── Frase motivacional ──
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: isDarkMode
-                            ? const Color(0xFF2D1506)
-                            : kSurface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDarkMode
-                              ? const Color(0xFF92400E)
-                              : kBorder,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.format_quote_rounded,
-                            color: kPrimary,
-                            size: 30,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Un día a la vez",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontStyle: FontStyle.italic,
-                              color: isDarkMode
-                                  ? Colors.white.withOpacity(0.8)
-                                  : kTextSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          ? _buildEmptyState(isDark)
+          : _buildBody(isDark, textPrim, surfColor, borderColor),
     );
   }
 
-  Widget _buildEmpty(BuildContext context, bool isDarkMode) {
+  // ── Estado vacío (sin fecha) ──────────────────────────────────────
+  Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.calendar_today_outlined,
-              size: 60,
-              color: kPrimary.withOpacity(0.6),
-            ),
+            Icon(Icons.calendar_today,
+                size: 64, color: _kOrange.withOpacity(0.5)),
             const SizedBox(height: 20),
             Text(
-              "Toca el calendario para establecer tu fecha de sobriedad.",
+              "Toca el calendario para establecer\ntu fecha de sobriedad.",
               style: TextStyle(
                 fontSize: 18,
-                color: isDarkMode
-                    ? Colors.white.withOpacity(0.7)
-                    : kTextSecondary,
+                color: isDark ? Colors.white70 : _kTextSec,
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
@@ -339,43 +161,215 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
     );
   }
 
-  Widget _statCard(
-    BuildContext context,
-    bool isDarkMode, {
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
+  // ── Cuerpo principal ─────────────────────────────────────────────
+  Widget _buildBody(
+    bool isDark, Color textPrim, Color surfColor, Color borderColor) {
+
+    final yr  = (timeBreakdown.months / 12 + timeBreakdown.days / 360).clamp(0.0, 1.0);
+    final mo  = (timeBreakdown.months / 12.0).clamp(0.0, 1.0);
+    final day = (timeBreakdown.days   / 30.44).clamp(0.0, 1.0);
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // ── Hero naranja con rings blancos ────────────────────
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            decoration: const BoxDecoration(
+              color: _kOrange,
+              borderRadius: BorderRadius.only(
+                bottomLeft:  Radius.circular(32),
+                bottomRight: Radius.circular(32),
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularPercentIndicator(
+                  radius: 140, lineWidth: 14,
+                  percent: yr,
+                  progressColor: Colors.white.withOpacity(0.9),
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  circularStrokeCap: CircularStrokeCap.round,
+                ),
+                CircularPercentIndicator(
+                  radius: 110, lineWidth: 14,
+                  percent: mo,
+                  progressColor: Colors.white.withOpacity(0.7),
+                  backgroundColor: Colors.white.withOpacity(0.15),
+                  circularStrokeCap: CircularStrokeCap.round,
+                ),
+                CircularPercentIndicator(
+                  radius: 80, lineWidth: 14,
+                  percent: day,
+                  progressColor: Colors.white.withOpacity(0.5),
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  circularStrokeCap: CircularStrokeCap.round,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${timeBreakdown.years} "
+                      "${timeBreakdown.years == 1 ? 'año' : 'años'}",
+                      style: const TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      "${timeBreakdown.months} "
+                      "${timeBreakdown.months == 1 ? 'mes' : 'meses'}",
+                      style: TextStyle(fontSize: 18,
+                          color: Colors.white.withOpacity(0.9)),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      "${timeBreakdown.days} "
+                      "${timeBreakdown.days == 1 ? 'día' : 'días'}",
+                      style: TextStyle(fontSize: 18,
+                          color: Colors.white.withOpacity(0.9)),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "sobrio/a y contando",
+                      style: TextStyle(
+                        fontSize: 14, fontStyle: FontStyle.italic,
+                        color: Colors.white.withOpacity(0.85)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ── Tarjetas de estadísticas ──────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+            child: Row(
+              children: [
+                _StatCard(
+                  icon: Icons.emoji_events_outlined,
+                  value: timeBreakdown.years,
+                  label: "Años",
+                  surfColor: surfColor,
+                  borderColor: borderColor,
+                  textPrim: textPrim,
+                ),
+                const SizedBox(width: 10),
+                _StatCard(
+                  icon: Icons.calendar_month_outlined,
+                  value: timeBreakdown.months,
+                  label: "Meses",
+                  surfColor: surfColor,
+                  borderColor: borderColor,
+                  textPrim: textPrim,
+                ),
+                const SizedBox(width: 10),
+                _StatCard(
+                  icon: Icons.today_outlined,
+                  value: timeBreakdown.days,
+                  label: "Días",
+                  surfColor: surfColor,
+                  borderColor: borderColor,
+                  textPrim: textPrim,
+                ),
+              ],
+            ),
+          ),
+
+          // ── Tarjeta de frase ──────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: surfColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: borderColor),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    '\u201C\u201C',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: _kOrange,
+                      height: 0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Un día a la vez',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontStyle: FontStyle.italic,
+                      color: textPrim,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Widget auxiliar: tarjeta de estadística
+// ─────────────────────────────────────────────────────────────────
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final int value;
+  final String label;
+  final Color surfColor, borderColor, textPrim;
+
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.surfColor,
+    required this.borderColor,
+    required this.textPrim,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF2D1506) : kSurface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isDarkMode ? const Color(0xFF92400E) : kBorder,
-          ),
+          color: surfColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           children: [
-            Icon(icon, color: kPrimary, size: 22),
-            const SizedBox(height: 6),
+            Icon(icon, color: _kOrange, size: 26),
+            const SizedBox(height: 8),
             Text(
-              value,
+              '$value',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : kTextPrimary,
+                color: textPrim,
               ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              '',
+              // el label se pasa abajo
             ),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isDarkMode
-                    ? Colors.white.withOpacity(0.6)
-                    : kTextSecondary,
-              ),
+              style: const TextStyle(fontSize: 12, color: _kTextSec),
             ),
           ],
         ),
