@@ -38,12 +38,26 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   _TimeBreakdown timeBreakdown =
       _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
+
+  // Animación de pulso en el número grande
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
+
+  // Animación de entrada de las cards
+  late AnimationController _entryController;
+  late Animation<double> _heroFade;
+  late Animation<Offset> _heroSlide;
+  late Animation<double> _card1Fade;
+  late Animation<Offset> _card1Slide;
+  late Animation<double> _card2Fade;
+  late Animation<Offset> _card2Slide;
+  late Animation<double> _card3Fade;
+  late Animation<Offset> _card3Slide;
 
   @override
   void initState() {
     super.initState();
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -51,6 +65,32 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     _pulseAnimation = Tween<double>(begin: 0.97, end: 1.03).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+
+    _entryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _heroFade  = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+    _heroSlide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+
+    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.25, 0.65, curve: Curves.easeOut)));
+    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.25, 0.65, curve: Curves.easeOut)));
+
+    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.45, 0.8, curve: Curves.easeOut)));
+    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.45, 0.8, curve: Curves.easeOut)));
+
+    _card3Fade  = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.6, 1.0, curve: Curves.easeOut)));
+    _card3Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+        CurvedAnimation(parent: _entryController, curve: const Interval(0.6, 1.0, curve: Curves.easeOut)));
+
     _loadSobrietyDate();
   }
 
@@ -58,6 +98,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   void dispose() {
     _timer?.cancel();
     _pulseController.dispose();
+    _entryController.dispose();
     super.dispose();
   }
 
@@ -84,6 +125,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
         timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
         _startTimer();
       });
+      _entryController.forward();
     }
   }
 
@@ -99,11 +141,11 @@ class _SobrietyCounterState extends State<SobrietyCounter>
 
   Future<void> _setSobrietyDate(BuildContext context) async {
     DateTime tempDate = sobrietyDate ?? DateTime.now();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     await showCupertinoModalPopup(
       context: context,
       builder: (ctx) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         return Container(
           height: 340,
           decoration: BoxDecoration(
@@ -112,7 +154,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
           ),
           child: Column(
             children: [
-              // Handle bar
               Container(
                 margin: const EdgeInsets.only(top: 12),
                 width: 36,
@@ -131,6 +172,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                       padding: EdgeInsets.zero,
                       child: Text('Cancelar',
                           style: TextStyle(
+                              decoration: TextDecoration.none,
                               color: isDark ? Colors.white60 : Colors.black45)),
                       onPressed: () => Navigator.pop(ctx),
                     ),
@@ -138,13 +180,16 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none,
                           color: isDark ? Colors.white : Colors.black,
                         )),
                     CupertinoButton(
                       padding: EdgeInsets.zero,
                       child: const Text('Listo',
                           style: TextStyle(
-                              color: _kOrange, fontWeight: FontWeight.w600)),
+                              decoration: TextDecoration.none,
+                              color: _kOrange,
+                              fontWeight: FontWeight.w600)),
                       onPressed: () async {
                         Navigator.pop(ctx);
                         final prefs = await SharedPreferences.getInstance();
@@ -152,6 +197,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                             'sobrietyDate', tempDate.toIso8601String());
                         setState(() => sobrietyDate = tempDate);
                         _startTimer();
+                        _entryController.forward(from: 0);
                         widget.onDateChanged();
                       },
                     ),
@@ -192,7 +238,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // ── iOS-style large title nav bar ─────────────────────
           SliverAppBar(
             expandedHeight: 100,
             floating: false,
@@ -201,6 +246,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             backgroundColor: bgColor,
             elevation: 0,
             scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
               title: Text(
@@ -214,34 +260,40 @@ class _SobrietyCounterState extends State<SobrietyCounter>
               ),
               stretchModes: const [StretchMode.fadeTitle],
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: CupertinoButton(
-                  padding: const EdgeInsets.all(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: _kOrange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Editar fecha',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+            // Botón editar fecha movido abajo del título, no en actions
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => _setSobrietyDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: _kOrange,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Editar fecha',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none,
+                        ),
                       ),
                     ),
                   ),
-                  onPressed: () => _setSobrietyDate(context),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
 
-          // ── Contenido ─────────────────────────────────────────
           SliverToBoxAdapter(
             child: sobrietyDate == null
                 ? _buildEmptyState(isDark, textPrim)
@@ -305,75 +357,99 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     final tb = timeBreakdown;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
 
-          // ── Hero Card ────────────────────────────────────────
-          _HeroCard(
-            isDark: isDark,
-            totalDays: _fmt(tb.totalDays),
-            pulseAnimation: _pulseAnimation,
+          // ── Hero Card con animación de entrada ───────────────
+          FadeTransition(
+            opacity: _heroFade,
+            child: SlideTransition(
+              position: _heroSlide,
+              child: _HeroCard(
+                isDark: isDark,
+                totalDays: _fmt(tb.totalDays),
+                pulseAnimation: _pulseAnimation,
+              ),
+            ),
           ),
 
           const SizedBox(height: 12),
 
-          // ── Desglose años / meses / días ─────────────────────
-          Row(
-            children: [
-              _MiniStatCard(
-                value: '${tb.years}',
-                label: tb.years == 1 ? 'año' : 'años',
-                icon: CupertinoIcons.rosette,
-                isDark: isDark,
-                surfColor: surfColor,
-                borderColor: borderColor,
-                textPrim: textPrim,
+          // ── Stat cards con animación escalonada ──────────────
+          FadeTransition(
+            opacity: _card1Fade,
+            child: SlideTransition(
+              position: _card1Slide,
+              child: Row(
+                children: [
+                  _MiniStatCard(
+                    value: '${tb.years}',
+                    label: tb.years == 1 ? 'año' : 'años',
+                    icon: CupertinoIcons.rosette,
+                    isDark: isDark,
+                    surfColor: surfColor,
+                    borderColor: borderColor,
+                    textPrim: textPrim,
+                  ),
+                  const SizedBox(width: 10),
+                  _MiniStatCard(
+                    value: '${tb.months}',
+                    label: tb.months == 1 ? 'mes' : 'meses',
+                    icon: CupertinoIcons.calendar,
+                    isDark: isDark,
+                    surfColor: surfColor,
+                    borderColor: borderColor,
+                    textPrim: textPrim,
+                  ),
+                  const SizedBox(width: 10),
+                  _MiniStatCard(
+                    value: '${tb.days}',
+                    label: tb.days == 1 ? 'día' : 'días',
+                    icon: CupertinoIcons.sun_max,
+                    isDark: isDark,
+                    surfColor: surfColor,
+                    borderColor: borderColor,
+                    textPrim: textPrim,
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              _MiniStatCard(
-                value: '${tb.months}',
-                label: tb.months == 1 ? 'mes' : 'meses',
-                icon: CupertinoIcons.calendar,
-                isDark: isDark,
-                surfColor: surfColor,
-                borderColor: borderColor,
-                textPrim: textPrim,
-              ),
-              const SizedBox(width: 10),
-              _MiniStatCard(
-                value: '${tb.days}',
-                label: tb.days == 1 ? 'día' : 'días',
-                icon: CupertinoIcons.sun_max,
-                isDark: isDark,
-                surfColor: surfColor,
-                borderColor: borderColor,
-                textPrim: textPrim,
-              ),
-            ],
+            ),
           ),
 
           const SizedBox(height: 12),
 
           // ── Frase motivacional ────────────────────────────────
-          _QuoteCard(
-            isDark: isDark,
-            surfColor: surfColor,
-            borderColor: borderColor,
-            textPrim: textPrim,
+          FadeTransition(
+            opacity: _card2Fade,
+            child: SlideTransition(
+              position: _card2Slide,
+              child: _QuoteCard(
+                isDark: isDark,
+                surfColor: surfColor,
+                borderColor: borderColor,
+                textPrim: textPrim,
+              ),
+            ),
           ),
 
           const SizedBox(height: 12),
 
           // ── Fecha de inicio ───────────────────────────────────
-          _StartDateCard(
-            date: sobrietyDate!,
-            isDark: isDark,
-            surfColor: surfColor,
-            borderColor: borderColor,
-            textPrim: textPrim,
-            onEdit: () => _setSobrietyDate(context),
+          FadeTransition(
+            opacity: _card3Fade,
+            child: SlideTransition(
+              position: _card3Slide,
+              child: _StartDateCard(
+                date: sobrietyDate!,
+                isDark: isDark,
+                surfColor: surfColor,
+                borderColor: borderColor,
+                textPrim: textPrim,
+                onEdit: () => _setSobrietyDate(context),
+              ),
+            ),
           ),
 
         ],
@@ -383,7 +459,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Hero Card — número grande con gradiente y glow
+// Hero Card
 // ─────────────────────────────────────────────────────────────────
 class _HeroCard extends StatelessWidget {
   final bool isDark;
@@ -419,7 +495,6 @@ class _HeroCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Círculo decorativo de fondo
           Positioned(
             right: -30,
             top: -30,
@@ -444,14 +519,12 @@ class _HeroCard extends StatelessWidget {
               ),
             ),
           ),
-          // Contenido
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Label superior
                 Row(
                   children: [
                     Container(
@@ -473,6 +546,7 @@ class _HeroCard extends StatelessWidget {
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.8,
+                              decoration: TextDecoration.none,
                             ),
                           ),
                         ],
@@ -480,7 +554,6 @@ class _HeroCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                // Número grande animado
                 ScaleTransition(
                   scale: pulseAnimation,
                   child: Column(
@@ -496,6 +569,7 @@ class _HeroCard extends StatelessWidget {
                             color: Colors.white,
                             height: 1.0,
                             letterSpacing: -3,
+                            decoration: TextDecoration.none,
                           ),
                         ),
                       ),
@@ -507,6 +581,7 @@ class _HeroCard extends StatelessWidget {
                           color: Colors.white.withOpacity(0.8),
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.2,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ],
@@ -572,6 +647,7 @@ class _MiniStatCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: textPrim,
                     letterSpacing: -0.5,
+                    decoration: TextDecoration.none,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -581,6 +657,7 @@ class _MiniStatCard extends StatelessWidget {
                     fontSize: 12,
                     color: isDark ? Colors.white38 : _kTextSec,
                     fontWeight: FontWeight.w500,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ],
@@ -648,6 +725,7 @@ class _QuoteCard extends StatelessWidget {
                     color: textPrim,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.1,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),
@@ -728,6 +806,7 @@ class _StartDateCard extends StatelessWidget {
                         fontSize: 12,
                         color: isDark ? Colors.white38 : _kTextSec,
                         fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -737,6 +816,7 @@ class _StartDateCard extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: textPrim,
+                        decoration: TextDecoration.none,
                       ),
                     ),
                   ],

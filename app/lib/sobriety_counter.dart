@@ -83,11 +83,11 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
             index: _currentIndex,
             children: screens,
           ),
-          // Settings button overlay (top-right, only visible on index 0)
+          // Settings button overlay (top-left, only visible on index 0)
           if (_currentIndex == 0)
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
-              right: 16,
+              left: 16,
               child: CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: _openSettings,
