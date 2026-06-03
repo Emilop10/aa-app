@@ -23,6 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   bool _notificationsEnabled = false;
   TimeOfDay _notificationTime = const TimeOfDay(hour: 9, minute: 0);
   Color _selectedColor = const Color(0xFFF97316);
+  ThemeMode _selectedThemeMode = ThemeMode.system;
 
   final String _enabledKey = 'notifications_enabled';
   final String _timeKey    = 'notification_time';
@@ -81,6 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen>
       _notificationTime = TimeOfDay(
           hour: int.parse(parts[0]), minute: int.parse(parts[1]));
       _selectedColor = appPrimaryColor.value;
+      _selectedThemeMode = appThemeMode.value;
     });
     _entryController.forward();
   }
@@ -192,6 +194,56 @@ class _SettingsScreenState extends State<SettingsScreen>
     return '$h:$m';
   }
 
+  Widget _themeSegment({
+    required IconData icon,
+    required String label,
+    required ThemeMode mode,
+    required Color primary,
+    required bool isDark,
+  }) {
+    final isSelected = _selectedThemeMode == mode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() => _selectedThemeMode = mode);
+          saveThemeMode(mode);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.all(3),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white54 : Colors.black45),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected
+                      ? Colors.white
+                      : (isDark ? Colors.white54 : Colors.black45),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Color>(
@@ -274,6 +326,102 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                         ),
+
+                        // ── Theme mode card ───────────────────────────
+                        FadeTransition(
+                          opacity: _colorCardFade,
+                          child: SlideTransition(
+                            position: _colorCardSlide,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.white.withOpacity(0.06)
+                                        : Colors.white.withOpacity(0.75),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.1)
+                                          : Colors.white.withOpacity(0.8),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: primary.withOpacity(0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(CupertinoIcons.moon_stars,
+                                            color: primary, size: 20),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Modo de pantalla',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: textPrim,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Colors.white.withOpacity(0.08)
+                                                    : Colors.black.withOpacity(0.06),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  _themeSegment(
+                                                    icon: CupertinoIcons.sun_max,
+                                                    label: 'Claro',
+                                                    mode: ThemeMode.light,
+                                                    primary: primary,
+                                                    isDark: isDark,
+                                                  ),
+                                                  _themeSegment(
+                                                    icon: CupertinoIcons.moon,
+                                                    label: 'Oscuro',
+                                                    mode: ThemeMode.dark,
+                                                    primary: primary,
+                                                    isDark: isDark,
+                                                  ),
+                                                  _themeSegment(
+                                                    icon: CupertinoIcons.device_phone_portrait,
+                                                    label: 'Auto',
+                                                    mode: ThemeMode.system,
+                                                    primary: primary,
+                                                    isDark: isDark,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
 
                         // ── Color picker card ─────────────────────────
                         FadeTransition(

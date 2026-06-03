@@ -4,6 +4,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Notifier global — todos los widgets lo escuchan
 final ValueNotifier<Color> appPrimaryColor = ValueNotifier<Color>(const Color(0xFFF97316));
 
+// Notifier para el modo de tema (claro / oscuro / sistema)
+final ValueNotifier<ThemeMode> appThemeMode = ValueNotifier<ThemeMode>(ThemeMode.system);
+
+Future<void> loadSavedThemeMode() async {
+  final prefs = await SharedPreferences.getInstance();
+  final saved = prefs.getString('app_theme_mode') ?? 'system';
+  appThemeMode.value = _themeModeFromString(saved);
+}
+
+Future<void> saveThemeMode(ThemeMode mode) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('app_theme_mode', _themeModeToString(mode));
+  appThemeMode.value = mode;
+}
+
+ThemeMode _themeModeFromString(String s) {
+  switch (s) {
+    case 'light': return ThemeMode.light;
+    case 'dark':  return ThemeMode.dark;
+    default:      return ThemeMode.system;
+  }
+}
+
+String _themeModeToString(ThemeMode m) {
+  switch (m) {
+    case ThemeMode.light:  return 'light';
+    case ThemeMode.dark:   return 'dark';
+    default:               return 'system';
+  }
+}
+
 // Colores secundarios derivados del primario (para gradientes)
 Color appPrimaryDeep(Color c) => HSLColor.fromColor(c).withLightness((HSLColor.fromColor(c).lightness - 0.08).clamp(0.0, 1.0)).toColor();
 Color appPrimaryDark(Color c) => HSLColor.fromColor(c).withLightness((HSLColor.fromColor(c).lightness - 0.18).clamp(0.0, 1.0)).toColor();

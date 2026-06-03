@@ -16,6 +16,7 @@ Future<void> main() async {
   await NotificationService.instance.init(navigatorKey: navigatorKey);
   await initializeDateFormatting('es_ES', null);
   await loadSavedColor();
+  await loadSavedThemeMode();
 
   final details = await NotificationService.instance.getAppLaunchDetails();
   final bool abrirReflexion =
@@ -49,14 +50,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Color>(
-      valueListenable: appPrimaryColor,
-      builder: (context, primary, child) {
-        return MaterialApp(
-          navigatorKey: navigatorKey,
-          debugShowCheckedModeBanner: false,
-          title: 'App de Sobriedad',
-          themeMode: ThemeMode.system,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, themeMode, child) {
+        return ValueListenableBuilder<Color>(
+          valueListenable: appPrimaryColor,
+          builder: (context, primary, child) {
+            return MaterialApp(
+              navigatorKey: navigatorKey,
+              debugShowCheckedModeBanner: false,
+              title: 'App de Sobriedad',
+              themeMode: themeMode,
 
           //==================================
           //== TEMA CLARO — Cálido & Humano ==
@@ -154,7 +158,9 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
 
-          home: const SobrietyCounterApp(),
+              home: const SobrietyCounterApp(),
+            );
+          },
         );
       },
     );
