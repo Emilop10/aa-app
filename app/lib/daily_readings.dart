@@ -150,19 +150,24 @@ class _DailyReadingsState extends State<DailyReadings> {
                     ),
                     defaultTextStyle: TextStyle(
                         fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white70 : Colors.black87),
                     weekendTextStyle: TextStyle(
                         fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white70 : Colors.black87),
                     outsideTextStyle: TextStyle(
                         fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white30 : Colors.black26),
                     todayTextStyle: const TextStyle(
                         fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: Colors.white,
                         fontWeight: FontWeight.w600),
                     selectedTextStyle: const TextStyle(
                         fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: Colors.white,
                         fontWeight: FontWeight.w600),
                   ),
@@ -170,6 +175,7 @@ class _DailyReadingsState extends State<DailyReadings> {
                     titleTextStyle: TextStyle(
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 17,
+                        decoration: TextDecoration.none,
                         fontWeight: FontWeight.w600),
                     formatButtonVisible: false,
                     leftChevronIcon: Icon(CupertinoIcons.chevron_left,
@@ -178,8 +184,8 @@ class _DailyReadingsState extends State<DailyReadings> {
                         color: isDark ? Colors.white70 : Colors.black54, size: 18),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: const TextStyle(color: _kOrange, fontSize: 12, fontWeight: FontWeight.w600),
-                    weekendStyle: TextStyle(color: _kOrange.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w600),
+                    weekdayStyle: const TextStyle(color: _kOrange, fontSize: 12, decoration: TextDecoration.none, fontWeight: FontWeight.w600),
+                    weekendStyle: TextStyle(color: _kOrange.withOpacity(0.7), fontSize: 12, decoration: TextDecoration.none, fontWeight: FontWeight.w600),
                   ),
                   calendarBuilders: const CalendarBuilders(
                     markerBuilder: null,
