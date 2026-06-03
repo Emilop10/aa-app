@@ -126,8 +126,7 @@ class _DailyReadingsState extends State<DailyReadings> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: TableCalendar(
+              child: TableCalendar(
                   locale: 'es_ES',
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
@@ -179,11 +178,14 @@ class _DailyReadingsState extends State<DailyReadings> {
                         color: isDark ? Colors.white70 : Colors.black54, size: 18),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: const TextStyle(color: _kOrange, fontWeight: FontWeight.w600),
-                    weekendStyle: TextStyle(color: _kOrange.withOpacity(0.7), fontWeight: FontWeight.w600),
+                    weekdayStyle: const TextStyle(color: _kOrange, fontSize: 12, fontWeight: FontWeight.w600),
+                    weekendStyle: TextStyle(color: _kOrange.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w600),
                   ),
+                  calendarBuilders: const CalendarBuilders(
+                    markerBuilder: null,
+                  ),
+                  eventLoader: null,
                 ),
-              ),
             ),
           ],
         ),
