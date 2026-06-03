@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:ui';
 import 'journal_menu.dart';
 import 'literature_menu.dart';
 import 'daily_readings.dart';
 import 'support_screen.dart';
 import 'sobriety_counter_screen.dart';
 import 'achievements_screen.dart';
-import 'settings_screen.dart'; // ¡NUEVO! Importamos la pantalla de ajustes.
+import 'settings_screen.dart';
+
+const _kOrange  = Color(0xFFF97316);
+const _kCream   = Color(0xFFFFFBF5);
+const _kDarkBg  = Color(0xFF1A0800);
 
 class SobrietyCounterApp extends StatefulWidget {
   const SobrietyCounterApp({super.key});
@@ -21,74 +27,159 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
 
   void _refreshCounterScreens() {
     setState(() {
-      _counterKey = UniqueKey();
+      _counterKey      = UniqueKey();
       _achievementsKey = UniqueKey();
     });
   }
 
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _screens = [
+    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final bgColor  = isDark ? _kDarkBg : _kCream;
+    final textPrim = isDark ? Colors.white : const Color(0xFF431407);
+
+    final List<Widget> screens = [
       SobrietyCounter(key: _counterKey, onDateChanged: _refreshCounterScreens),
       AchievementsScreen(key: _achievementsKey),
-      LiteratureMenu(),
+      const LiteratureMenu(),
       const DailyReadings(),
-      JournalMenu(),
+      const JournalMenu(),
       const SupportScreen(),
-      const SettingsScreen(), // ¡NUEVO! Añadimos la pantalla de ajustes a la lista.
+    ];
+
+    final List<IconData> tabIcons = [
+      CupertinoIcons.house,
+      CupertinoIcons.star,
+      CupertinoIcons.book,
+      CupertinoIcons.sun_max,
+      CupertinoIcons.pencil,
+      CupertinoIcons.person_2,
+    ];
+    final List<IconData> tabIconsFilled = [
+      CupertinoIcons.house_fill,
+      CupertinoIcons.star_fill,
+      CupertinoIcons.book_fill,
+      CupertinoIcons.sun_max_fill,
+      CupertinoIcons.pencil,
+      CupertinoIcons.person_2_fill,
+    ];
+    final List<String> tabLabels = [
+      'Inicio', 'Logros', 'Literatura', 'Reflexiones', 'Escritura', 'Apoyo',
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Inicio',
+      backgroundColor: bgColor,
+      extendBody: true,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _currentIndex,
+            children: screens,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events_outlined),
-            activeIcon: Icon(Icons.emoji_events),
-            label: 'Logros',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: 'Literatura',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_outlined),
-            activeIcon: Icon(Icons.book),
-            label: 'Reflexiones',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit_outlined),
-            activeIcon: Icon(Icons.edit),
-            label: 'Escritura',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.support_agent_outlined),
-            activeIcon: Icon(Icons.support_agent),
-            label: 'Soporte',
-          ),
-          // ¡NUEVO! Añadimos el ícono de ajustes al menú.
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Ajustes',
-          ),
+          // Settings button overlay (top-right, only visible on index 0)
+          if (_currentIndex == 0)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              right: 16,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: _openSettings,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withOpacity(0.12)
+                        : Colors.white.withOpacity(0.8),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.white.withOpacity(0.8),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Icon(
+                    CupertinoIcons.settings,
+                    size: 18,
+                    color: isDark ? Colors.white70 : const Color(0xFF431407),
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.black.withOpacity(0.55)
+                    : Colors.white.withOpacity(0.75),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.1)
+                      : Colors.white.withOpacity(0.9),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(tabLabels.length, (i) {
+                  final isActive  = _currentIndex == i;
+                  return Expanded(
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => setState(() => _currentIndex = i),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isActive ? tabIconsFilled[i] : tabIcons[i],
+                            size: 22,
+                            color: isActive
+                                ? _kOrange
+                                : (isDark
+                                    ? Colors.white38
+                                    : const Color(0xFF92400E).withOpacity(0.5)),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            tabLabels[i],
+                            style: TextStyle(
+                              fontSize: 9.5,
+                              fontWeight: isActive
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              color: isActive
+                                  ? _kOrange
+                                  : (isDark
+                                      ? Colors.white38
+                                      : const Color(0xFF92400E).withOpacity(0.5)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
