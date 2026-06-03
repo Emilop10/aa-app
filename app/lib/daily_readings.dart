@@ -118,6 +118,7 @@ class _DailyReadingsState extends State<DailyReadings> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.none,
                       color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
