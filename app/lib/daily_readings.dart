@@ -7,9 +7,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:share_plus/share_plus.dart';
+import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
-const _kOrange   = Color(0xFFF97316);
 const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kTextSec  = Color(0xFF92400E);
@@ -30,18 +30,50 @@ class DailyReadings extends StatefulWidget {
   _DailyReadingsState createState() => _DailyReadingsState();
 }
 
-class _DailyReadingsState extends State<DailyReadings> {
+class _DailyReadingsState extends State<DailyReadings>
+    with TickerProviderStateMixin {
   Map<DateTime, DailyReading> _dailyReadings = {};
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  // Respiración de fondo
+  late AnimationController _bgBreathController;
+  late Animation<double> _bgBreath;
+
+  // Entrada escalonada
+  late AnimationController _entryController;
+  late Animation<double> _cardFade;
+  late Animation<Offset> _cardSlide;
+  late Animation<double> _copyrightFade;
+  late Animation<Offset> _copyrightSlide;
+
   @override
   void initState() {
     super.initState();
+
+    // Respiración de fondo
+    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+
+    // Entrada escalonada
+    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
+    _cardFade      = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)));
+    _cardSlide     = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)));
+    _copyrightFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
+    _copyrightSlide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
+
     initializeDateFormatting('es_ES', null);
     _selectedDay = _normalizeDate(DateTime.now());
     _focusedDay  = _selectedDay!;
     _loadDailyReadings();
+  }
+
+  @override
+  void dispose() {
+    _bgBreathController.dispose();
+    _entryController.dispose();
+    super.dispose();
   }
 
   DateTime _normalizeDate(DateTime date) =>
@@ -55,7 +87,10 @@ class _DailyReadingsState extends State<DailyReadings> {
       final date = DateTime.parse(key);
       loadedReadings[_normalizeDate(date)] = DailyReading.fromJson(value);
     });
-    if (mounted) setState(() => _dailyReadings = loadedReadings);
+    if (mounted) {
+      setState(() => _dailyReadings = loadedReadings);
+      _entryController.forward();
+    }
   }
 
   DailyReading? _getReadingForDay(DateTime day) {
@@ -79,7 +114,7 @@ class _DailyReadingsState extends State<DailyReadings> {
     Share.share(textToShare);
   }
 
-  void _showCalendarModal(BuildContext context) {
+  void _showCalendarModal(BuildContext context, Color primary) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showCupertinoModalPopup(
       context: context,
@@ -118,6 +153,7 @@ class _DailyReadingsState extends State<DailyReadings> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.none,
                       color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
@@ -126,8 +162,7 @@ class _DailyReadingsState extends State<DailyReadings> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: TableCalendar(
+              child: TableCalendar(
                   locale: 'es_ES',
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
@@ -142,24 +177,41 @@ class _DailyReadingsState extends State<DailyReadings> {
                   },
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(
-                      color: _kOrange.withOpacity(0.5),
+                      color: primary.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    selectedDecoration: const BoxDecoration(
-                      color: _kOrange,
+                    selectedDecoration: BoxDecoration(
+                      color: primary,
                       shape: BoxShape.circle,
                     ),
                     defaultTextStyle: TextStyle(
+                        fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white70 : Colors.black87),
                     weekendTextStyle: TextStyle(
+                        fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white70 : Colors.black87),
                     outsideTextStyle: TextStyle(
+                        fontSize: 14,
+                        decoration: TextDecoration.none,
                         color: isDark ? Colors.white30 : Colors.black26),
+                    todayTextStyle: const TextStyle(
+                        fontSize: 14,
+                        decoration: TextDecoration.none,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    selectedTextStyle: const TextStyle(
+                        fontSize: 14,
+                        decoration: TextDecoration.none,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   ),
                   headerStyle: HeaderStyle(
                     titleTextStyle: TextStyle(
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 17,
+                        decoration: TextDecoration.none,
                         fontWeight: FontWeight.w600),
                     formatButtonVisible: false,
                     leftChevronIcon: Icon(CupertinoIcons.chevron_left,
@@ -168,11 +220,14 @@ class _DailyReadingsState extends State<DailyReadings> {
                         color: isDark ? Colors.white70 : Colors.black54, size: 18),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: const TextStyle(color: _kOrange, fontWeight: FontWeight.w600),
-                    weekendStyle: TextStyle(color: _kOrange.withOpacity(0.7), fontWeight: FontWeight.w600),
+                    weekdayStyle: TextStyle(color: primary, fontSize: 12, decoration: TextDecoration.none, fontWeight: FontWeight.w600),
+                    weekendStyle: TextStyle(color: primary.withOpacity(0.7), fontSize: 12, decoration: TextDecoration.none, fontWeight: FontWeight.w600),
                   ),
+                  calendarBuilders: const CalendarBuilders(
+                    markerBuilder: null,
+                  ),
+                  eventLoader: null,
                 ),
-              ),
             ),
           ],
         ),
@@ -182,124 +237,157 @@ class _DailyReadingsState extends State<DailyReadings> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark   = Theme.of(context).brightness == Brightness.dark;
-    final bgColor  = isDark ? _kDarkBg : _kCream;
-    final textPrim = isDark ? Colors.white : _kTextPrim;
-    final reading  = _selectedDay != null ? _getReadingForDay(_selectedDay!) : null;
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, child) {
+        final isDark   = Theme.of(context).brightness == Brightness.dark;
+        final bgColor  = isDark ? _kDarkBg : _kCream;
+        final textPrim = isDark ? Colors.white : _kTextPrim;
+        final reading  = _selectedDay != null ? _getReadingForDay(_selectedDay!) : null;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 100,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-              title: Text(
-                'Reflexiones',
-                style: TextStyle(
-                  color: textPrim,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    primary.withOpacity(_bgBreath.value),
+                    bgColor,
+                  ],
                 ),
               ),
-              stretchModes: const [StretchMode.fadeTitle],
+              child: child,
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: CupertinoButton(
-                  padding: const EdgeInsets.all(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: _kOrange,
-                      borderRadius: BorderRadius.circular(20),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text(
+                      'Reflexiones',
+                      style: TextStyle(
+                        color: textPrim,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: CupertinoButton(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: primary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(CupertinoIcons.calendar, color: Colors.white, size: 14),
+                              SizedBox(width: 5),
+                              Text(
+                                'Fecha',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onPressed: () => _showCalendarModal(context, primary),
+                      ),
+                    ),
+                  ],
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Icon(CupertinoIcons.calendar, color: Colors.white, size: 14),
-                        SizedBox(width: 5),
-                        Text(
-                          'Fecha',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                        // Reading card
+                        FadeTransition(
+                          opacity: _cardFade,
+                          child: SlideTransition(
+                            position: _cardSlide,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.white.withOpacity(0.06)
+                                        : Colors.white.withOpacity(0.75),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.1)
+                                          : Colors.white.withOpacity(0.8),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: reading != null
+                                      ? _buildReadingContent(reading, isDark, textPrim, primary)
+                                      : _buildNoReadingAvailable(isDark, textPrim),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Copyright
+                        FadeTransition(
+                          opacity: _copyrightFade,
+                          child: SlideTransition(
+                            position: _copyrightSlide,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.5),
+                                  height: 1.5,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  onPressed: () => _showCalendarModal(context),
                 ),
-              ),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Reading card
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withOpacity(0.06)
-                              : Colors.white.withOpacity(0.75),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.white.withOpacity(0.8),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: reading != null
-                            ? _buildReadingContent(reading, isDark, textPrim)
-                            : _buildNoReadingAvailable(isDark, textPrim),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Copyright
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.5),
-                        height: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildReadingContent(DailyReading reading, bool isDark, Color textPrim) {
+  Widget _buildReadingContent(DailyReading reading, bool isDark, Color textPrim, Color primary) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -310,7 +398,7 @@ class _DailyReadingsState extends State<DailyReadings> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: _kOrange,
+                color: primary,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -328,10 +416,10 @@ class _DailyReadingsState extends State<DailyReadings> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _kOrange.withOpacity(0.12),
+                  color: primary.withOpacity(0.12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(CupertinoIcons.share, color: _kOrange, size: 17),
+                child: Icon(CupertinoIcons.share, color: primary, size: 17),
               ),
               onPressed: () => _shareReading(reading),
             ),
