@@ -69,8 +69,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
         isDark: isDark,
         onSearch: (query) {
           if (query.isNotEmpty) {
-            _searchResult = _pdfController.searchText(query,
-                searchOption: TextSearchOption.caseSensitive);
+            _searchResult = _pdfController.searchText(query);
           }
           Navigator.pop(ctx);
           setState(() => _showSearch = false);
