@@ -338,8 +338,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                           ),
                           // Contenido
-                          Column(
-                            children: [
+                          Center(
+                            child: Column(
+                              children: [
                               CircularPercentIndicator(
                                 radius: 90,
                                 lineWidth: 12,
@@ -378,6 +379,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 ),
                               ),
                             ],
+                          ),
                           ),
                         ],
                       ),
