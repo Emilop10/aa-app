@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'dart:ui';
 
-// ─── Paleta "Cálido & Humano" ───────────────────────────
-const _kOrange   = Color(0xFFF97316);
-const _kCream    = Color(0xFFFFFBF5);
-const _kSurface  = Color(0xFFFFF7ED);
-const _kBorder   = Color(0xFFFED7AA);
-const _kTextPrim = Color(0xFF431407);
-const _kTextSec  = Color(0xFF92400E);
-const _kDarkBg   = Color(0xFF1A0800);
-const _kDarkSurf = Color(0xFF2D1506);
+// ─── Paleta ───────────────────────────────────────────────
+const _kOrange     = Color(0xFFF97316);
+const _kOrangeDeep = Color(0xFFEA580C);
+const _kCream      = Color(0xFFFFFBF5);
+const _kSurface    = Color(0xFFFFF7ED);
+const _kBorder     = Color(0xFFFED7AA);
+const _kTextPrim   = Color(0xFF431407);
+const _kTextSec    = Color(0xFF92400E);
+const _kDarkBg     = Color(0xFF1A0800);
+const _kDarkSurf   = Color(0xFF2D1506);
 
 class SobrietyCounter extends StatefulWidget {
   final VoidCallback onDateChanged;
@@ -29,21 +32,32 @@ class _TimeBreakdown {
   });
 }
 
-class _SobrietyCounterState extends State<SobrietyCounter> {
+class _SobrietyCounterState extends State<SobrietyCounter>
+    with TickerProviderStateMixin {
   DateTime? sobrietyDate;
   _TimeBreakdown timeBreakdown =
       _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.97, end: 1.03).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
     _loadSobrietyDate();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -84,30 +98,82 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
   }
 
   Future<void> _setSobrietyDate(BuildContext context) async {
-    final picked = await showDatePicker(
+    DateTime tempDate = sobrietyDate ?? DateTime.now();
+
+    await showCupertinoModalPopup(
       context: context,
-      initialDate: sobrietyDate ?? DateTime.now(),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: Theme.of(ctx).colorScheme.copyWith(
-            primary: _kOrange, onPrimary: Colors.white,
+      builder: (ctx) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Container(
+          height: 340,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1C1C1E) : CupertinoColors.systemBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
-        ),
-        child: child!,
-      ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black12,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('Cancelar',
+                          style: TextStyle(
+                              color: isDark ? Colors.white60 : Colors.black45)),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                    Text('Fecha de Sobriedad',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black,
+                        )),
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: const Text('Listo',
+                          style: TextStyle(
+                              color: _kOrange, fontWeight: FontWeight.w600)),
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString(
+                            'sobrietyDate', tempDate.toIso8601String());
+                        setState(() => sobrietyDate = tempDate);
+                        _startTimer();
+                        widget.onDateChanged();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: sobrietyDate ?? DateTime.now(),
+                  maximumDate: DateTime.now(),
+                  minimumDate: DateTime(1950),
+                  onDateTimeChanged: (d) => tempDate = d,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (picked != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('sobrietyDate', picked.toIso8601String());
-      setState(() => sobrietyDate = picked);
-      _startTimer();
-      widget.onDateChanged();
-    }
   }
 
-  // Formatea números con coma de miles: 5516 → "5,516"
   String _fmt(int n) => n.toString().replaceAllMapped(
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
         (m) => '${m[1]},',
@@ -118,55 +184,117 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
     final isDark      = Theme.of(context).brightness == Brightness.dark;
     final bgColor     = isDark ? _kDarkBg   : _kCream;
     final surfColor   = isDark ? _kDarkSurf : _kSurface;
-    final borderColor = isDark ? Colors.white.withOpacity(0.1) : _kBorder;
+    final borderColor = isDark ? Colors.white.withOpacity(0.08) : _kBorder;
     final textPrim    = isDark ? Colors.white : _kTextPrim;
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(
-          "Contador de Sobriedad",
-          style: TextStyle(
-            color: textPrim,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // ── iOS-style large title nav bar ─────────────────────
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            stretch: true,
+            backgroundColor: bgColor,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+              title: Text(
+                'Sobriedad',
+                style: TextStyle(
+                  color: textPrim,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              stretchModes: const [StretchMode.fadeTitle],
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: CupertinoButton(
+                  padding: const EdgeInsets.all(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: _kOrange,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Editar fecha',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  onPressed: () => _setSobrietyDate(context),
+                ),
+              ),
+            ],
           ),
-        ),
-        backgroundColor: surfColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today, color: _kOrange),
-            onPressed: () => _setSobrietyDate(context),
+
+          // ── Contenido ─────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: sobrietyDate == null
+                ? _buildEmptyState(isDark, textPrim)
+                : _buildBody(isDark, textPrim, surfColor, borderColor),
           ),
         ],
       ),
-      body: sobrietyDate == null
-          ? _buildEmptyState(isDark)
-          : _buildBody(isDark, textPrim, surfColor, borderColor),
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.calendar_today,
-                size: 64, color: _kOrange.withOpacity(0.5)),
-            const SizedBox(height: 20),
-            Text(
-              "Toca el calendario para establecer\ntu fecha de sobriedad.",
-              style: TextStyle(
-                fontSize: 18,
-                color: isDark ? Colors.white70 : _kTextSec,
-                height: 1.5,
+  Widget _buildEmptyState(bool isDark, Color textPrim) {
+    return SizedBox(
+      height: 500,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: _kOrange.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(CupertinoIcons.calendar,
+                    size: 38, color: _kOrange),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 24),
+              Text(
+                'Registra tu fecha\nde sobriedad',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: textPrim,
+                  height: 1.3,
+                  letterSpacing: -0.3,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Toca "Editar fecha" arriba para comenzar.',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: isDark ? Colors.white38 : _kTextSec,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -174,160 +302,78 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
 
   Widget _buildBody(
       bool isDark, Color textPrim, Color surfColor, Color borderColor) {
-
     final tb = timeBreakdown;
 
-    final String yLabel = '${tb.years} ${tb.years   == 1 ? "año"  : "años"}';
-    final String mLabel = '${tb.months} ${tb.months == 1 ? "mes"  : "meses"}';
-    final String dLabel = '${tb.days} ${tb.days     == 1 ? "día"  : "días"}';
-
-    return SingleChildScrollView(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
 
-          // ── Hero tipo póster ─────────────────────────────────
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 44, 24, 36),
-            decoration: const BoxDecoration(
-              color: _kOrange,
-              borderRadius: BorderRadius.only(
-                bottomLeft:  Radius.circular(32),
-                bottomRight: Radius.circular(32),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-
-                // Número grande — el protagonista
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    _fmt(tb.totalDays),
-                    style: const TextStyle(
-                      fontSize: 96,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      height: 1.0,
-                      letterSpacing: -2,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                // Etiqueta principal
-                Text(
-                  'días sobrio/a',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.white.withOpacity(0.85),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Línea divisora sutil
-                Container(
-                  width: 48,
-                  height: 1.5,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.45),
-                    borderRadius: BorderRadius.circular(1),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Desglose: años · meses · días
-                Text(
-                  '$yLabel  ·  $mLabel  ·  $dLabel',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white.withOpacity(0.75),
-                    letterSpacing: 0.3,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+          // ── Hero Card ────────────────────────────────────────
+          _HeroCard(
+            isDark: isDark,
+            totalDays: _fmt(tb.totalDays),
+            pulseAnimation: _pulseAnimation,
           ),
 
-          // ── Tarjetas de estadísticas ──────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-            child: Row(
-              children: [
-                _StatCard(
-                  icon: Icons.emoji_events_outlined,
-                  value: tb.years,
-                  label: "Años",
-                  surfColor: surfColor,
-                  borderColor: borderColor,
-                  textPrim: textPrim,
-                ),
-                const SizedBox(width: 10),
-                _StatCard(
-                  icon: Icons.calendar_month_outlined,
-                  value: tb.months,
-                  label: "Meses",
-                  surfColor: surfColor,
-                  borderColor: borderColor,
-                  textPrim: textPrim,
-                ),
-                const SizedBox(width: 10),
-                _StatCard(
-                  icon: Icons.today_outlined,
-                  value: tb.days,
-                  label: "Días",
-                  surfColor: surfColor,
-                  borderColor: borderColor,
-                  textPrim: textPrim,
-                ),
-              ],
-            ),
+          const SizedBox(height: 12),
+
+          // ── Desglose años / meses / días ─────────────────────
+          Row(
+            children: [
+              _MiniStatCard(
+                value: '${tb.years}',
+                label: tb.years == 1 ? 'año' : 'años',
+                icon: CupertinoIcons.rosette,
+                isDark: isDark,
+                surfColor: surfColor,
+                borderColor: borderColor,
+                textPrim: textPrim,
+              ),
+              const SizedBox(width: 10),
+              _MiniStatCard(
+                value: '${tb.months}',
+                label: tb.months == 1 ? 'mes' : 'meses',
+                icon: CupertinoIcons.calendar,
+                isDark: isDark,
+                surfColor: surfColor,
+                borderColor: borderColor,
+                textPrim: textPrim,
+              ),
+              const SizedBox(width: 10),
+              _MiniStatCard(
+                value: '${tb.days}',
+                label: tb.days == 1 ? 'día' : 'días',
+                icon: CupertinoIcons.sun_max,
+                isDark: isDark,
+                surfColor: surfColor,
+                borderColor: borderColor,
+                textPrim: textPrim,
+              ),
+            ],
           ),
 
-          // ── Tarjeta de frase ──────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              decoration: BoxDecoration(
-                color: surfColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: borderColor),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(Icons.format_quote, color: _kOrange, size: 28),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      'Un día a la vez',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontStyle: FontStyle.italic,
-                        color: textPrim,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Transform.scale(
-                    scaleX: -1,
-                    child: const Icon(Icons.format_quote, color: _kOrange, size: 28),
-                  ),
-                ],
-              ),
-            ),
+          const SizedBox(height: 12),
+
+          // ── Frase motivacional ────────────────────────────────
+          _QuoteCard(
+            isDark: isDark,
+            surfColor: surfColor,
+            borderColor: borderColor,
+            textPrim: textPrim,
+          ),
+
+          const SizedBox(height: 12),
+
+          // ── Fecha de inicio ───────────────────────────────────
+          _StartDateCard(
+            date: sobrietyDate!,
+            isDark: isDark,
+            surfColor: surfColor,
+            borderColor: borderColor,
+            textPrim: textPrim,
+            onEdit: () => _setSobrietyDate(context),
           ),
 
         ],
@@ -337,18 +383,158 @@ class _SobrietyCounterState extends State<SobrietyCounter> {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Widget auxiliar: tarjeta de estadística
+// Hero Card — número grande con gradiente y glow
 // ─────────────────────────────────────────────────────────────────
-class _StatCard extends StatelessWidget {
+class _HeroCard extends StatelessWidget {
+  final bool isDark;
+  final String totalDays;
+  final Animation<double> pulseAnimation;
+
+  const _HeroCard({
+    required this.isDark,
+    required this.totalDays,
+    required this.pulseAnimation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 220,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF97316), Color(0xFFEA580C), Color(0xFFC2410C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _kOrange.withOpacity(isDark ? 0.5 : 0.35),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Círculo decorativo de fondo
+          Positioned(
+            right: -30,
+            top: -30,
+            child: Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.07),
+              ),
+            ),
+          ),
+          Positioned(
+            left: -20,
+            bottom: -40,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.05),
+              ),
+            ),
+          ),
+          // Contenido
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Label superior
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(CupertinoIcons.heart_fill,
+                              color: Colors.white, size: 11),
+                          SizedBox(width: 5),
+                          Text(
+                            'EN RECUPERACIÓN',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // Número grande animado
+                ScaleTransition(
+                  scale: pulseAnimation,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          totalDays,
+                          style: const TextStyle(
+                            fontSize: 80,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            height: 1.0,
+                            letterSpacing: -3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'días sobrio/a',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.8),
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Mini stat cards
+// ─────────────────────────────────────────────────────────────────
+class _MiniStatCard extends StatelessWidget {
+  final String value, label;
   final IconData icon;
-  final int value;
-  final String label;
+  final bool isDark;
   final Color surfColor, borderColor, textPrim;
 
-  const _StatCard({
-    required this.icon,
+  const _MiniStatCard({
     required this.value,
     required this.label,
+    required this.icon,
+    required this.isDark,
     required this.surfColor,
     required this.borderColor,
     required this.textPrim,
@@ -357,31 +543,213 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: surfColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: _kOrange, size: 26),
-            const SizedBox(height: 8),
-            Text(
-              '$value',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: textPrim,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : Colors.white.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.white.withOpacity(0.8),
+                width: 0.8,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: _kTextSec),
+            child: Column(
+              children: [
+                Icon(icon, color: _kOrange, size: 22),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: textPrim,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white38 : _kTextSec,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Quote Card
+// ─────────────────────────────────────────────────────────────────
+class _QuoteCard extends StatelessWidget {
+  final bool isDark;
+  final Color surfColor, borderColor, textPrim;
+
+  const _QuoteCard({
+    required this.isDark,
+    required this.surfColor,
+    required this.borderColor,
+    required this.textPrim,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withOpacity(0.06)
+                : Colors.white.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.white.withOpacity(0.8),
+              width: 0.8,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _kOrange.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(CupertinoIcons.quote_bubble,
+                    color: _kOrange, size: 18),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  'Un día a la vez',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontStyle: FontStyle.italic,
+                    color: textPrim,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Start Date Card
+// ─────────────────────────────────────────────────────────────────
+class _StartDateCard extends StatelessWidget {
+  final DateTime date;
+  final bool isDark;
+  final Color surfColor, borderColor, textPrim;
+  final VoidCallback onEdit;
+
+  const _StartDateCard({
+    required this.date,
+    required this.isDark,
+    required this.surfColor,
+    required this.borderColor,
+    required this.textPrim,
+    required this.onEdit,
+  });
+
+  String _formatDate(DateTime d) {
+    const months = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    return '${d.day} de ${months[d.month - 1]} de ${d.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withOpacity(0.06)
+                : Colors.white.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.white.withOpacity(0.8),
+              width: 0.8,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _kOrange.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(CupertinoIcons.flag,
+                    color: _kOrange, size: 17),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Fecha de inicio',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.white38 : _kTextSec,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatDate(date),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: textPrim,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: onEdit,
+                child: const Icon(CupertinoIcons.chevron_right,
+                    color: _kOrange, size: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );
