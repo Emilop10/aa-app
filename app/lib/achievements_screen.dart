@@ -40,10 +40,30 @@ class AchievementsScreen extends StatefulWidget {
   _AchievementsScreenState createState() => _AchievementsScreenState();
 }
 
-class _AchievementsScreenState extends State<AchievementsScreen> {
+class _AchievementsScreenState extends State<AchievementsScreen>
+    with TickerProviderStateMixin {
   DateTime? sobrietyDate;
   _TimeBreakdown? timeBreakdown;
   Timer? _timer;
+
+  // Respiración de fondo
+  late AnimationController _bgBreathController;
+  late Animation<double> _bgBreath;
+
+  // Orbes flotantes en la hero card
+  late AnimationController _orb1Controller;
+  late AnimationController _orb2Controller;
+  late AnimationController _orb3Controller;
+  late Animation<double> _orb1Anim;
+  late Animation<double> _orb2Anim;
+  late Animation<double> _orb3Anim;
+
+  // Entrada escalonada
+  late AnimationController _entryController;
+  late Animation<double> _heroFade;
+  late Animation<Offset> _heroSlide;
+  late Animation<double> _listFade;
+  late Animation<Offset> _listSlide;
 
   final List<Milestone> _allMilestones = [
     Milestone(name: '24 Horas',  duration: const Duration(days: 1),        icon: CupertinoIcons.shield),
@@ -63,12 +83,38 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Respiración de fondo
+    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+
+    // Orbes flotantes
+    _orb1Controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat(reverse: true);
+    _orb2Controller = AnimationController(vsync: this, duration: const Duration(seconds: 8))..repeat(reverse: true);
+    _orb3Controller = AnimationController(vsync: this, duration: const Duration(seconds: 5))..repeat(reverse: true);
+    _orb1Anim = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _orb1Controller, curve: Curves.easeInOut));
+    _orb2Anim = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _orb2Controller, curve: Curves.easeInOut));
+    _orb3Anim = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _orb3Controller, curve: Curves.easeInOut));
+
+    // Entrada escalonada
+    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
+    _heroFade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _heroSlide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _listFade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.4, 1.0, curve: Curves.easeOut)));
+    _listSlide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.4, 1.0, curve: Curves.easeOut)));
+
     _loadSobrietyDate();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _bgBreathController.dispose();
+    _orb1Controller.dispose();
+    _orb2Controller.dispose();
+    _orb3Controller.dispose();
+    _entryController.dispose();
     super.dispose();
   }
 
@@ -94,6 +140,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         timeBreakdown = _calculateTime(sobrietyDate!);
         _startTimer();
       });
+      _entryController.forward();
     }
   }
 
@@ -114,37 +161,53 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 100,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-              title: Text(
-                'Logros',
-                style: TextStyle(
-                  color: textPrim,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              stretchModes: const [StretchMode.fadeTitle],
+      body: AnimatedBuilder(
+        animation: _bgBreath,
+        builder: (context, child) => Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.topCenter,
+              radius: 1.2,
+              colors: [
+                _kOrange.withOpacity(_bgBreath.value),
+                bgColor,
+              ],
             ),
           ),
-          SliverToBoxAdapter(
-            child: sobrietyDate == null
-                ? _buildEmptyState(isDark, textPrim)
-                : _buildContent(isDark, textPrim),
-          ),
-        ],
+          child: child,
+        ),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 100,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                title: Text(
+                  'Logros',
+                  style: TextStyle(
+                    color: textPrim,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                stretchModes: const [StretchMode.fadeTitle],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: sobrietyDate == null
+                  ? _buildEmptyState(isDark, textPrim)
+                  : _buildContent(isDark, textPrim),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -207,87 +270,150 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Hero Card con círculo de progreso ──
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              gradient: const LinearGradient(
-                colors: [Color(0xFFF97316), Color(0xFFEA580C), Color(0xFFC2410C)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _kOrange.withOpacity(isDark ? 0.5 : 0.35),
-                  blurRadius: 28,
-                  offset: const Offset(0, 10),
-                  spreadRadius: -4,
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                CircularPercentIndicator(
-                  radius: 90,
-                  lineWidth: 12,
-                  percent: progressToNext,
-                  center: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${breakdown.years}a',
-                        style: const TextStyle(
-                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold,
+          // ── Hero Card con orbes flotantes ──
+          FadeTransition(
+            opacity: _heroFade,
+            child: SlideTransition(
+              position: _heroSlide,
+              child: AnimatedBuilder(
+                animation: Listenable.merge([_orb1Anim, _orb2Anim, _orb3Anim]),
+                builder: (context, _) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFF97316), Color(0xFFEA580C), Color(0xFFC2410C)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _kOrange.withOpacity(isDark ? 0.5 : 0.35),
+                          blurRadius: 28,
+                          offset: const Offset(0, 10),
+                          spreadRadius: -4,
                         ),
-                      ),
-                      Text(
-                        '${breakdown.months}m ${breakdown.days}d',
-                        style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
-                      ),
-                    ],
-                  ),
-                  progressColor: Colors.white,
-                  backgroundColor: Colors.white.withOpacity(0.25),
-                  circularStrokeCap: CircularStrokeCap.round,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Próximo logro: ${nextMilestone.name}',
-                    style: const TextStyle(
-                      color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500,
+                      ],
                     ),
-                  ),
-                ),
-              ],
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Stack(
+                        children: [
+                          // Orbe 1
+                          Positioned(
+                            right: -40 + (_orb1Anim.value * 20),
+                            top:   -40 + (_orb1Anim.value * 15),
+                            child: Container(
+                              width: 160, height: 160,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.10 + _orb1Anim.value * 0.05),
+                              ),
+                            ),
+                          ),
+                          // Orbe 2
+                          Positioned(
+                            left:   -30 + (_orb2Anim.value * 18),
+                            bottom: -50 + (_orb2Anim.value * 20),
+                            child: Container(
+                              width: 130, height: 130,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.07 + _orb2Anim.value * 0.04),
+                              ),
+                            ),
+                          ),
+                          // Orbe 3
+                          Positioned(
+                            right:  30 + (_orb3Anim.value * 15),
+                            bottom: 30 + (_orb3Anim.value * 10),
+                            child: Container(
+                              width: 60, height: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.08 + _orb3Anim.value * 0.06),
+                              ),
+                            ),
+                          ),
+                          // Contenido
+                          Column(
+                            children: [
+                              CircularPercentIndicator(
+                                radius: 90,
+                                lineWidth: 12,
+                                percent: progressToNext,
+                                center: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '${breakdown.years}a',
+                                      style: const TextStyle(
+                                        color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${breakdown.months}m ${breakdown.days}d',
+                                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                                progressColor: Colors.white,
+                                backgroundColor: Colors.white.withOpacity(0.25),
+                                circularStrokeCap: CircularStrokeCap.round,
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Próximo logro: ${nextMilestone.name}',
+                                  style: const TextStyle(
+                                    color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
 
           const SizedBox(height: 20),
 
-          // ── Título lista ──
-          Text(
-            'Todos los logros',
-            style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w700,
-              color: textPrim, letterSpacing: -0.3,
+          // ── Lista de logros con entrada escalonada ──
+          FadeTransition(
+            opacity: _listFade,
+            child: SlideTransition(
+              position: _listSlide,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Todos los logros',
+                    style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w700,
+                      color: textPrim, letterSpacing: -0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ..._allMilestones.map((milestone) {
+                    final isAchieved = breakdown.totalDuration >= milestone.duration;
+                    return _buildMilestoneCard(milestone, isAchieved, isDark, textPrim);
+                  }),
+                ],
+              ),
             ),
           ),
-
-          const SizedBox(height: 12),
-
-          // ── Lista de milestones ──
-          ..._allMilestones.map((milestone) {
-            final isAchieved = breakdown.totalDuration >= milestone.duration;
-            return _buildMilestoneCard(milestone, isAchieved, isDark, textPrim);
-          }),
         ],
       ),
     );

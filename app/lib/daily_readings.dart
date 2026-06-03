@@ -30,18 +30,50 @@ class DailyReadings extends StatefulWidget {
   _DailyReadingsState createState() => _DailyReadingsState();
 }
 
-class _DailyReadingsState extends State<DailyReadings> {
+class _DailyReadingsState extends State<DailyReadings>
+    with TickerProviderStateMixin {
   Map<DateTime, DailyReading> _dailyReadings = {};
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  // Respiración de fondo
+  late AnimationController _bgBreathController;
+  late Animation<double> _bgBreath;
+
+  // Entrada escalonada
+  late AnimationController _entryController;
+  late Animation<double> _cardFade;
+  late Animation<Offset> _cardSlide;
+  late Animation<double> _copyrightFade;
+  late Animation<Offset> _copyrightSlide;
+
   @override
   void initState() {
     super.initState();
+
+    // Respiración de fondo
+    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+
+    // Entrada escalonada
+    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
+    _cardFade      = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)));
+    _cardSlide     = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)));
+    _copyrightFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
+    _copyrightSlide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
+
     initializeDateFormatting('es_ES', null);
     _selectedDay = _normalizeDate(DateTime.now());
     _focusedDay  = _selectedDay!;
     _loadDailyReadings();
+  }
+
+  @override
+  void dispose() {
+    _bgBreathController.dispose();
+    _entryController.dispose();
+    super.dispose();
   }
 
   DateTime _normalizeDate(DateTime date) =>
@@ -55,7 +87,10 @@ class _DailyReadingsState extends State<DailyReadings> {
       final date = DateTime.parse(key);
       loadedReadings[_normalizeDate(date)] = DailyReading.fromJson(value);
     });
-    if (mounted) setState(() => _dailyReadings = loadedReadings);
+    if (mounted) {
+      setState(() => _dailyReadings = loadedReadings);
+      _entryController.forward();
+    }
   }
 
   DailyReading? _getReadingForDay(DateTime day) {
@@ -209,112 +244,140 @@ class _DailyReadingsState extends State<DailyReadings> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 100,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-              title: Text(
-                'Reflexiones',
-                style: TextStyle(
-                  color: textPrim,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              stretchModes: const [StretchMode.fadeTitle],
+      body: AnimatedBuilder(
+        animation: _bgBreath,
+        builder: (context, child) => Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.topCenter,
+              radius: 1.2,
+              colors: [
+                _kOrange.withOpacity(_bgBreath.value),
+                bgColor,
+              ],
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: CupertinoButton(
-                  padding: const EdgeInsets.all(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: _kOrange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(CupertinoIcons.calendar, color: Colors.white, size: 14),
-                        SizedBox(width: 5),
-                        Text(
-                          'Fecha',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onPressed: () => _showCalendarModal(context),
-                ),
-              ),
-            ],
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Reading card
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withOpacity(0.06)
-                              : Colors.white.withOpacity(0.75),
+          child: child,
+        ),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 100,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                title: Text(
+                  'Reflexiones',
+                  style: TextStyle(
+                    color: textPrim,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                stretchModes: const [StretchMode.fadeTitle],
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.all(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: _kOrange,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.calendar, color: Colors.white, size: 14),
+                          SizedBox(width: 5),
+                          Text(
+                            'Fecha',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onPressed: () => _showCalendarModal(context),
+                  ),
+                ),
+              ],
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Reading card
+                    FadeTransition(
+                      opacity: _cardFade,
+                      child: SlideTransition(
+                        position: _cardSlide,
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.white.withOpacity(0.8),
-                            width: 0.8,
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.06)
+                                    : Colors.white.withOpacity(0.75),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withOpacity(0.1)
+                                      : Colors.white.withOpacity(0.8),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: reading != null
+                                  ? _buildReadingContent(reading, isDark, textPrim)
+                                  : _buildNoReadingAvailable(isDark, textPrim),
+                            ),
                           ),
                         ),
-                        child: reading != null
-                            ? _buildReadingContent(reading, isDark, textPrim)
-                            : _buildNoReadingAvailable(isDark, textPrim),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Copyright
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.5),
-                        height: 1.5,
+                    const SizedBox(height: 20),
+                    // Copyright
+                    FadeTransition(
+                      opacity: _copyrightFade,
+                      child: SlideTransition(
+                        position: _copyrightSlide,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.5),
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

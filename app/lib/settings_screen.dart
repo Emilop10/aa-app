@@ -18,17 +18,53 @@ class SettingsScreen extends StatefulWidget {
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with TickerProviderStateMixin {
   bool _notificationsEnabled = false;
   TimeOfDay _notificationTime = const TimeOfDay(hour: 9, minute: 0);
 
   final String _enabledKey = 'notifications_enabled';
   final String _timeKey    = 'notification_time';
 
+  // Respiración de fondo
+  late AnimationController _bgBreathController;
+  late Animation<double> _bgBreath;
+
+  // Entrada escalonada
+  late AnimationController _entryController;
+  late Animation<double> _labelFade;
+  late Animation<Offset> _labelSlide;
+  late Animation<double> _card1Fade;
+  late Animation<Offset> _card1Slide;
+  late Animation<double> _card2Fade;
+  late Animation<Offset> _card2Slide;
+
   @override
   void initState() {
     super.initState();
+
+    // Respiración de fondo
+    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+
+    // Entrada escalonada
+    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
+    _labelFade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.4, curve: Curves.easeOut)));
+    _labelSlide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.4, curve: Curves.easeOut)));
+    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.2, 0.65, curve: Curves.easeOut)));
+    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.2, 0.65, curve: Curves.easeOut)));
+    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.45, 1.0, curve: Curves.easeOut)));
+    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.45, 1.0, curve: Curves.easeOut)));
+
     _loadSettings();
+  }
+
+  @override
+  void dispose() {
+    _bgBreathController.dispose();
+    _entryController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -40,6 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _notificationTime = TimeOfDay(
           hour: int.parse(parts[0]), minute: int.parse(parts[1]));
     });
+    _entryController.forward();
   }
 
   Future<void> _saveSettings() async {
@@ -157,231 +194,265 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 100,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            leading: CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: Icon(CupertinoIcons.chevron_left, color: _kOrange),
-              onPressed: () => Navigator.pop(context),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-              title: Text(
-                'Ajustes',
-                style: TextStyle(
-                  color: textPrim,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              stretchModes: const [StretchMode.fadeTitle],
+      body: AnimatedBuilder(
+        animation: _bgBreath,
+        builder: (context, child) => Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.topCenter,
+              radius: 1.2,
+              colors: [
+                _kOrange.withOpacity(_bgBreath.value),
+                bgColor,
+              ],
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Section label
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4, bottom: 10),
-                    child: Text(
-                      'NOTIFICACIONES',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.8,
-                        color: isDark ? Colors.white38 : _kTextSec,
+          child: child,
+        ),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 100,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              leading: CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Icon(CupertinoIcons.chevron_left, color: _kOrange),
+                onPressed: () => Navigator.pop(context),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                title: Text(
+                  'Ajustes',
+                  style: TextStyle(
+                    color: textPrim,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                stretchModes: const [StretchMode.fadeTitle],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Section label
+                    FadeTransition(
+                      opacity: _labelFade,
+                      child: SlideTransition(
+                        position: _labelSlide,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 4, bottom: 10),
+                          child: Text(
+                            'NOTIFICACIONES',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                              color: isDark ? Colors.white38 : _kTextSec,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
 
-                  // ── Notifications toggle card ────────────────────
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(4),
-                      bottomRight: Radius.circular(4),
-                    ),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withOpacity(0.06)
-                              : Colors.white.withOpacity(0.75),
+                    // ── Notifications toggle card ────────────────────
+                    FadeTransition(
+                      opacity: _card1Fade,
+                      child: SlideTransition(
+                        position: _card1Slide,
+                        child: ClipRRect(
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
                             bottomLeft: Radius.circular(4),
                             bottomRight: Radius.circular(4),
                           ),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.white.withOpacity(0.8),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 16),
                               decoration: BoxDecoration(
-                                color: _kOrange.withOpacity(0.15),
-                                shape: BoxShape.circle,
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.06)
+                                    : Colors.white.withOpacity(0.75),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                  bottomLeft: Radius.circular(4),
+                                  bottomRight: Radius.circular(4),
+                                ),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withOpacity(0.1)
+                                      : Colors.white.withOpacity(0.8),
+                                  width: 0.8,
+                                ),
                               ),
-                              child: const Icon(CupertinoIcons.bell,
-                                  color: _kOrange, size: 20),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
                                 children: [
-                                  Text(
-                                    'Notificaciones Diarias',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: textPrim,
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: _kOrange.withOpacity(0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(CupertinoIcons.bell,
+                                        color: _kOrange, size: 20),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Notificaciones Diarias',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: textPrim,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Recordatorio para tu reflexión diaria',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: isDark
+                                                ? Colors.white38
+                                                : _kTextSec,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Recordatorio para tu reflexión diaria',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isDark
-                                          ? Colors.white38
-                                          : _kTextSec,
-                                    ),
+                                  CupertinoSwitch(
+                                    value: _notificationsEnabled,
+                                    activeColor: _kOrange,
+                                    onChanged: _onNotificationToggle,
                                   ),
                                 ],
                               ),
                             ),
-                            CupertinoSwitch(
-                              value: _notificationsEnabled,
-                              activeColor: _kOrange,
-                              onChanged: _onNotificationToggle,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 2),
+                    const SizedBox(height: 2),
 
-                  // ── Time picker card ─────────────────────────────
-                  GestureDetector(
-                    onTap: _notificationsEnabled
-                        ? () => _selectTime(context)
-                        : null,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(4),
-                        topRight: Radius.circular(4),
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Opacity(
-                          opacity: _notificationsEnabled ? 1.0 : 0.45,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? Colors.white.withOpacity(0.06)
-                                  : Colors.white.withOpacity(0.75),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(4),
-                                topRight: Radius.circular(4),
-                                bottomLeft: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.white.withOpacity(0.1)
-                                    : Colors.white.withOpacity(0.8),
-                                width: 0.8,
-                              ),
+                    // ── Time picker card ─────────────────────────────
+                    FadeTransition(
+                      opacity: _card2Fade,
+                      child: SlideTransition(
+                        position: _card2Slide,
+                        child: GestureDetector(
+                          onTap: _notificationsEnabled
+                              ? () => _selectTime(context)
+                              : null,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                              child: Opacity(
+                                opacity: _notificationsEnabled ? 1.0 : 0.45,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 16),
                                   decoration: BoxDecoration(
-                                    color: _kOrange.withOpacity(0.15),
-                                    shape: BoxShape.circle,
+                                    color: isDark
+                                        ? Colors.white.withOpacity(0.06)
+                                        : Colors.white.withOpacity(0.75),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(4),
+                                      topRight: Radius.circular(4),
+                                      bottomLeft: Radius.circular(20),
+                                      bottomRight: Radius.circular(20),
+                                    ),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.1)
+                                          : Colors.white.withOpacity(0.8),
+                                      width: 0.8,
+                                    ),
                                   ),
-                                  child: const Icon(CupertinoIcons.clock,
-                                      color: _kOrange, size: 20),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  child: Row(
                                     children: [
-                                      Text(
-                                        'Hora del Recordatorio',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: textPrim,
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: _kOrange.withOpacity(0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(CupertinoIcons.clock,
+                                            color: _kOrange, size: 20),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Hora del Recordatorio',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: textPrim,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              'Las notificaciones se enviarán a las ${_formatTime()}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: isDark
+                                                    ? Colors.white38
+                                                    : _kTextSec,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Las notificaciones se enviarán a las ${_formatTime()}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: isDark
-                                              ? Colors.white38
-                                              : _kTextSec,
-                                        ),
+                                      Icon(
+                                        CupertinoIcons.chevron_right,
+                                        color: isDark
+                                            ? Colors.white24
+                                            : _kTextSec.withOpacity(0.4),
+                                        size: 16,
                                       ),
                                     ],
                                   ),
                                 ),
-                                Icon(
-                                  CupertinoIcons.chevron_right,
-                                  color: isDark
-                                      ? Colors.white24
-                                      : _kTextSec.withOpacity(0.4),
-                                  size: 16,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

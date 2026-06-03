@@ -11,8 +11,52 @@ const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kDarkBg   = Color(0xFF1A0800);
 
-class LiteratureMenu extends StatelessWidget {
+class LiteratureMenu extends StatefulWidget {
   const LiteratureMenu({super.key});
+
+  @override
+  _LiteratureMenuState createState() => _LiteratureMenuState();
+}
+
+class _LiteratureMenuState extends State<LiteratureMenu>
+    with TickerProviderStateMixin {
+
+  // Respiración de fondo
+  late AnimationController _bgBreathController;
+  late Animation<double> _bgBreath;
+
+  // Entrada escalonada
+  late AnimationController _entryController;
+  late Animation<double> _card1Fade;
+  late Animation<Offset> _card1Slide;
+  late Animation<double> _card2Fade;
+  late Animation<Offset> _card2Slide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Respiración de fondo
+    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+
+    // Entrada escalonada
+    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
+    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
+    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
+
+    _entryController.forward();
+  }
+
+  @override
+  void dispose() {
+    _bgBreathController.dispose();
+    _entryController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,54 +66,82 @@ class LiteratureMenu extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 100,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-              title: Text(
-                'Literatura',
-                style: TextStyle(
-                  color: textPrim,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
+      body: AnimatedBuilder(
+        animation: _bgBreath,
+        builder: (context, child) => Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.topCenter,
+              radius: 1.2,
+              colors: [
+                _kOrange.withOpacity(_bgBreath.value),
+                bgColor,
+              ],
+            ),
+          ),
+          child: child,
+        ),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 100,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                title: Text(
+                  'Literatura',
+                  style: TextStyle(
+                    color: textPrim,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                stretchModes: const [StretchMode.fadeTitle],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                child: Column(
+                  children: [
+                    FadeTransition(
+                      opacity: _card1Fade,
+                      child: SlideTransition(
+                        position: _card1Slide,
+                        child: _buildMenuItem(
+                          context: context,
+                          title: 'Libro Azul',
+                          imagePath: 'assets/images/big_book_bg.png',
+                          targetScreen: const LibroAzulEpubScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FadeTransition(
+                      opacity: _card2Fade,
+                      child: SlideTransition(
+                        position: _card2Slide,
+                        child: _buildMenuItem(
+                          context: context,
+                          title: '12 Pasos / 12 Tradiciones',
+                          imagePath: 'assets/images/steps_traditions_bg.png',
+                          targetScreen: StepsTraditionsScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              stretchModes: const [StretchMode.fadeTitle],
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              child: Column(
-                children: [
-                  _buildMenuItem(
-                    context: context,
-                    title: 'Libro Azul',
-                    imagePath: 'assets/images/big_book_bg.png',
-                    targetScreen: const LibroAzulEpubScreen(),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuItem(
-                    context: context,
-                    title: '12 Pasos / 12 Tradiciones',
-                    imagePath: 'assets/images/steps_traditions_bg.png',
-                    targetScreen: StepsTraditionsScreen(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
