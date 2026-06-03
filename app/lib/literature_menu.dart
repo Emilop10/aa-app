@@ -4,9 +4,9 @@ import 'dart:ui';
 // IMPORTAMOS LA NUEVA PANTALLA DEL LECTOR EPUB
 import 'libro_azul_epub_screen.dart';
 import 'steps_traditions_screen.dart';
+import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
-const _kOrange   = Color(0xFFF97316);
 const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kDarkBg   = Color(0xFF1A0800);
@@ -60,89 +60,94 @@ class _LiteratureMenuState extends State<LiteratureMenu>
 
   @override
   Widget build(BuildContext context) {
-    final isDark   = Theme.of(context).brightness == Brightness.dark;
-    final bgColor  = isDark ? _kDarkBg : _kCream;
-    final textPrim = isDark ? Colors.white : _kTextPrim;
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, child) {
+        final isDark   = Theme.of(context).brightness == Brightness.dark;
+        final bgColor  = isDark ? _kDarkBg : _kCream;
+        final textPrim = isDark ? Colors.white : _kTextPrim;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: AnimatedBuilder(
-        animation: _bgBreath,
-        builder: (context, child) => Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topCenter,
-              radius: 1.2,
-              colors: [
-                _kOrange.withOpacity(_bgBreath.value),
-                bgColor,
-              ],
-            ),
-          ),
-          child: child,
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              stretch: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                title: Text(
-                  'Literatura',
-                  style: TextStyle(
-                    color: textPrim,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                stretchModes: const [StretchMode.fadeTitle],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                child: Column(
-                  children: [
-                    FadeTransition(
-                      opacity: _card1Fade,
-                      child: SlideTransition(
-                        position: _card1Slide,
-                        child: _buildMenuItem(
-                          context: context,
-                          title: 'Libro Azul',
-                          imagePath: 'assets/images/big_book_bg.png',
-                          targetScreen: const LibroAzulEpubScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeTransition(
-                      opacity: _card2Fade,
-                      child: SlideTransition(
-                        position: _card2Slide,
-                        child: _buildMenuItem(
-                          context: context,
-                          title: '12 Pasos / 12 Tradiciones',
-                          imagePath: 'assets/images/steps_traditions_bg.png',
-                          targetScreen: StepsTraditionsScreen(),
-                        ),
-                      ),
-                    ),
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    primary.withOpacity(_bgBreath.value),
+                    bgColor,
                   ],
                 ),
               ),
+              child: child,
             ),
-          ],
-        ),
-      ),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text(
+                      'Literatura',
+                      style: TextStyle(
+                        color: textPrim,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                    child: Column(
+                      children: [
+                        FadeTransition(
+                          opacity: _card1Fade,
+                          child: SlideTransition(
+                            position: _card1Slide,
+                            child: _buildMenuItem(
+                              context: context,
+                              title: 'Libro Azul',
+                              imagePath: 'assets/images/big_book_bg.png',
+                              targetScreen: const LibroAzulEpubScreen(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: _buildMenuItem(
+                              context: context,
+                              title: '12 Pasos / 12 Tradiciones',
+                              imagePath: 'assets/images/steps_traditions_bg.png',
+                              targetScreen: StepsTraditionsScreen(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'dart:ui';
 import 'journal_screen.dart';
 import 'gratitude_journal_screen.dart';
+import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
-const _kOrange   = Color(0xFFF97316);
 const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kDarkBg   = Color(0xFF1A0800);
@@ -59,89 +59,94 @@ class _JournalMenuState extends State<JournalMenu>
 
   @override
   Widget build(BuildContext context) {
-    final isDark   = Theme.of(context).brightness == Brightness.dark;
-    final bgColor  = isDark ? _kDarkBg : _kCream;
-    final textPrim = isDark ? Colors.white : _kTextPrim;
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, child) {
+        final isDark   = Theme.of(context).brightness == Brightness.dark;
+        final bgColor  = isDark ? _kDarkBg : _kCream;
+        final textPrim = isDark ? Colors.white : _kTextPrim;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: AnimatedBuilder(
-        animation: _bgBreath,
-        builder: (context, child) => Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topCenter,
-              radius: 1.2,
-              colors: [
-                _kOrange.withOpacity(_bgBreath.value),
-                bgColor,
-              ],
-            ),
-          ),
-          child: child,
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              stretch: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                title: Text(
-                  'Escritura',
-                  style: TextStyle(
-                    color: textPrim,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                stretchModes: const [StretchMode.fadeTitle],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                child: Column(
-                  children: [
-                    FadeTransition(
-                      opacity: _card1Fade,
-                      child: SlideTransition(
-                        position: _card1Slide,
-                        child: _buildMenuItem(
-                          context: context,
-                          title: 'Mi Diario',
-                          imagePath: 'assets/images/journal_bg.png',
-                          targetScreen: JournalScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeTransition(
-                      opacity: _card2Fade,
-                      child: SlideTransition(
-                        position: _card2Slide,
-                        child: _buildMenuItem(
-                          context: context,
-                          title: 'Diario de Gratitud',
-                          imagePath: 'assets/images/daily_reflections_bg.png',
-                          targetScreen: const GratitudeJournalScreen(),
-                        ),
-                      ),
-                    ),
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    primary.withOpacity(_bgBreath.value),
+                    bgColor,
                   ],
                 ),
               ),
+              child: child,
             ),
-          ],
-        ),
-      ),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text(
+                      'Escritura',
+                      style: TextStyle(
+                        color: textPrim,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                    child: Column(
+                      children: [
+                        FadeTransition(
+                          opacity: _card1Fade,
+                          child: SlideTransition(
+                            position: _card1Slide,
+                            child: _buildMenuItem(
+                              context: context,
+                              title: 'Mi Diario',
+                              imagePath: 'assets/images/journal_bg.png',
+                              targetScreen: JournalScreen(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: _buildMenuItem(
+                              context: context,
+                              title: 'Diario de Gratitud',
+                              imagePath: 'assets/images/daily_reflections_bg.png',
+                              targetScreen: const GratitudeJournalScreen(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

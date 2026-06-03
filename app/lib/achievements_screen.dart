@@ -4,9 +4,9 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:ui';
+import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
-const _kOrange    = Color(0xFFF97316);
 const _kCream     = Color(0xFFFFFBF5);
 const _kSurface   = Color(0xFFFFF7ED);
 const _kBorder    = Color(0xFFFED7AA);
@@ -155,64 +155,69 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark     = Theme.of(context).brightness == Brightness.dark;
-    final bgColor    = isDark ? _kDarkBg : _kCream;
-    final textPrim   = isDark ? Colors.white : _kTextPrim;
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, child) {
+        final isDark     = Theme.of(context).brightness == Brightness.dark;
+        final bgColor    = isDark ? _kDarkBg : _kCream;
+        final textPrim   = isDark ? Colors.white : _kTextPrim;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: AnimatedBuilder(
-        animation: _bgBreath,
-        builder: (context, child) => Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topCenter,
-              radius: 1.2,
-              colors: [
-                _kOrange.withOpacity(_bgBreath.value),
-                bgColor,
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    primary.withOpacity(_bgBreath.value),
+                    bgColor,
+                  ],
+                ),
+              ),
+              child: child,
+            ),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text(
+                      'Logros',
+                      style: TextStyle(
+                        color: textPrim,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: sobrietyDate == null
+                      ? _buildEmptyState(isDark, textPrim, primary)
+                      : _buildContent(isDark, textPrim, primary),
+                ),
               ],
             ),
           ),
-          child: child,
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              stretch: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                title: Text(
-                  'Logros',
-                  style: TextStyle(
-                    color: textPrim,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                stretchModes: const [StretchMode.fadeTitle],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: sobrietyDate == null
-                  ? _buildEmptyState(isDark, textPrim)
-                  : _buildContent(isDark, textPrim),
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildEmptyState(bool isDark, Color textPrim) {
+  Widget _buildEmptyState(bool isDark, Color textPrim, Color primary) {
     return SizedBox(
       height: 500,
       child: Center(
@@ -224,9 +229,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               Container(
                 width: 80, height: 80,
                 decoration: BoxDecoration(
-                  color: _kOrange.withOpacity(0.12), shape: BoxShape.circle,
+                  color: primary.withOpacity(0.12), shape: BoxShape.circle,
                 ),
-                child: const Icon(CupertinoIcons.star, size: 38, color: _kOrange),
+                child: Icon(CupertinoIcons.star, size: 38, color: primary),
               ),
               const SizedBox(height: 24),
               Text(
@@ -244,7 +249,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildContent(bool isDark, Color textPrim) {
+  Widget _buildContent(bool isDark, Color textPrim, Color primary) {
     final breakdown = timeBreakdown!;
 
     Milestone nextMilestone = _allMilestones.firstWhere(
@@ -265,6 +270,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       progressToNext = 1.0;
     }
 
+    final deep = appPrimaryDeep(primary);
+    final dark = appPrimaryDark(primary);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
       child: Column(
@@ -283,14 +291,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(28),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFF97316), Color(0xFFEA580C), Color(0xFFC2410C)],
+                      gradient: LinearGradient(
+                        colors: [primary, deep, dark],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: _kOrange.withOpacity(isDark ? 0.5 : 0.35),
+                          color: primary.withOpacity(isDark ? 0.5 : 0.35),
                           blurRadius: 28,
                           offset: const Offset(0, 10),
                           spreadRadius: -4,
@@ -410,7 +418,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   const SizedBox(height: 12),
                   ..._allMilestones.map((milestone) {
                     final isAchieved = breakdown.totalDuration >= milestone.duration;
-                    return _buildMilestoneCard(milestone, isAchieved, isDark, textPrim);
+                    return _buildMilestoneCard(milestone, isAchieved, isDark, textPrim, primary);
                   }),
                 ],
               ),
@@ -421,7 +429,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildMilestoneCard(Milestone milestone, bool isAchieved, bool isDark, Color textPrim) {
+  Widget _buildMilestoneCard(Milestone milestone, bool isAchieved, bool isDark, Color textPrim, Color primary) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: ClipRRect(
@@ -432,12 +440,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: isAchieved
-                  ? (isDark ? _kOrange.withOpacity(0.15) : Colors.white.withOpacity(0.85))
+                  ? (isDark ? primary.withOpacity(0.15) : Colors.white.withOpacity(0.85))
                   : (isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.5)),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
                 color: isAchieved
-                    ? (isDark ? _kOrange.withOpacity(0.4) : _kBorder)
+                    ? (isDark ? primary.withOpacity(0.4) : _kBorder)
                     : (isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.6)),
                 width: isAchieved ? 1.2 : 0.8,
               ),
@@ -448,7 +456,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   width: 44, height: 44,
                   decoration: BoxDecoration(
                     color: isAchieved
-                        ? _kOrange
+                        ? primary
                         : (isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05)),
                     shape: BoxShape.circle,
                   ),
@@ -475,7 +483,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: _kOrange, borderRadius: BorderRadius.circular(20),
+                      color: primary, borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
                       '✓ Logrado',

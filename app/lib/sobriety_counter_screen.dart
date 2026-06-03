@@ -4,9 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
+import 'app_colors.dart';
 
-const _kOrange     = Color(0xFFF97316);
-const _kOrangeDeep = Color(0xFFEA580C);
 const _kCream      = Color(0xFFFFFBF5);
 const _kSurface    = Color(0xFFFFF7ED);
 const _kBorder     = Color(0xFFFED7AA);
@@ -155,6 +154,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   Future<void> _setSobrietyDate(BuildContext context) async {
     DateTime tempDate = sobrietyDate ?? DateTime.now();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = appPrimaryColor.value;
 
     await showCupertinoModalPopup(
       context: context,
@@ -196,7 +196,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                       _entryController.forward(from: 0);
                       widget.onDateChanged();
                     },
-                    child: const Text('Listo', style: TextStyle(decoration: TextDecoration.none, color: _kOrange, fontWeight: FontWeight.w600)),
+                    child: Text('Listo', style: TextStyle(decoration: TextDecoration.none, color: primary, fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
@@ -221,80 +221,85 @@ class _SobrietyCounterState extends State<SobrietyCounter>
 
   @override
   Widget build(BuildContext context) {
-    final isDark      = Theme.of(context).brightness == Brightness.dark;
-    final bgColor     = isDark ? _kDarkBg : _kCream;
-    final surfColor   = isDark ? _kDarkSurf : _kSurface;
-    final borderColor = isDark ? Colors.white.withOpacity(0.08) : _kBorder;
-    final textPrim    = isDark ? Colors.white : _kTextPrim;
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, child) {
+        final isDark      = Theme.of(context).brightness == Brightness.dark;
+        final bgColor     = isDark ? _kDarkBg : _kCream;
+        final surfColor   = isDark ? _kDarkSurf : _kSurface;
+        final borderColor = isDark ? Colors.white.withOpacity(0.08) : _kBorder;
+        final textPrim    = isDark ? Colors.white : _kTextPrim;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: AnimatedBuilder(
-        animation: _bgBreath,
-        builder: (context, child) => Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topCenter,
-              radius: 1.2,
-              colors: [
-                _kOrange.withOpacity(_bgBreath.value),
-                bgColor,
-              ],
-            ),
-          ),
-          child: child,
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              stretch: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                title: Text('Sobriedad', style: TextStyle(color: textPrim, fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.5, decoration: TextDecoration.none)),
-                stretchModes: const [StretchMode.fadeTitle],
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => _setSobrietyDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                        decoration: BoxDecoration(color: _kOrange, borderRadius: BorderRadius.circular(20)),
-                        child: const Text('Editar fecha', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600, decoration: TextDecoration.none)),
-                      ),
-                    ),
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    primary.withOpacity(_bgBreath.value),
+                    bgColor,
                   ],
                 ),
               ),
+              child: child,
             ),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text('Sobriedad', style: TextStyle(color: textPrim, fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.5, decoration: TextDecoration.none)),
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                ),
 
-            SliverToBoxAdapter(
-              child: sobrietyDate == null
-                  ? _buildEmptyState(isDark, textPrim)
-                  : _buildBody(isDark, textPrim, surfColor, borderColor),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () => _setSobrietyDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                            decoration: BoxDecoration(color: primary, borderRadius: BorderRadius.circular(20)),
+                            child: const Text('Editar fecha', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600, decoration: TextDecoration.none)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                  child: sobrietyDate == null
+                      ? _buildEmptyState(isDark, textPrim, primary)
+                      : _buildBody(isDark, textPrim, surfColor, borderColor, primary),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildEmptyState(bool isDark, Color textPrim) {
+  Widget _buildEmptyState(bool isDark, Color textPrim, Color primary) {
     return SizedBox(
       height: 500,
       child: Center(
@@ -305,8 +310,8 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             children: [
               Container(
                 width: 80, height: 80,
-                decoration: BoxDecoration(color: _kOrange.withOpacity(0.12), shape: BoxShape.circle),
-                child: const Icon(CupertinoIcons.calendar, size: 38, color: _kOrange),
+                decoration: BoxDecoration(color: primary.withOpacity(0.12), shape: BoxShape.circle),
+                child: Icon(CupertinoIcons.calendar, size: 38, color: primary),
               ),
               const SizedBox(height: 24),
               Text('Registra tu fecha\nde sobriedad', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: textPrim, height: 1.3, letterSpacing: -0.3, decoration: TextDecoration.none), textAlign: TextAlign.center),
@@ -319,7 +324,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     );
   }
 
-  Widget _buildBody(bool isDark, Color textPrim, Color surfColor, Color borderColor) {
+  Widget _buildBody(bool isDark, Color textPrim, Color surfColor, Color borderColor, Color primary) {
     final tb = timeBreakdown;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -339,6 +344,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                 orb3: _orb3Anim,
                 glowRotation: _glowRotation,
                 glowOpacity: _glowOpacity,
+                primary: primary,
               ),
             ),
           ),
@@ -349,11 +355,11 @@ class _SobrietyCounterState extends State<SobrietyCounter>
               position: _card1Slide,
               child: Row(
                 children: [
-                  _MiniStatCard(value: '${tb.years}',  label: tb.years  == 1 ? 'año'  : 'años',  icon: CupertinoIcons.rosette,  isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim),
+                  _MiniStatCard(value: '${tb.years}',  label: tb.years  == 1 ? 'año'  : 'años',  icon: CupertinoIcons.rosette,  isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
                   const SizedBox(width: 10),
-                  _MiniStatCard(value: '${tb.months}', label: tb.months == 1 ? 'mes'  : 'meses', icon: CupertinoIcons.calendar, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim),
+                  _MiniStatCard(value: '${tb.months}', label: tb.months == 1 ? 'mes'  : 'meses', icon: CupertinoIcons.calendar, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
                   const SizedBox(width: 10),
-                  _MiniStatCard(value: '${tb.days}',   label: tb.days   == 1 ? 'día'  : 'días',  icon: CupertinoIcons.sun_max,  isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim),
+                  _MiniStatCard(value: '${tb.days}',   label: tb.days   == 1 ? 'día'  : 'días',  icon: CupertinoIcons.sun_max,  isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
                 ],
               ),
             ),
@@ -363,7 +369,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             opacity: _card2Fade,
             child: SlideTransition(
               position: _card2Slide,
-              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim),
+              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
             ),
           ),
           const SizedBox(height: 12),
@@ -371,7 +377,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             opacity: _card3Fade,
             child: SlideTransition(
               position: _card3Slide,
-              child: _StartDateCard(date: sobrietyDate!, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, onEdit: () => _setSobrietyDate(context)),
+              child: _StartDateCard(date: sobrietyDate!, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, onEdit: () => _setSobrietyDate(context), primary: primary),
             ),
           ),
         ],
@@ -389,6 +395,7 @@ class _HeroCard extends StatelessWidget {
   final Animation<double> pulseAnimation;
   final Animation<double> orb1, orb2, orb3;
   final Animation<double> glowRotation, glowOpacity;
+  final Color primary;
 
   const _HeroCard({
     required this.isDark,
@@ -399,10 +406,13 @@ class _HeroCard extends StatelessWidget {
     required this.orb3,
     required this.glowRotation,
     required this.glowOpacity,
+    required this.primary,
   });
 
   @override
   Widget build(BuildContext context) {
+    final deep = appPrimaryDeep(primary);
+    final dark = appPrimaryDark(primary);
     return AnimatedBuilder(
       animation: Listenable.merge([pulseAnimation, orb1, orb2, orb3, glowRotation, glowOpacity]),
       builder: (context, _) {
@@ -411,14 +421,14 @@ class _HeroCard extends StatelessWidget {
           height: 240,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
-            gradient: const LinearGradient(
-              colors: [Color(0xFFF97316), Color(0xFFEA580C), Color(0xFFC2410C)],
+            gradient: LinearGradient(
+              colors: [primary, deep, dark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: _kOrange.withOpacity(isDark ? 0.5 : 0.35),
+                color: primary.withOpacity(isDark ? 0.5 : 0.35),
                 blurRadius: 28,
                 offset: const Offset(0, 10),
                 spreadRadius: -4,
@@ -563,9 +573,9 @@ class _MiniStatCard extends StatelessWidget {
   final String value, label;
   final IconData icon;
   final bool isDark;
-  final Color surfColor, borderColor, textPrim;
+  final Color surfColor, borderColor, textPrim, primary;
 
-  const _MiniStatCard({required this.value, required this.label, required this.icon, required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim});
+  const _MiniStatCard({required this.value, required this.label, required this.icon, required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary});
 
   @override
   Widget build(BuildContext context) {
@@ -583,7 +593,7 @@ class _MiniStatCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Icon(icon, color: _kOrange, size: 22),
+                Icon(icon, color: primary, size: 22),
                 const SizedBox(height: 8),
                 Text(value, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: textPrim, letterSpacing: -0.5, decoration: TextDecoration.none)),
                 const SizedBox(height: 2),
@@ -602,8 +612,8 @@ class _MiniStatCard extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 class _QuoteCard extends StatelessWidget {
   final bool isDark;
-  final Color surfColor, borderColor, textPrim;
-  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim});
+  final Color surfColor, borderColor, textPrim, primary;
+  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary});
 
   @override
   Widget build(BuildContext context) {
@@ -622,8 +632,8 @@ class _QuoteCard extends StatelessWidget {
             children: [
               Container(
                 width: 36, height: 36,
-                decoration: BoxDecoration(color: _kOrange.withOpacity(0.15), shape: BoxShape.circle),
-                child: const Icon(CupertinoIcons.quote_bubble, color: _kOrange, size: 18),
+                decoration: BoxDecoration(color: primary.withOpacity(0.15), shape: BoxShape.circle),
+                child: Icon(CupertinoIcons.quote_bubble, color: primary, size: 18),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -643,9 +653,9 @@ class _QuoteCard extends StatelessWidget {
 class _StartDateCard extends StatelessWidget {
   final DateTime date;
   final bool isDark;
-  final Color surfColor, borderColor, textPrim;
+  final Color surfColor, borderColor, textPrim, primary;
   final VoidCallback onEdit;
-  const _StartDateCard({required this.date, required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.onEdit});
+  const _StartDateCard({required this.date, required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.onEdit, required this.primary});
 
   String _formatDate(DateTime d) {
     const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -669,8 +679,8 @@ class _StartDateCard extends StatelessWidget {
             children: [
               Container(
                 width: 36, height: 36,
-                decoration: BoxDecoration(color: _kOrange.withOpacity(0.15), shape: BoxShape.circle),
-                child: const Icon(CupertinoIcons.flag, color: _kOrange, size: 17),
+                decoration: BoxDecoration(color: primary.withOpacity(0.15), shape: BoxShape.circle),
+                child: Icon(CupertinoIcons.flag, color: primary, size: 17),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -686,7 +696,7 @@ class _StartDateCard extends StatelessWidget {
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: onEdit,
-                child: const Icon(CupertinoIcons.chevron_right, color: _kOrange, size: 16),
+                child: Icon(CupertinoIcons.chevron_right, color: primary, size: 16),
               ),
             ],
           ),
