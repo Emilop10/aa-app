@@ -150,11 +150,22 @@ class _DailyReadingsState extends State<DailyReadings> {
                       shape: BoxShape.circle,
                     ),
                     defaultTextStyle: TextStyle(
+                        fontSize: 14,
                         color: isDark ? Colors.white70 : Colors.black87),
                     weekendTextStyle: TextStyle(
+                        fontSize: 14,
                         color: isDark ? Colors.white70 : Colors.black87),
                     outsideTextStyle: TextStyle(
+                        fontSize: 14,
                         color: isDark ? Colors.white30 : Colors.black26),
+                    todayTextStyle: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    selectedTextStyle: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   ),
                   headerStyle: HeaderStyle(
                     titleTextStyle: TextStyle(
