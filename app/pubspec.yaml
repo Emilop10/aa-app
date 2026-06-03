@@ -57,6 +57,7 @@ flutter:
     - assets/images/support_bg.png
     - assets/images/my_story_bg.png
     - assets/libro_azul.epub
+    - assets/libro_azul_content.json
 
   fonts:
     - family: Times New Roman
