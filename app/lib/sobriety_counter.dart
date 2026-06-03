@@ -54,13 +54,24 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
       const SupportScreen(),
     ];
 
-    final tabItems = [
-      (CupertinoIcons.house,        CupertinoIcons.house_fill,       'Inicio'),
-      (CupertinoIcons.star,         CupertinoIcons.star_fill,        'Logros'),
-      (CupertinoIcons.book,         CupertinoIcons.book_fill,        'Literatura'),
-      (CupertinoIcons.sun_max,      CupertinoIcons.sun_max_fill,     'Reflexiones'),
-      (CupertinoIcons.pencil,       CupertinoIcons.pencil,           'Escritura'),
-      (CupertinoIcons.person_2,     CupertinoIcons.person_2_fill,    'Apoyo'),
+    final List<IconData> tabIcons = [
+      CupertinoIcons.house,
+      CupertinoIcons.star,
+      CupertinoIcons.book,
+      CupertinoIcons.sun_max,
+      CupertinoIcons.pencil,
+      CupertinoIcons.person_2,
+    ];
+    final List<IconData> tabIconsFilled = [
+      CupertinoIcons.house_fill,
+      CupertinoIcons.star_fill,
+      CupertinoIcons.book_fill,
+      CupertinoIcons.sun_max_fill,
+      CupertinoIcons.pencil,
+      CupertinoIcons.person_2_fill,
+    ];
+    final List<String> tabLabels = [
+      'Inicio', 'Logros', 'Literatura', 'Reflexiones', 'Escritura', 'Apoyo',
     ];
 
     return Scaffold(
@@ -127,8 +138,7 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(tabItems.length, (i) {
-                  final item      = tabItems[i];
+                children: List.generate(tabLabels.length, (i) {
                   final isActive  = _currentIndex == i;
                   return Expanded(
                     child: CupertinoButton(
@@ -138,7 +148,7 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            isActive ? item.$2 : item.$1,
+                            isActive ? tabIconsFilled[i] : tabIcons[i],
                             size: 22,
                             color: isActive
                                 ? _kOrange
@@ -148,7 +158,7 @@ class _SobrietyCounterAppState extends State<SobrietyCounterApp> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            item.$3,
+                            tabLabels[i],
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: isActive
