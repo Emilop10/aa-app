@@ -1,146 +1,300 @@
 import 'package:flutter/material.dart';
-import 'support_contacts_screen.dart'; // ¡NUEVO! Importamos la pantalla de contactos.
+import 'package:flutter/cupertino.dart';
+import 'dart:ui';
+import 'support_contacts_screen.dart';
+
+// ─── Paleta ───────────────────────────────────────────────
+const _kOrange   = Color(0xFFF97316);
+const _kCream    = Color(0xFFFFFBF5);
+const _kTextPrim = Color(0xFF431407);
+const _kTextSec  = Color(0xFF92400E);
+const _kDarkBg   = Color(0xFF1A0800);
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Soporte'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Tarjeta "Mi Historia"
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MyStoryScreen()),
-                );
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 4,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Mi Historia',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final bgColor  = isDark ? _kDarkBg : _kCream;
+    final textPrim = isDark ? Colors.white : _kTextPrim;
 
-            // Tarjeta "Contactos de Apoyo"
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SupportContactsScreen()),
-                );
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 4,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Contactos de Apoyo',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            stretch: true,
+            backgroundColor: bgColor,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+              title: Text(
+                'Apoyo',
+                style: TextStyle(
+                  color: textPrim,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                 ),
               ),
+              stretchModes: const [StretchMode.fadeTitle],
             ),
-          ],
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+              child: Column(
+                children: [
+                  _buildSupportCard(
+                    context: context,
+                    icon: CupertinoIcons.heart,
+                    title: 'Mi Historia',
+                    subtitle: 'Conoce el origen de esta app',
+                    isDark: isDark,
+                    textPrim: textPrim,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const MyStoryScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildSupportCard(
+                    context: context,
+                    icon: CupertinoIcons.person_2,
+                    title: 'Contactos de Apoyo',
+                    subtitle: 'Gestiona tus contactos de emergencia',
+                    isDark: isDark,
+                    textPrim: textPrim,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SupportContactsScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+    required Color textPrim,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : Colors.white.withOpacity(0.75),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.white.withOpacity(0.8),
+                width: 0.8,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: _kOrange.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: _kOrange, size: 22),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textPrim,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark ? Colors.white38 : _kTextSec,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  CupertinoIcons.chevron_right,
+                  color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.4),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-// Pantalla "Mi Historia"
+// ─── Pantalla Mi Historia ────────────────────────────────────────────
 class MyStoryScreen extends StatelessWidget {
   const MyStoryScreen({super.key});
 
-  // Función auxiliar para crear párrafos con estilo
-  Widget _buildParagraph(String text, BuildContext context) {
+  Widget _buildParagraph(String text, bool isDark, Color textPrim) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 18.0),
       child: Text(
         text,
         textAlign: TextAlign.justify,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              height: 1.6, // Mejora la legibilidad
-              fontSize: 17,
-            ),
+        style: TextStyle(
+          height: 1.7,
+          fontSize: 17,
+          color: isDark ? Colors.white.withOpacity(0.85) : textPrim.withOpacity(0.85),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi Historia'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Icon(
-                Icons.favorite_border,
-                color: theme.primaryColor,
-                size: 40,
-              ),
-            ),
-            // El texto "El Origen de un Sueño" ha sido eliminado.
-            const Divider(height: 40, thickness: 1),
+    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final bgColor  = isDark ? _kDarkBg : _kCream;
+    final textPrim = isDark ? Colors.white : _kTextPrim;
 
-            // --- ¡CORREGIDO! Aquí está el texto completo ---
-            _buildParagraph(
-              'Esta app fue desarrollada como una herramienta adicional al programa de 24 horas.',
-              context,
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            stretch: true,
+            backgroundColor: bgColor,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Icon(
+                CupertinoIcons.chevron_left,
+                color: _kOrange,
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
-            _buildParagraph(
-              'Yo soy un miembro activo de AA desde hace ya algunas 24 horas. No represento a la OSG y esta app nació como un sueño de ayudar a mantener la sobriedad en más personas.',
-              context,
-            ),
-            _buildParagraph(
-              'El desarrollo de esta app ha sido gracias al apoyo y soporte de mi hijo Emi, que sin su amor, apoyo y perseverancia esto no hubiera sido posible.',
-              context,
-            ),
-            _buildParagraph(
-              'Esta app ha sido desarrollada con mis propios recursos, por lo que el apoyo de sus donaciones y membresías será siempre bienvenido.',
-              context,
-            ),
-            _buildParagraph(
-              'Espero de todo corazón que esta app te funcione como una herramienta de apoyo en tu programa de Recuperación, Unidad y Servicio.',
-              context,
-            ),
-            const SizedBox(height: 20),
-            
-            // Firma
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Felices 24 horas con todo mi Amor y Cariño.\n— Beto L.',
-                textAlign: TextAlign.right,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+              title: Text(
+                'Mi Historia',
+                style: TextStyle(
+                  color: textPrim,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                 ),
               ),
+              stretchModes: const [StretchMode.fadeTitle],
             ),
-          ],
-        ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: _kOrange.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        CupertinoIcons.heart_fill,
+                        color: _kOrange,
+                        size: 32,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  _buildParagraph(
+                    'Esta app fue desarrollada como una herramienta adicional al programa de 24 horas.',
+                    isDark,
+                    textPrim,
+                  ),
+                  _buildParagraph(
+                    'Yo soy un miembro activo de AA desde hace ya algunas 24 horas. No represento a la OSG y esta app nació como un sueño de ayudar a mantener la sobriedad en más personas.',
+                    isDark,
+                    textPrim,
+                  ),
+                  _buildParagraph(
+                    'El desarrollo de esta app ha sido gracias al apoyo y soporte de mi hijo Emi, que sin su amor, apoyo y perseverancia esto no hubiera sido posible.',
+                    isDark,
+                    textPrim,
+                  ),
+                  _buildParagraph(
+                    'Esta app ha sido desarrollada con mis propios recursos, por lo que el apoyo de sus donaciones y membresías será siempre bienvenido.',
+                    isDark,
+                    textPrim,
+                  ),
+                  _buildParagraph(
+                    'Espero de todo corazón que esta app te funcione como una herramienta de apoyo en tu programa de Recuperación, Unidad y Servicio.',
+                    isDark,
+                    textPrim,
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      'Felices 24 horas con todo mi Amor y Cariño.\n— Beto L.',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 15,
+                        color: isDark ? Colors.white60 : _kTextSec,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
