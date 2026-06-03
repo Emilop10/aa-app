@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:ui';
 // IMPORTAMOS LA NUEVA PANTALLA DEL LECTOR EPUB
-import 'libro_azul_epub_screen.dart';
+import 'libro_azul_screen.dart';
 import 'steps_traditions_screen.dart';
 import 'app_colors.dart';
 
@@ -122,7 +122,7 @@ class _LiteratureMenuState extends State<LiteratureMenu>
                               context: context,
                               title: 'Libro Azul',
                               imagePath: 'assets/images/big_book_bg.png',
-                              targetScreen: const LibroAzulEpubScreen(),
+                              targetScreen: const LibroAzulScreen(),
                             ),
                           ),
                         ),
