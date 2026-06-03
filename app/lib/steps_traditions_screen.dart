@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'app_colors.dart';
 
 const _kCream   = Color(0xFFFFFBF5);
@@ -69,7 +69,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
     super.dispose();
   }
 
-  Future<void> _openPdf(String assetPath, String fileName,
+  Future<void> _openPdf(String assetPath, String title,
       {required bool isPasos}) async {
     if (isPasos) {
       setState(() => _openingPasos = true);
@@ -79,6 +79,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
 
     try {
       final dir  = await getTemporaryDirectory();
+      final fileName = assetPath.split('/').last;
       final file = File('${dir.path}/$fileName');
 
       if (!await file.exists()) {
@@ -87,13 +88,16 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
             data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
       }
 
-      final uri = Uri.file(file.path);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        if (mounted) {
-          _showError('No se pudo abrir el archivo.');
-        }
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (ctx) => _PdfViewerScreen(
+              filePath: file.path,
+              title: title,
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) _showError('Error al abrir el PDF.');
@@ -197,7 +201,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
                               isDark: isDark,
                               isLoading: _openingPasos,
                               onTap: () => _openPdf(
-                                  'assets/12_pasos.pdf', '12_pasos.pdf',
+                                  'assets/12_pasos.pdf', '12 Pasos',
                                   isPasos: true),
                             ),
                           ),
@@ -217,7 +221,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
                               isLoading: _openingTradiciones,
                               onTap: () => _openPdf(
                                   'assets/12_tradiciones.pdf',
-                                  '12_tradiciones.pdf',
+                                  '12 Tradiciones',
                                   isPasos: false),
                             ),
                           ),
@@ -308,6 +312,106 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─── Pantalla de visor PDF ────────────────────────────────────────────────────
+
+class _PdfViewerScreen extends StatefulWidget {
+  final String filePath;
+  final String title;
+  const _PdfViewerScreen({required this.filePath, required this.title});
+
+  @override
+  _PdfViewerScreenState createState() => _PdfViewerScreenState();
+}
+
+class _PdfViewerScreenState extends State<_PdfViewerScreen> {
+  int _currentPage = 0;
+  int _totalPages  = 0;
+  bool _isReady    = false;
+  PDFViewController? _controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = appPrimaryColor.value;
+    final isDark  = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+        elevation: 0,
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () => Navigator.pop(context),
+          child: Icon(CupertinoIcons.chevron_left, color: primary),
+        ),
+        title: Text(
+          widget.title,
+          style: TextStyle(
+            color: isDark ? Colors.white : const Color(0xFF431407),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+        actions: [
+          if (_totalPages > 0)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: Text(
+                  '${_currentPage + 1} / $_totalPages',
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.black45,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          PDFView(
+            filePath: widget.filePath,
+            enableSwipe: true,
+            swipeHorizontal: false,
+            autoSpacing: true,
+            pageFling: true,
+            pageSnap: true,
+            fitEachPage: true,
+            nightMode: isDark,
+            onRender: (pages) {
+              setState(() {
+                _totalPages = pages ?? 0;
+                _isReady    = true;
+              });
+            },
+            onPageChanged: (page, total) {
+              setState(() {
+                _currentPage = page ?? 0;
+                _totalPages  = total ?? 0;
+              });
+            },
+            onViewCreated: (ctrl) {
+              _controller = ctrl;
+            },
+            onError: (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error: $e')),
+                );
+              }
+            },
+          ),
+          if (!_isReady)
+            Center(
+              child: CupertinoActivityIndicator(color: primary, radius: 14),
+            ),
+        ],
       ),
     );
   }
