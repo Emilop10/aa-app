@@ -47,17 +47,17 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   final List<Milestone> _allMilestones = [
     Milestone(name: '24 Horas',  duration: const Duration(days: 1),        icon: CupertinoIcons.shield),
-    Milestone(name: '1 Semana',  duration: const Duration(days: 7),        icon: CupertinoIcons.sparkles),
-    Milestone(name: '1 Mes',     duration: const Duration(days: 30),       icon: CupertinoIcons.star),
+    Milestone(name: '1 Semana',  duration: const Duration(days: 7),        icon: CupertinoIcons.star),
+    Milestone(name: '1 Mes',     duration: const Duration(days: 30),       icon: CupertinoIcons.star_fill),
     Milestone(name: '3 Meses',   duration: const Duration(days: 90),       icon: CupertinoIcons.rosette),
-    Milestone(name: '6 Meses',   duration: const Duration(days: 180),      icon: CupertinoIcons.bolt),
+    Milestone(name: '6 Meses',   duration: const Duration(days: 180),      icon: CupertinoIcons.bolt_fill),
     Milestone(name: '1 Año',     duration: const Duration(days: 365),      icon: CupertinoIcons.gift),
-    Milestone(name: '2 Años',    duration: const Duration(days: 365 * 2),  icon: CupertinoIcons.flame),
-    Milestone(name: '3 Años',    duration: const Duration(days: 365 * 3),  icon: CupertinoIcons.crown),
+    Milestone(name: '2 Años',    duration: const Duration(days: 365 * 2),  icon: CupertinoIcons.heart_fill),
+    Milestone(name: '3 Años',    duration: const Duration(days: 365 * 3),  icon: CupertinoIcons.checkmark_seal_fill),
     Milestone(name: '5 Años',    duration: const Duration(days: 365 * 5),  icon: CupertinoIcons.checkmark_seal),
-    Milestone(name: '10 Años',   duration: const Duration(days: 365 * 10), icon: CupertinoIcons.diamond),
+    Milestone(name: '10 Años',   duration: const Duration(days: 365 * 10), icon: CupertinoIcons.sun_max_fill),
     Milestone(name: '15 Años',   duration: const Duration(days: 365 * 15), icon: CupertinoIcons.sun_max),
-    Milestone(name: '20 Años',   duration: const Duration(days: 365 * 20), icon: CupertinoIcons.infinite),
+    Milestone(name: '20 Años',   duration: const Duration(days: 365 * 20), icon: CupertinoIcons.moon_stars_fill),
   ];
 
   @override
