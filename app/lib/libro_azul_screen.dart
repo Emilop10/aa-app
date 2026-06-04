@@ -322,7 +322,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
       height:     1.75,
       color:      textColor,
       letterSpacing: 0.1,
-      fontFamily: 'Times New Roman',
+      fontFamily: 'Georgia',
     );
     final richText = _buildRichText(chapter.content, highlights, baseStyle, primary);
 
@@ -383,6 +383,18 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
                   );
                 },
               ),
+              const SizedBox(height: 40),
+              Text(
+                'Alcohólicos Anónimos® es una marca registrada de Alcoholics Anonymous World Services, Inc. Este texto es la traducción española de la 1ª edición del texto básico de A.A., cuyo original en inglés es de dominio público en los Estados Unidos. Reproducido con fines de recuperación sin ánimo de lucro. Su reproducción no implica que A.A. haya revisado o aprobado el contenido de esta publicación.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: textColor.withOpacity(0.35),
+                  height: 1.5,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -920,7 +932,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text('Aa', style: TextStyle(
               color: fg, fontSize: 18, fontWeight: FontWeight.w600,
-              decoration: TextDecoration.none, fontFamily: 'Times New Roman')),
+              decoration: TextDecoration.none, fontFamily: 'Georgia')),
             const SizedBox(height: 2),
             Text(label, style: TextStyle(
               color: fg.withOpacity(0.6), fontSize: 11,

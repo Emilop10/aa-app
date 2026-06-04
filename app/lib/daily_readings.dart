@@ -364,11 +364,12 @@ class _DailyReadingsState extends State<DailyReadings>
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
-                                'Del libro Reflexiones diarias\nCopyright © 1991 por Alcoholics Anonymous World Services, Inc. Todos los derechos reservados.',
+                                'Del libro Reflexiones Diarias © 1990 por Alcoholics Anonymous World Services, Inc. Reimpresos con permiso de A.A.W.S., Inc. El permiso para reimprimir este material no significa que A.A. haya revisado o aprobado el contenido de esta publicación, ni que A.A. esté de acuerdo con los puntos de vista aquí expresados.',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.5),
+                                  color: isDark ? Colors.white24 : _kTextSec.withOpacity(0.4),
                                   height: 1.5,
+                                  fontStyle: FontStyle.italic,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
