@@ -399,7 +399,7 @@ class _PrayersScreenState extends State<PrayersScreen>
                         color: primary.withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(CupertinoIcons.hands_sparkles_fill,
+                      child: Icon(CupertinoIcons.heart_fill,
                           color: primary, size: 18),
                     ),
                     const SizedBox(width: 12),
