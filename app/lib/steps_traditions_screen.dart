@@ -343,7 +343,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 16),
       child: Text(
-        'Los Doce Pasos y las Doce Tradiciones son propiedad de Alcoholics Anonymous World Services, Inc. Reimpresos con permiso de A.A.W.S., Inc. La reimpresión no indica que A.A. haya revisado o aprobado el contenido de esta publicación.',
+        'Los Doce Pasos y las Doce Tradiciones son reimpresos y adaptados con permiso de Alcoholics Anonymous World Services, Inc. El permiso para reimprimir este material no significa que A.A. haya revisado o aprobado el contenido de esta publicación, ni que A.A. esté de acuerdo con los puntos de vista aquí expresados. A.A. es un programa de recuperación del alcoholismo únicamente.',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 11,
