@@ -502,10 +502,12 @@ class _PrayerDetailScreenState extends State<_PrayerDetailScreen>
                     ),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
                     titlePadding:
-                        const EdgeInsets.only(left: 20, bottom: 14, right: 60),
+                        const EdgeInsets.only(left: 60, bottom: 14, right: 60),
                     title: Text(
                       widget.prayer.title,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: textColor,
                         fontSize: 18,
