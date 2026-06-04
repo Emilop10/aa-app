@@ -323,13 +323,34 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 60),
-      itemCount: items.length,
-      itemBuilder: (ctx, i) => _buildCard(
-        number: i + 1,
-        text: items[i],
-        primary: primary,
-        textColor: textColor,
-        dark: dark,
+      itemCount: items.length + 1,
+      itemBuilder: (ctx, i) {
+        if (i < items.length) {
+          return _buildCard(
+            number: i + 1,
+            text: items[i],
+            primary: primary,
+            textColor: textColor,
+            dark: dark,
+          );
+        }
+        return _buildCreditFooter(textColor, dark);
+      },
+    );
+  }
+
+  Widget _buildCreditFooter(Color textColor, bool dark) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 16),
+      child: Text(
+        'Los Doce Pasos y las Doce Tradiciones son propiedad de Alcoholics Anonymous World Services, Inc. Reimpresos con permiso de A.A.W.S., Inc. La reimpresión no indica que A.A. haya revisado o aprobado el contenido de esta publicación.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 11,
+          color: textColor.withOpacity(0.4),
+          height: 1.5,
+          fontStyle: FontStyle.italic,
+        ),
       ),
     );
   }
