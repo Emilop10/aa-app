@@ -391,7 +391,7 @@ class _StepsTraditionsScreenState extends State<StepsTraditionsScreen>
                       fontSize: _fontSize,
                       color: textColor,
                       height: 1.55,
-                      fontFamily: 'Times New Roman',
+                      fontFamily: 'Georgia',
                     ),
                   ),
                 ),

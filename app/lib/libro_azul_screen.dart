@@ -322,7 +322,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
       height:     1.75,
       color:      textColor,
       letterSpacing: 0.1,
-      fontFamily: 'Times New Roman',
+      fontFamily: 'Georgia',
     );
     final richText = _buildRichText(chapter.content, highlights, baseStyle, primary);
 
@@ -920,7 +920,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text('Aa', style: TextStyle(
               color: fg, fontSize: 18, fontWeight: FontWeight.w600,
-              decoration: TextDecoration.none, fontFamily: 'Times New Roman')),
+              decoration: TextDecoration.none, fontFamily: 'Georgia')),
             const SizedBox(height: 2),
             Text(label, style: TextStyle(
               color: fg.withOpacity(0.6), fontSize: 11,
