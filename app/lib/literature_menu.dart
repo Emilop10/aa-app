@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:ui';
-// IMPORTAMOS LA NUEVA PANTALLA DEL LECTOR EPUB
 import 'libro_azul_screen.dart';
 import 'steps_traditions_screen.dart';
+import 'prayers_screen.dart';
 import 'app_colors.dart';
 
-// ─── Paleta ───────────────────────────────────────────────
 const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kDarkBg   = Color(0xFF1A0800);
@@ -21,32 +20,50 @@ class LiteratureMenu extends StatefulWidget {
 class _LiteratureMenuState extends State<LiteratureMenu>
     with TickerProviderStateMixin {
 
-  // Respiración de fondo
   late AnimationController _bgBreathController;
   late Animation<double> _bgBreath;
 
-  // Entrada escalonada
   late AnimationController _entryController;
   late Animation<double> _card1Fade;
   late Animation<Offset> _card1Slide;
   late Animation<double> _card2Fade;
   late Animation<Offset> _card2Slide;
+  late Animation<double> _card3Fade;
+  late Animation<Offset> _card3Slide;
 
   @override
   void initState() {
     super.initState();
 
-    // Respiración de fondo
-    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreathController = AnimationController(
+        vsync: this, duration: const Duration(seconds: 7))
+      ..repeat(reverse: true);
     _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
         CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
 
-    // Entrada escalonada
-    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
-    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
-    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
-    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
-    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
+    _entryController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1100));
+    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _entryController,
+            curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.25, 0.75, curve: Curves.easeOut)));
+    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _entryController,
+            curve: const Interval(0.25, 0.75, curve: Curves.easeOut)));
+    _card3Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
+    _card3Slide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _entryController,
+            curve: const Interval(0.5, 1.0, curve: Curves.easeOut)));
 
     _entryController.forward();
   }
@@ -121,6 +138,7 @@ class _LiteratureMenuState extends State<LiteratureMenu>
                             child: _buildMenuItem(
                               context: context,
                               title: 'Libro Azul',
+                              subtitle: 'Texto básico de A.A.',
                               imagePath: 'assets/images/big_book_bg.png',
                               targetScreen: const LibroAzulScreen(),
                             ),
@@ -133,9 +151,24 @@ class _LiteratureMenuState extends State<LiteratureMenu>
                             position: _card2Slide,
                             child: _buildMenuItem(
                               context: context,
-                              title: '12 Pasos / 12 Tradiciones',
+                              title: '12 Pasos y Tradiciones',
+                              subtitle: 'El programa de recuperación',
                               imagePath: 'assets/images/steps_traditions_bg.png',
-                              targetScreen: StepsTraditionsScreen(),
+                              targetScreen: const StepsTraditionsScreen(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeTransition(
+                          opacity: _card3Fade,
+                          child: SlideTransition(
+                            position: _card3Slide,
+                            child: _buildMenuItem(
+                              context: context,
+                              title: 'Oraciones',
+                              subtitle: 'Serenidad, San Francisco y más',
+                              imagePath: 'assets/images/support_bg.png',
+                              targetScreen: const PrayersScreen(),
                             ),
                           ),
                         ),
@@ -154,6 +187,7 @@ class _LiteratureMenuState extends State<LiteratureMenu>
   Widget _buildMenuItem({
     required BuildContext context,
     required String title,
+    required String subtitle,
     required String imagePath,
     required Widget targetScreen,
   }) {
@@ -180,7 +214,7 @@ class _LiteratureMenuState extends State<LiteratureMenu>
             image: AssetImage(imagePath),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.4),
+              Colors.black.withOpacity(0.45),
               BlendMode.darken,
             ),
           ),
@@ -189,26 +223,46 @@ class _LiteratureMenuState extends State<LiteratureMenu>
           borderRadius: BorderRadius.circular(24),
           child: Stack(
             children: [
-              // Title centered
+              // Contenido centrado
               Center(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 4,
-                        color: Colors.black87,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                              offset: Offset(1, 1),
+                              blurRadius: 4,
+                              color: Colors.black87),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.75),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        shadows: const [
+                          Shadow(
+                              offset: Offset(1, 1),
+                              blurRadius: 4,
+                              color: Colors.black87),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              // Chevron bottom right
+              // Chevron abajo derecha
               Positioned(
                 bottom: 14,
                 right: 16,
