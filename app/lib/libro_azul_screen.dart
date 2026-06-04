@@ -385,7 +385,7 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
               ),
               const SizedBox(height: 40),
               Text(
-                'Traducción española del texto básico de la edición de los pioneros de Alcohólicos Anónimos (1ª edición). El texto original en inglés es de dominio público. Esta traducción es reproducida con fines de recuperación sin ánimo de lucro. Alcohólicos Anónimos® es una marca registrada de A.A. World Services, Inc.',
+                'Alcohólicos Anónimos® es una marca registrada de Alcoholics Anonymous World Services, Inc. Este texto es la traducción española de la 1ª edición del texto básico de A.A., cuyo original en inglés es de dominio público en los Estados Unidos. Reproducido con fines de recuperación sin ánimo de lucro. Su reproducción no implica que A.A. haya revisado o aprobado el contenido de esta publicación.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 11,
