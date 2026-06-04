@@ -9,8 +9,6 @@ const _kSepia    = Color(0xFFF8F0E3);
 const _kDarkBg   = Color(0xFF1A1A1A);
 const _kTextPrim = Color(0xFF431407);
 
-// ─── Datos ────────────────────────────────────────────────────────────────────
-
 class _Prayer {
   final String title;
   final String body;
@@ -27,7 +25,7 @@ const _prayers = [
         'y la sabiduría para reconocer la diferencia.',
   ),
   _Prayer(
-    title: 'Oración de la Serenidad (versión completa)',
+    title: 'Oración de la Serenidad\n(versión completa)',
     body:
         'Dios, concédeme la serenidad\n'
         'para aceptar las cosas que no puedo cambiar,\n'
@@ -103,7 +101,7 @@ const _prayers = [
   ),
 ];
 
-// ─── Pantalla ─────────────────────────────────────────────────────────────────
+// ─── Lista de oraciones ───────────────────────────────────────────────────────
 
 class PrayersScreen extends StatefulWidget {
   const PrayersScreen({super.key});
@@ -112,13 +110,191 @@ class PrayersScreen extends StatefulWidget {
 }
 
 class _PrayersScreenState extends State<PrayersScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
+
+  late AnimationController _bgBreathController;
+  late Animation<double>   _bgBreath;
+
+  @override
+  void initState() {
+    super.initState();
+    _bgBreathController = AnimationController(
+        vsync: this, duration: const Duration(seconds: 7))
+      ..repeat(reverse: true);
+    _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
+        CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _bgBreathController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Color>(
+      valueListenable: appPrimaryColor,
+      builder: (context, primary, _) {
+        final isDark   = Theme.of(context).brightness == Brightness.dark;
+        final bgColor  = isDark ? const Color(0xFF1A0800) : const Color(0xFFFFFBF5);
+        final textPrim = isDark ? Colors.white : _kTextPrim;
+
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: AnimatedBuilder(
+            animation: _bgBreath,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [primary.withOpacity(_bgBreath.value), bgColor],
+                ),
+              ),
+              child: child,
+            ),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 100,
+                  floating: false,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  leading: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => Navigator.pop(context),
+                    child: Icon(CupertinoIcons.chevron_left, color: primary),
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    title: Text(
+                      'Oraciones',
+                      style: TextStyle(
+                        color: textPrim,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    stretchModes: const [StretchMode.fadeTitle],
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 60),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (ctx, i) => _buildRow(
+                        context: context,
+                        prayer: _prayers[i],
+                        index: i,
+                        primary: primary,
+                        isDark: isDark,
+                      ),
+                      childCount: _prayers.length,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRow({
+    required BuildContext context,
+    required _Prayer prayer,
+    required int index,
+    required Color primary,
+    required bool isDark,
+  }) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => _PrayerDetailScreen(prayer: prayer),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.06)
+                    : Colors.white.withOpacity(0.72),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.white.withOpacity(0.9),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: primary.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(CupertinoIcons.heart_fill,
+                        color: primary, size: 18),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      prayer.title.replaceAll('\n', ' '),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : _kTextPrim,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(CupertinoIcons.chevron_right,
+                      color: primary.withOpacity(0.5), size: 15),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Detalle de oración ───────────────────────────────────────────────────────
+
+class _PrayerDetailScreen extends StatefulWidget {
+  final _Prayer prayer;
+  const _PrayerDetailScreen({required this.prayer});
+  @override
+  _PrayerDetailScreenState createState() => _PrayerDetailScreenState();
+}
+
+class _PrayerDetailScreenState extends State<_PrayerDetailScreen>
+    with SingleTickerProviderStateMixin {
 
   late AnimationController _bgBreathController;
   late Animation<double>   _bgBreath;
 
   int    _readingTheme = 0;
-  double _fontSize     = 17.0;
+  double _fontSize     = 18.0;
 
   @override
   void initState() {
@@ -134,7 +310,7 @@ class _PrayersScreenState extends State<PrayersScreen>
   Future<void> _loadPrefs() async {
     final p = await SharedPreferences.getInstance();
     setState(() {
-      _fontSize     = p.getDouble('prayers_fontsize') ?? 17.0;
+      _fontSize     = p.getDouble('prayers_fontsize') ?? 18.0;
       _readingTheme = p.getInt('prayers_theme') ?? 0;
     });
   }
@@ -200,7 +376,8 @@ class _PrayersScreenState extends State<PrayersScreen>
                           _savePrefs();
                         }));
                       },
-                      child: Icon(CupertinoIcons.minus_circle, color: primary, size: 28),
+                      child: Icon(CupertinoIcons.minus_circle,
+                          color: primary, size: 28),
                     ),
                     const SizedBox(width: 8),
                     Text('${_fontSize.toInt()} pt',
@@ -217,7 +394,8 @@ class _PrayersScreenState extends State<PrayersScreen>
                           _savePrefs();
                         }));
                       },
-                      child: Icon(CupertinoIcons.plus_circle, color: primary, size: 28),
+                      child: Icon(CupertinoIcons.plus_circle,
+                          color: primary, size: 28),
                     ),
                   ],
                 ),
@@ -239,7 +417,8 @@ class _PrayersScreenState extends State<PrayersScreen>
     );
   }
 
-  Widget _themeBtn(String label, int idx, Color primary, bool dark, StateSetter setModal) {
+  Widget _themeBtn(String label, int idx, Color primary, bool dark,
+      StateSetter setModal) {
     final selected = _readingTheme == idx;
     return Expanded(
       child: GestureDetector(
@@ -260,7 +439,9 @@ class _PrayersScreenState extends State<PrayersScreen>
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? Colors.white : (dark ? Colors.white70 : _kTextPrim),
+              color: selected
+                  ? Colors.white
+                  : (dark ? Colors.white70 : _kTextPrim),
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -275,10 +456,9 @@ class _PrayersScreenState extends State<PrayersScreen>
     return ValueListenableBuilder<Color>(
       valueListenable: appPrimaryColor,
       builder: (context, primary, _) {
-        final sysDark  = Theme.of(context).brightness == Brightness.dark;
-        final bgColor  = _bgColor(sysDark);
+        final sysDark   = Theme.of(context).brightness == Brightness.dark;
+        final bgColor   = _bgColor(sysDark);
         final textColor = _textColor(sysDark);
-        final dark     = _isDark(sysDark);
 
         return Scaffold(
           backgroundColor: bgColor,
@@ -301,7 +481,7 @@ class _PrayersScreenState extends State<PrayersScreen>
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 100,
+                  expandedHeight: 110,
                   floating: false,
                   pinned: true,
                   stretch: true,
@@ -322,35 +502,58 @@ class _PrayersScreenState extends State<PrayersScreen>
                     ),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
-                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
+                    titlePadding:
+                        const EdgeInsets.only(left: 20, bottom: 14, right: 60),
                     title: Text(
-                      'Oraciones',
+                      widget.prayer.title,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 26,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.4,
                       ),
                     ),
                     stretchModes: const [StretchMode.fadeTitle],
                   ),
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 60),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (ctx, i) {
-                        if (i < _prayers.length) {
-                          return _buildPrayerCard(
-                            prayer: _prayers[i],
-                            primary: primary,
-                            textColor: textColor,
-                            dark: dark,
-                          );
-                        }
-                        return _buildFooter(textColor);
-                      },
-                      childCount: _prayers.length + 1,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 32, 28, 80),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Línea decorativa
+                        Container(
+                          width: 40, height: 2,
+                          decoration: BoxDecoration(
+                            color: primary.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          widget.prayer.body,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _fontSize,
+                            color: textColor,
+                            height: 1.9,
+                            fontFamily: 'Georgia',
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                        const SizedBox(height: 48),
+                        Text(
+                          'Dominio público · Tradición de A.A.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: textColor.withOpacity(0.35),
+                            height: 1.5,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -359,95 +562,6 @@ class _PrayersScreenState extends State<PrayersScreen>
           ),
         );
       },
-    );
-  }
-
-  Widget _buildPrayerCard({
-    required _Prayer prayer,
-    required Color primary,
-    required Color textColor,
-    required bool dark,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: dark
-                  ? Colors.white.withOpacity(0.06)
-                  : Colors.white.withOpacity(0.72),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: dark
-                    ? Colors.white.withOpacity(0.08)
-                    : Colors.white.withOpacity(0.9),
-                width: 0.8,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 36, height: 36,
-                      decoration: BoxDecoration(
-                        color: primary.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(CupertinoIcons.heart_fill,
-                          color: primary, size: 18),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        prayer.title,
-                        style: TextStyle(
-                          fontSize: _fontSize - 1,
-                          fontWeight: FontWeight.w700,
-                          color: primary,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  prayer.body,
-                  style: TextStyle(
-                    fontSize: _fontSize,
-                    color: textColor,
-                    height: 1.7,
-                    fontFamily: 'Georgia',
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFooter(Color textColor) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 16),
-      child: Text(
-        'La Oración de la Serenidad y las oraciones de los pasos son de dominio público y forman parte de la tradición de Alcohólicos Anónimos. La Oración de San Francisco de Asís es de dominio público (siglo XIII).',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 11,
-          color: textColor.withOpacity(0.4),
-          height: 1.5,
-          fontStyle: FontStyle.italic,
-        ),
-      ),
     );
   }
 }
