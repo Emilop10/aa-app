@@ -383,6 +383,18 @@ class _LibroAzulScreenState extends State<LibroAzulScreen>
                   );
                 },
               ),
+              const SizedBox(height: 40),
+              Text(
+                'Traducción española del texto básico de la edición de los pioneros de Alcohólicos Anónimos (1ª edición). El texto original en inglés es de dominio público. Esta traducción es reproducida con fines de recuperación sin ánimo de lucro. Alcohólicos Anónimos® es una marca registrada de A.A. World Services, Inc.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: textColor.withOpacity(0.35),
+                  height: 1.5,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
