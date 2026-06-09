@@ -5,7 +5,9 @@ import 'notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'daily_readings.dart';
+import 'onboarding_screen.dart';
 import 'app_colors.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -18,12 +20,15 @@ Future<void> main() async {
   await loadSavedColor();
   await loadSavedThemeMode();
 
+  final prefs = await SharedPreferences.getInstance();
+  final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
   final details = await NotificationService.instance.getAppLaunchDetails();
   final bool abrirReflexion =
       details?.didNotificationLaunchApp == true &&
       details?.notificationResponse?.payload == 'daily_reflection';
 
-  runApp(const MyApp());
+  runApp(MyApp(showOnboarding: !onboardingDone));
 
   if (abrirReflexion) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -41,7 +46,8 @@ Future<void> _configureLocalTimeZone() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final bool showOnboarding;
+  const MyApp({super.key, required this.showOnboarding});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -158,7 +164,9 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
 
-              home: const SobrietyCounterApp(),
+              home: widget.showOnboarding
+                  ? OnboardingScreen(nextScreen: const SobrietyCounterApp())
+                  : const SobrietyCounterApp(),
             );
           },
         );
