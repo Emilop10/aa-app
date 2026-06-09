@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_service.dart';
+import 'onboarding_screen.dart';
 import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
@@ -749,6 +750,119 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                         ),
+                        const SizedBox(height: 24),
+
+                        // ── Section label: Acerca de ──────────────────
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 4, bottom: 10),
+                              child: Text(
+                                'ACERCA DE',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.8,
+                                  color: isDark ? Colors.white38 : _kTextSec,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // ── Ver instrucciones card ────────────────────
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => OnboardingScreen(
+                                    nextScreen: const SizedBox.shrink(),
+                                    isReplay: true,
+                                  ),
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 18, vertical: 16),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.06)
+                                          : Colors.white.withOpacity(0.75),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? Colors.white.withOpacity(0.1)
+                                            : Colors.white.withOpacity(0.8),
+                                        width: 0.8,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: primary.withOpacity(0.15),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                              CupertinoIcons.question_circle,
+                                              color: primary,
+                                              size: 20),
+                                        ),
+                                        const SizedBox(width: 14),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Ver instrucciones',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: textPrim,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                'Repasa la guía de todas las funciones',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: isDark
+                                                      ? Colors.white38
+                                                      : _kTextSec,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          CupertinoIcons.chevron_right,
+                                          color: isDark
+                                              ? Colors.white24
+                                              : _kTextSec.withOpacity(0.4),
+                                          size: 16,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
                       ],
                     ),
                   ),
