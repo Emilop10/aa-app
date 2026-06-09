@@ -23,6 +23,8 @@ class _SettingsScreenState extends State<SettingsScreen>
     with TickerProviderStateMixin {
   bool _notificationsEnabled = false;
   TimeOfDay _notificationTime = const TimeOfDay(hour: 9, minute: 0);
+  bool _gratitudeNotifEnabled = false;
+  TimeOfDay _gratitudeNotifTime = const TimeOfDay(hour: 20, minute: 0);
   Color _selectedColor = const Color(0xFFF97316);
   ThemeMode _selectedThemeMode = ThemeMode.system;
 
@@ -82,6 +84,11 @@ class _SettingsScreenState extends State<SettingsScreen>
       final parts = timeString.split(':');
       _notificationTime = TimeOfDay(
           hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+      _gratitudeNotifEnabled = prefs.getBool('gratitude_notif_enabled') ?? false;
+      final gratitudeTimeString = prefs.getString('gratitude_notif_time') ?? '20:00';
+      final gratitudeParts = gratitudeTimeString.split(':');
+      _gratitudeNotifTime = TimeOfDay(
+          hour: int.parse(gratitudeParts[0]), minute: int.parse(gratitudeParts[1]));
       _selectedColor = appPrimaryColor.value;
       _selectedThemeMode = appThemeMode.value;
     });
@@ -93,6 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen>
     await prefs.setBool(_enabledKey, _notificationsEnabled);
     await prefs.setString(
         _timeKey, '${_notificationTime.hour}:${_notificationTime.minute}');
+    await prefs.setBool('gratitude_notif_enabled', _gratitudeNotifEnabled);
+    await prefs.setString('gratitude_notif_time',
+        '${_gratitudeNotifTime.hour}:${_gratitudeNotifTime.minute}');
   }
 
   void _onNotificationToggle(bool value) {
@@ -103,6 +113,105 @@ class _SettingsScreenState extends State<SettingsScreen>
       NotificationService.instance.cancelAllNotifications();
     }
     _saveSettings();
+  }
+
+  void _onGratitudeToggle(bool value) {
+    setState(() => _gratitudeNotifEnabled = value);
+    if (_gratitudeNotifEnabled) {
+      NotificationService.instance.scheduleGratitudeNotification(_gratitudeNotifTime);
+    } else {
+      NotificationService.instance.cancelGratitudeNotification();
+    }
+    _saveSettings();
+  }
+
+  void _selectGratitudeTime(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    int tempHour   = _gratitudeNotifTime.hour;
+    int tempMinute = _gratitudeNotifTime.minute;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => Container(
+        height: 320,
+        decoration: BoxDecoration(
+          color: isDark
+              ? const Color(0xFF1C1C1E)
+              : CupertinoColors.systemBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.black12,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: Text('Cancelar',
+                        style: TextStyle(
+                            color: isDark ? Colors.white60 : Colors.black45)),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                  Text(
+                    'Hora del Recordatorio',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: Text('Listo',
+                        style: TextStyle(
+                            color: _selectedColor, fontWeight: FontWeight.w600)),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      setState(() => _gratitudeNotifTime =
+                          TimeOfDay(hour: tempHour, minute: tempMinute));
+                      if (_gratitudeNotifEnabled) {
+                        NotificationService.instance
+                            .scheduleGratitudeNotification(_gratitudeNotifTime);
+                      }
+                      _saveSettings();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: CupertinoTimerPicker(
+                mode: CupertinoTimerPickerMode.hm,
+                initialTimerDuration: Duration(
+                    hours: _gratitudeNotifTime.hour,
+                    minutes: _gratitudeNotifTime.minute),
+                onTimerDurationChanged: (Duration d) {
+                  tempHour   = d.inHours;
+                  tempMinute = d.inMinutes % 60;
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatGratitudeTime() {
+    final h = _gratitudeNotifTime.hour.toString().padLeft(2, '0');
+    final m = _gratitudeNotifTime.minute.toString().padLeft(2, '0');
+    return '$h:$m';
   }
 
   void _selectTime(BuildContext context) {
@@ -750,6 +859,212 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                         ),
+                        const SizedBox(height: 24),
+
+                        // ── Section label: Gratitud ───────────────────
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 4, bottom: 10),
+                              child: Text(
+                                'GRATITUD',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.8,
+                                  color: isDark ? Colors.white38 : _kTextSec,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // ── Gratitude toggle card ─────────────────────
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                                bottomLeft: Radius.circular(4),
+                                bottomRight: Radius.circular(4),
+                              ),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.white.withOpacity(0.06)
+                                        : Colors.white.withOpacity(0.75),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                      bottomLeft: Radius.circular(4),
+                                      bottomRight: Radius.circular(4),
+                                    ),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.1)
+                                          : Colors.white.withOpacity(0.8),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: primary.withOpacity(0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(CupertinoIcons.sun_min,
+                                            color: primary, size: 20),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Recordatorio de Gratitud',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: textPrim,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              'Recuerda escribir tu gratitud cada día',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: isDark
+                                                    ? Colors.white38
+                                                    : _kTextSec,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      CupertinoSwitch(
+                                        value: _gratitudeNotifEnabled,
+                                        activeColor: primary,
+                                        onChanged: _onGratitudeToggle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 2),
+
+                        // ── Gratitude time picker card ────────────────
+                        FadeTransition(
+                          opacity: _card2Fade,
+                          child: SlideTransition(
+                            position: _card2Slide,
+                            child: GestureDetector(
+                              onTap: _gratitudeNotifEnabled
+                                  ? () => _selectGratitudeTime(context)
+                                  : null,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(4),
+                                  topRight: Radius.circular(4),
+                                  bottomLeft: Radius.circular(20),
+                                  bottomRight: Radius.circular(20),
+                                ),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: Opacity(
+                                    opacity: _gratitudeNotifEnabled ? 1.0 : 0.45,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 18, vertical: 16),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? Colors.white.withOpacity(0.06)
+                                            : Colors.white.withOpacity(0.75),
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(4),
+                                          topRight: Radius.circular(4),
+                                          bottomLeft: Radius.circular(20),
+                                          bottomRight: Radius.circular(20),
+                                        ),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? Colors.white.withOpacity(0.1)
+                                              : Colors.white.withOpacity(0.8),
+                                          width: 0.8,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: primary.withOpacity(0.15),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(CupertinoIcons.clock,
+                                                color: primary, size: 20),
+                                          ),
+                                          const SizedBox(width: 14),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Hora del Recordatorio',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: textPrim,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  'Las notificaciones se enviarán a las ${_formatGratitudeTime()}',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: isDark
+                                                        ? Colors.white38
+                                                        : _kTextSec,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            CupertinoIcons.chevron_right,
+                                            color: isDark
+                                                ? Colors.white24
+                                                : _kTextSec.withOpacity(0.4),
+                                            size: 16,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
                         const SizedBox(height: 24),
 
                         // ── Section label: Acerca de ──────────────────

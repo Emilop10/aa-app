@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:home_widget/home_widget.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'app_colors.dart';
@@ -13,6 +16,77 @@ const _kTextPrim   = Color(0xFF431407);
 const _kTextSec    = Color(0xFF92400E);
 const _kDarkBg     = Color(0xFF1A0800);
 const _kDarkSurf   = Color(0xFF2D1506);
+
+const _kQuotes = [
+  'Un día a la vez.',
+  'Primero lo primero.',
+  'Fácilmente y sin esfuerzo.',
+  'Sigue viniendo.',
+  'Primero lo primero.',
+  'Confía en el proceso.',
+  'La gratitud es la actitud.',
+  'Deja ir y deja a Dios.',
+  'Llama antes de caer.',
+  'Esto también pasará.',
+  'No tienes que sentirte bien para hacer lo correcto.',
+  'El éxito es la suma de pequeños esfuerzos repetidos cada día.',
+  'Hoy es todo lo que tienes.',
+  'La sobriedad es un regalo que te haces a ti mismo.',
+  'No estás solo/a en este camino.',
+  'Cada día sobrio es una victoria.',
+  'La humildad es la base de la recuperación.',
+  'Acepta lo que no puedes cambiar.',
+  'El programa funciona si lo trabajas.',
+  'Mantén la mente abierta.',
+  'La recuperación es posible.',
+  'Un pensamiento a la vez.',
+  'La fe mueve montañas.',
+  'Hoy no tengo que beber.',
+  'Mi recuperación es mi responsabilidad.',
+  'La honestidad es el primer paso.',
+  'Pide ayuda antes de necesitarla.',
+  'Tus peores días sobrio son mejores que tus mejores días bebiendo.',
+  'La serenidad no es la ausencia de conflicto, sino la capacidad de manejarlo.',
+  'Perdona, no por ellos, sino por ti.',
+  'La esperanza es el ancla del alma.',
+  'Cambia lo que puedes, acepta lo que no puedes.',
+  'Cada 24 horas es una nueva oportunidad.',
+  'El amor es el motor de la recuperación.',
+  'No tienes que hacerlo todo hoy.',
+  'La paciencia es una virtud en el camino.',
+  'Conecta con otros que entienden.',
+  'La rendición no es derrota, es liberación.',
+  'Haz lo que sabes que es correcto.',
+  'La recovery es un maratón, no una carrera.',
+  'Tu historia puede ser la esperanza de alguien más.',
+  'Permanece presente.',
+  'La gratitud abre puertas.',
+  'Pequeños pasos llevan lejos.',
+  'No compares tus adentros con los afueras de otros.',
+  'Tú no causaste esto, no puedes controlarlo, no puedes curarlo.',
+  'El servicio sana.',
+  'Juntos lo logramos.',
+  'Mantente cerca del teléfono.',
+  'La oración y la meditación son herramientas, úsalas.',
+];
+
+String _todaysQuote() {
+  final dayOfYear = DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+  return _kQuotes[dayOfYear % _kQuotes.length];
+}
+
+class _SobrietyPeriod {
+  final DateTime start;
+  final DateTime end;
+  final int days;
+  _SobrietyPeriod({required this.start, required this.end, required this.days});
+  Map<String, dynamic> toJson() => {'start': start.toIso8601String(), 'end': end.toIso8601String(), 'days': days};
+  factory _SobrietyPeriod.fromJson(Map<String, dynamic> j) => _SobrietyPeriod(
+    start: DateTime.parse(j['start']),
+    end: DateTime.parse(j['end']),
+    days: j['days'],
+  );
+}
 
 class SobrietyCounter extends StatefulWidget {
   final VoidCallback onDateChanged;
@@ -31,6 +105,8 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   DateTime? sobrietyDate;
   _TimeBreakdown timeBreakdown = _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
+  List<_SobrietyPeriod> _history = [];
+  bool _showHistory = false;
 
   // Pulso suave del número
   late AnimationController _pulseController;
@@ -105,6 +181,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     _card3Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.6, 1.0, curve: Curves.easeOut)));
 
     _loadSobrietyDate();
+    _loadHistory();
   }
 
   @override
@@ -138,8 +215,29 @@ class _SobrietyCounterState extends State<SobrietyCounter>
         timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
         _startTimer();
       });
+      _updateWidget();
       _entryController.forward();
     }
+  }
+
+  Future<void> _loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('sobriety_history');
+    if (raw != null && mounted) {
+      final list = (jsonDecode(raw) as List).map((j) => _SobrietyPeriod.fromJson(j)).toList();
+      setState(() => _history = list);
+    }
+  }
+
+  Future<void> _updateWidget() async {
+    if (sobrietyDate == null) return;
+    final days = DateTime.now().difference(sobrietyDate!).inDays;
+    const months = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+    final s = sobrietyDate!;
+    final startStr = "${s.day} ${months[s.month-1]} ${s.year}";
+    await HomeWidget.saveWidgetData<int>("sobriety_days", days);
+    await HomeWidget.saveWidgetData<String>("sobriety_start_date", startStr);
+    await HomeWidget.updateWidget(name: "SobrietyWidget", iOSName: "SobrietyWidget");
   }
 
   void _startTimer() {
@@ -189,6 +287,18 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                     padding: EdgeInsets.zero,
                     onPressed: () async {
                       Navigator.pop(ctx);
+                      // Save old period to history
+                      if (sobrietyDate != null) {
+                        final period = _SobrietyPeriod(
+                          start: sobrietyDate!,
+                          end: DateTime.now(),
+                          days: DateTime.now().difference(sobrietyDate!).inDays,
+                        );
+                        final newHistory = [period, ..._history];
+                        setState(() => _history = newHistory);
+                        final prefs2 = await SharedPreferences.getInstance();
+                        await prefs2.setString('sobriety_history', jsonEncode(newHistory.map((p) => p.toJson()).toList()));
+                      }
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setString('sobrietyDate', tempDate.toIso8601String());
                       setState(() => sobrietyDate = tempDate);
@@ -369,7 +479,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             opacity: _card2Fade,
             child: SlideTransition(
               position: _card2Slide,
-              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
+              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary, quote: _todaysQuote()),
             ),
           ),
           const SizedBox(height: 12),

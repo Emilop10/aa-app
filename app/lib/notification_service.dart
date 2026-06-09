@@ -40,6 +40,7 @@ class NotificationService {
             MaterialPageRoute(builder: (context) => const DailyReadings()),
           );
         }
+        // TODO: Handle 'gratitude_journal' payload — navigate to JournalMenu once available.
       },
     );
   }
@@ -80,6 +81,32 @@ class NotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     return scheduledDate;
+  }
+
+  Future<void> scheduleGratitudeNotification(TimeOfDay time) async {
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      1, // ID 1 (0 is already used for daily reflection)
+      'Diario de Gratitud',
+      '🌟 ¿Por qué estás agradecido hoy? Tómate un momento para escribirlo.',
+      _nextInstanceOfTime(time),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'gratitude_channel_id',
+          'Recordatorio de Gratitud',
+          channelDescription: 'Recordatorio diario para el diario de gratitud.',
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: 'gratitude_journal',
+    );
+  }
+
+  Future<void> cancelGratitudeNotification() async {
+    await _flutterLocalNotificationsPlugin.cancel(1);
   }
 
   Future<void> cancelAllNotifications() async {
