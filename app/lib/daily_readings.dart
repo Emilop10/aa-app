@@ -322,26 +322,21 @@ class _DailyReadingsState extends State<DailyReadings>
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 100,
                   floating: false,
                   pinned: true,
-                  stretch: true,
-                  backgroundColor: bgColor,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                   scrolledUnderElevation: 0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                    title: Text(
-                      'Reflexiones',
-                      style: TextStyle(
-                        color: textPrim,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                      ),
+                  title: Text(
+                    'Reflexiones',
+                    style: TextStyle(
+                      color: textPrim,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
                     ),
-                    stretchModes: const [StretchMode.fadeTitle],
                   ),
+                  titleSpacing: 20,
                   actions: [
                     if (_readingStreak >= 1)
                       Padding(
