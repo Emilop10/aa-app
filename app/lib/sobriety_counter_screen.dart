@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:home_widget/home_widget.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -215,7 +214,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
         timeBreakdown = _calculateYearsMonthsDays(sobrietyDate!, DateTime.now());
         _startTimer();
       });
-      _updateWidget();
       _entryController.forward();
     }
   }
@@ -229,16 +227,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     }
   }
 
-  Future<void> _updateWidget() async {
-    if (sobrietyDate == null) return;
-    final days = DateTime.now().difference(sobrietyDate!).inDays;
-    const months = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
-    final s = sobrietyDate!;
-    final startStr = "${s.day} ${months[s.month-1]} ${s.year}";
-    await HomeWidget.saveWidgetData<int>("sobriety_days", days);
-    await HomeWidget.saveWidgetData<String>("sobriety_start_date", startStr);
-    await HomeWidget.updateWidget(name: "SobrietyWidget", iOSName: "SobrietyWidget");
-  }
 
   void _startTimer() {
     _timer?.cancel();
