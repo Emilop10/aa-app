@@ -425,7 +425,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   Widget _buildBody(bool isDark, Color textPrim, Color surfColor, Color borderColor, Color primary) {
     final tb = timeBreakdown;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

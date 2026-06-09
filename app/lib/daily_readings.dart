@@ -326,7 +326,7 @@ class _DailyReadingsState extends State<DailyReadings>
                   floating: false,
                   pinned: true,
                   stretch: true,
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: bgColor,
                   elevation: 0,
                   scrolledUnderElevation: 0,
                   flexibleSpace: FlexibleSpaceBar(
