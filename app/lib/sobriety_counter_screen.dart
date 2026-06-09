@@ -105,7 +105,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   _TimeBreakdown timeBreakdown = _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
   List<_SobrietyPeriod> _history = [];
-  bool _showHistory = false;
 
   // Pulso suave del número
   late AnimationController _pulseController;
@@ -478,76 +477,6 @@ class _SobrietyCounterState extends State<SobrietyCounter>
               child: _StartDateCard(date: sobrietyDate!, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, onEdit: () => _setSobrietyDate(context), primary: primary),
             ),
           ),
-          const SizedBox(height: 12),
-          if (_history.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8), width: 0.8),
-                  ),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () => setState(() => _showHistory = !_showHistory),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          color: Colors.transparent,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 36, height: 36,
-                                decoration: BoxDecoration(color: primary.withOpacity(0.15), shape: BoxShape.circle),
-                                child: Icon(CupertinoIcons.arrow_counterclockwise, color: primary, size: 17),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Text('Etapas anteriores',
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textPrim, decoration: TextDecoration.none)),
-                              ),
-                              Icon(_showHistory ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
-                                color: primary.withOpacity(0.6), size: 14),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_showHistory)
-                        ...(_history.take(5).map((p) {
-                          const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-                          final startStr = '${p.start.day} ${months[p.start.month-1]} ${p.start.year}';
-                          final endStr   = '${p.end.day} ${months[p.end.month-1]} ${p.end.year}';
-                          return Container(
-                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 50),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(height: 0.5, color: isDark ? Colors.white12 : Colors.black.withOpacity(0.06)),
-                                      const SizedBox(height: 12),
-                                      Text('$startStr → $endStr',
-                                        style: TextStyle(fontSize: 13, color: textPrim.withOpacity(0.6), decoration: TextDecoration.none)),
-                                      const SizedBox(height: 2),
-                                      Text('${p.days} días',
-                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: primary, decoration: TextDecoration.none)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList()),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: () => _showSosModal(context, primary, isDark),
