@@ -514,7 +514,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                               Container(
                                 width: 36, height: 36,
                                 decoration: BoxDecoration(color: primary.withOpacity(0.15), shape: BoxShape.circle),
-                                child: Icon(CupertinoIcons.clock_arrow_circlepath, color: primary, size: 17),
+                                child: Icon(CupertinoIcons.arrow_counterclockwise, color: primary, size: 17),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
