@@ -490,10 +490,243 @@ class _SobrietyCounterState extends State<SobrietyCounter>
               child: _StartDateCard(date: sobrietyDate!, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, onEdit: () => _setSobrietyDate(context), primary: primary),
             ),
           ),
+          const SizedBox(height: 12),
+          if (_history.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8), width: 0.8),
+                  ),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () => setState(() => _showHistory = !_showHistory),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          color: Colors.transparent,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36, height: 36,
+                                decoration: BoxDecoration(color: primary.withOpacity(0.15), shape: BoxShape.circle),
+                                child: Icon(CupertinoIcons.clock_arrow_circlepath, color: primary, size: 17),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Text('Etapas anteriores',
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textPrim, decoration: TextDecoration.none)),
+                              ),
+                              Icon(_showHistory ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
+                                color: primary.withOpacity(0.6), size: 14),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (_showHistory)
+                        ...(_history.take(5).map((p) {
+                          const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+                          final startStr = '${p.start.day} ${months[p.start.month-1]} ${p.start.year}';
+                          final endStr   = '${p.end.day} ${months[p.end.month-1]} ${p.end.year}';
+                          return Container(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 50),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(height: 0.5, color: isDark ? Colors.white12 : Colors.black.withOpacity(0.06)),
+                                      const SizedBox(height: 12),
+                                      Text('$startStr → $endStr',
+                                        style: TextStyle(fontSize: 13, color: textPrim.withOpacity(0.6), decoration: TextDecoration.none)),
+                                      const SizedBox(height: 2),
+                                      Text('${p.days} días',
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: primary, decoration: TextDecoration.none)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList()),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => _showSosModal(context, primary, isDark),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFFEF4444).withOpacity(0.12) : const Color(0xFFEF4444).withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.35), width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.15), shape: BoxShape.circle),
+                        child: const Icon(CupertinoIcons.phone_fill, color: Color(0xFFEF4444), size: 20),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Necesito apoyo ahora',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: const Color(0xFFEF4444), letterSpacing: -0.2, decoration: TextDecoration.none)),
+                            const SizedBox(height: 2),
+                            Text('Contactos, línea A.A. y frases de apoyo',
+                              style: TextStyle(fontSize: 12, color: const Color(0xFFEF4444).withOpacity(0.7), decoration: TextDecoration.none)),
+                          ],
+                        ),
+                      ),
+                      const Icon(CupertinoIcons.chevron_right, color: Color(0xFFEF4444), size: 15),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
+  void _showSosModal(BuildContext context, Color primary, bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('support_contacts');
+    final contacts = raw != null
+      ? (jsonDecode(raw) as List).cast<Map<String, dynamic>>()
+      : <Map<String, dynamic>>[];
+
+    if (!mounted) return;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFBF5),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(margin: const EdgeInsets.symmetric(vertical: 14), width: 36, height: 4,
+              decoration: BoxDecoration(color: isDark ? Colors.white24 : Colors.black12, borderRadius: BorderRadius.circular(2))),
+            Text('Necesito apoyo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.2), width: 0.8),
+              ),
+              child: Column(
+                children: [
+                  _sosPhrase('Respira hondo. Este momento también pasará.', isDark),
+                  const SizedBox(height: 10),
+                  _sosPhrase('Llama antes de tomar la primera copa.', isDark),
+                  const SizedBox(height: 10),
+                  _sosPhrase('No tienes que hacerlo solo/a.', isDark),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => launchUrl(Uri(scheme: 'tel', path: '8002900024')),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: primary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: primary.withOpacity(0.3), width: 0.8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(CupertinoIcons.phone_circle_fill, color: primary, size: 22),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Línea Nacional A.A. México', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+                        Text('800 290 0024 · Gratuita 24/7', style: TextStyle(fontSize: 12, color: primary, decoration: TextDecoration.none)),
+                      ],
+                    )),
+                    Icon(CupertinoIcons.chevron_right, color: primary.withOpacity(0.5), size: 14),
+                  ],
+                ),
+              ),
+            ),
+            if (contacts.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Align(alignment: Alignment.centerLeft,
+                child: Text('Mis contactos de apoyo',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.5,
+                    color: isDark ? Colors.white38 : _kTextSec, decoration: TextDecoration.none))),
+              const SizedBox(height: 10),
+              ...contacts.map((c) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GestureDetector(
+                  onTap: () => launchUrl(Uri(scheme: 'tel', path: c['phone'] as String)),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.9), width: 0.8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(width: 36, height: 36,
+                          decoration: BoxDecoration(color: primary.withOpacity(0.13), shape: BoxShape.circle),
+                          child: Center(child: Text((c['name'] as String)[0].toUpperCase(),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: primary, decoration: TextDecoration.none)))),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(c['name'] as String, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+                            Text(c['phone'] as String, style: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : _kTextSec, decoration: TextDecoration.none)),
+                          ],
+                        )),
+                        Icon(CupertinoIcons.phone_fill, color: primary, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+              )).toList(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sosPhrase(String text, bool isDark) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(CupertinoIcons.checkmark_circle_fill, color: const Color(0xFFEF4444), size: 16),
+      const SizedBox(width: 8),
+      Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : _kTextPrim.withOpacity(0.8), height: 1.4, decoration: TextDecoration.none))),
+    ],
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -723,7 +956,8 @@ class _MiniStatCard extends StatelessWidget {
 class _QuoteCard extends StatelessWidget {
   final bool isDark;
   final Color surfColor, borderColor, textPrim, primary;
-  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary});
+  final String quote;
+  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary, required this.quote});
 
   @override
   Widget build(BuildContext context) {
@@ -747,7 +981,7 @@ class _QuoteCard extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Text('Un día a la vez', style: TextStyle(fontSize: 17, fontStyle: FontStyle.italic, color: textPrim, fontWeight: FontWeight.w500, letterSpacing: 0.1, decoration: TextDecoration.none)),
+                child: Text(quote, style: TextStyle(fontSize: 17, fontStyle: FontStyle.italic, color: textPrim, fontWeight: FontWeight.w500, letterSpacing: 0.1, decoration: TextDecoration.none)),
               ),
             ],
           ),
