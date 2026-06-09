@@ -7,6 +7,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'app_colors.dart';
 
 // ─── Paleta ───────────────────────────────────────────────
@@ -35,6 +36,7 @@ class _DailyReadingsState extends State<DailyReadings>
   Map<DateTime, DailyReading> _dailyReadings = {};
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  int _readingStreak = 0;
 
   // Respiración de fondo
   late AnimationController _bgBreathController;
@@ -66,6 +68,7 @@ class _DailyReadingsState extends State<DailyReadings>
     initializeDateFormatting('es_ES', null);
     _selectedDay = _normalizeDate(DateTime.now());
     _focusedDay  = _selectedDay!;
+    _loadStreak();
     _loadDailyReadings();
   }
 
@@ -79,6 +82,41 @@ class _DailyReadingsState extends State<DailyReadings>
   DateTime _normalizeDate(DateTime date) =>
       DateTime(date.year, date.month, date.day);
 
+  Future<void> _loadStreak() async {
+    final prefs = await SharedPreferences.getInstance();
+    final streak = prefs.getInt('reading_streak') ?? 0;
+    if (mounted) {
+      setState(() => _readingStreak = streak);
+    }
+  }
+
+  Future<void> _updateStreak() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastDateStr = prefs.getString('last_reading_date');
+    final streak = prefs.getInt('reading_streak') ?? 0;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final lastDate = lastDateStr != null ? DateTime.parse(lastDateStr) : null;
+
+    int newStreak;
+    if (lastDate == today) {
+      return; // already counted today
+    } else if (lastDate == yesterday) {
+      newStreak = streak + 1;
+    } else {
+      newStreak = 1;
+    }
+
+    await prefs.setString('last_reading_date', today.toIso8601String());
+    await prefs.setInt('reading_streak', newStreak);
+
+    if (mounted) {
+      setState(() => _readingStreak = newStreak);
+    }
+  }
+
   Future<void> _loadDailyReadings() async {
     final jsonString = await rootBundle.loadString('assets/daily_readings.json');
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
@@ -90,7 +128,21 @@ class _DailyReadingsState extends State<DailyReadings>
     if (mounted) {
       setState(() => _dailyReadings = loadedReadings);
       _entryController.forward();
+      // Update streak if there is a reading for today
+      final today = _normalizeDate(DateTime.now());
+      if (_getReadingForDayFromMap(loadedReadings, today) != null) {
+        _updateStreak();
+      }
     }
+  }
+
+  DailyReading? _getReadingForDayFromMap(Map<DateTime, DailyReading> map, DateTime day) {
+    for (final entry in map.entries) {
+      if (entry.key.month == day.month && entry.key.day == day.day) {
+        return entry.value;
+      }
+    }
+    return null;
   }
 
   DailyReading? _getReadingForDay(DateTime day) {
@@ -173,6 +225,10 @@ class _DailyReadingsState extends State<DailyReadings>
                       _selectedDay = selectedDay;
                       _focusedDay  = focusedDay;
                     });
+                    final today = _normalizeDate(DateTime.now());
+                    if (_normalizeDate(selectedDay) == today) {
+                      _updateStreak();
+                    }
                     Navigator.pop(ctx);
                   },
                   calendarStyle: CalendarStyle(
@@ -266,27 +322,45 @@ class _DailyReadingsState extends State<DailyReadings>
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 100,
                   floating: false,
                   pinned: true,
-                  stretch: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   scrolledUnderElevation: 0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    titlePadding: const EdgeInsets.only(left: 20, bottom: 14),
-                    title: Text(
-                      'Reflexiones',
-                      style: TextStyle(
-                        color: textPrim,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                      ),
+                  title: Text(
+                    'Reflexiones',
+                    style: TextStyle(
+                      color: textPrim,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
                     ),
-                    stretchModes: const [StretchMode.fadeTitle],
                   ),
+                  titleSpacing: 20,
                   actions: [
+                    if (_readingStreak >= 1)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: primary.withOpacity(0.4),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            '🔥 $_readingStreak',
+                            style: TextStyle(
+                              color: primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: CupertinoButton(

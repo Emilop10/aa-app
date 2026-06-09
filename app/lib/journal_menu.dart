@@ -5,14 +5,12 @@ import 'journal_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'app_colors.dart';
 
-// ─── Paleta ───────────────────────────────────────────────
 const _kCream    = Color(0xFFFFFBF5);
 const _kTextPrim = Color(0xFF431407);
 const _kDarkBg   = Color(0xFF1A0800);
 
 class JournalMenu extends StatefulWidget {
   const JournalMenu({super.key});
-
   @override
   _JournalMenuState createState() => _JournalMenuState();
 }
@@ -20,32 +18,39 @@ class JournalMenu extends StatefulWidget {
 class _JournalMenuState extends State<JournalMenu>
     with TickerProviderStateMixin {
 
-  // Respiración de fondo
   late AnimationController _bgBreathController;
-  late Animation<double> _bgBreath;
-
-  // Entrada escalonada
+  late Animation<double>   _bgBreath;
   late AnimationController _entryController;
-  late Animation<double> _card1Fade;
-  late Animation<Offset> _card1Slide;
-  late Animation<double> _card2Fade;
-  late Animation<Offset> _card2Slide;
+  late Animation<double>   _card1Fade;
+  late Animation<Offset>   _card1Slide;
+  late Animation<double>   _card2Fade;
+  late Animation<Offset>   _card2Slide;
 
   @override
   void initState() {
     super.initState();
-
-    // Respiración de fondo
-    _bgBreathController = AnimationController(vsync: this, duration: const Duration(seconds: 7))..repeat(reverse: true);
+    _bgBreathController = AnimationController(
+        vsync: this, duration: const Duration(seconds: 7))
+      ..repeat(reverse: true);
     _bgBreath = Tween<double>(begin: 0.03, end: 0.09).animate(
         CurvedAnimation(parent: _bgBreathController, curve: Curves.easeInOut));
 
-    // Entrada escalonada
-    _entryController = AnimationController(vsync: this, duration: const Duration(milliseconds: 950));
-    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
-    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
-    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
-    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
+    _entryController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 950));
+    _card1Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _card1Slide = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _entryController,
+            curve: const Interval(0.0, 0.55, curve: Curves.easeOut)));
+    _card2Fade  = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
+    _card2Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _entryController,
+            curve: const Interval(0.35, 1.0, curve: Curves.easeOut)));
 
     _entryController.forward();
   }
@@ -75,10 +80,7 @@ class _JournalMenuState extends State<JournalMenu>
                 gradient: RadialGradient(
                   center: Alignment.topCenter,
                   radius: 1.2,
-                  colors: [
-                    primary.withOpacity(_bgBreath.value),
-                    bgColor,
-                  ],
+                  colors: [primary.withOpacity(_bgBreath.value), bgColor],
                 ),
               ),
               child: child,
@@ -110,31 +112,37 @@ class _JournalMenuState extends State<JournalMenu>
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                     child: Column(
                       children: [
                         FadeTransition(
                           opacity: _card1Fade,
                           child: SlideTransition(
                             position: _card1Slide,
-                            child: _buildMenuItem(
+                            child: _buildCard(
                               context: context,
                               title: 'Mi Diario',
-                              imagePath: 'assets/images/journal_bg.png',
-                              targetScreen: JournalScreen(),
+                              subtitle: 'Tus pensamientos y reflexiones',
+                              icon: CupertinoIcons.pencil_outline,
+                              primary: primary,
+                              isDark: isDark,
+                              screen: const JournalScreen(),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14),
                         FadeTransition(
                           opacity: _card2Fade,
                           child: SlideTransition(
                             position: _card2Slide,
-                            child: _buildMenuItem(
+                            child: _buildCard(
                               context: context,
                               title: 'Diario de Gratitud',
-                              imagePath: 'assets/images/daily_reflections_bg.png',
-                              targetScreen: const GratitudeJournalScreen(),
+                              subtitle: 'Cultiva la gratitud cada día',
+                              icon: CupertinoIcons.sun_min_fill,
+                              primary: primary,
+                              isDark: isDark,
+                              screen: const GratitudeJournalScreen(),
                             ),
                           ),
                         ),
@@ -150,82 +158,74 @@ class _JournalMenuState extends State<JournalMenu>
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _buildCard({
     required BuildContext context,
     required String title,
-    required String imagePath,
-    required Widget targetScreen,
+    required String subtitle,
+    required IconData icon,
+    required Color primary,
+    required bool isDark,
+    required Widget screen,
   }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => targetScreen),
-        );
-      },
-      child: Container(
-        height: 160,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-              spreadRadius: -2,
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (_) => screen)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : Colors.white.withOpacity(0.72),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.09)
+                    : Colors.white.withOpacity(0.9),
+                width: 0.8,
+              ),
             ),
-          ],
-          image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.4),
-              BlendMode.darken,
-            ),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Stack(
-            children: [
-              // Title centered
-              Center(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 4,
-                        color: Colors.black87,
-                      ),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: primary.withOpacity(0.13),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: primary, size: 24),
+                ),
+                const SizedBox(width: 18),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : _kTextPrim,
+                            letterSpacing: -0.3,
+                          )),
+                      const SizedBox(height: 3),
+                      Text(subtitle,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark
+                                ? Colors.white38
+                                : _kTextPrim.withOpacity(0.5),
+                          )),
                     ],
                   ),
                 ),
-              ),
-              // Chevron bottom right
-              Positioned(
-                bottom: 14,
-                right: 16,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    CupertinoIcons.chevron_right,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-              ),
-            ],
+                Icon(CupertinoIcons.chevron_right,
+                    color: primary.withOpacity(0.6), size: 16),
+              ],
+            ),
           ),
         ),
       ),

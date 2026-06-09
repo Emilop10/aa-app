@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'app_colors.dart';
@@ -13,6 +15,77 @@ const _kTextPrim   = Color(0xFF431407);
 const _kTextSec    = Color(0xFF92400E);
 const _kDarkBg     = Color(0xFF1A0800);
 const _kDarkSurf   = Color(0xFF2D1506);
+
+const _kQuotes = [
+  'Un día a la vez.',
+  'Primero lo primero.',
+  'Fácilmente y sin esfuerzo.',
+  'Sigue viniendo.',
+  'Primero lo primero.',
+  'Confía en el proceso.',
+  'La gratitud es la actitud.',
+  'Deja ir y deja a Dios.',
+  'Llama antes de caer.',
+  'Esto también pasará.',
+  'No tienes que sentirte bien para hacer lo correcto.',
+  'El éxito es la suma de pequeños esfuerzos repetidos cada día.',
+  'Hoy es todo lo que tienes.',
+  'La sobriedad es un regalo que te haces a ti mismo.',
+  'No estás solo/a en este camino.',
+  'Cada día sobrio es una victoria.',
+  'La humildad es la base de la recuperación.',
+  'Acepta lo que no puedes cambiar.',
+  'El programa funciona si lo trabajas.',
+  'Mantén la mente abierta.',
+  'La recuperación es posible.',
+  'Un pensamiento a la vez.',
+  'La fe mueve montañas.',
+  'Hoy no tengo que beber.',
+  'Mi recuperación es mi responsabilidad.',
+  'La honestidad es el primer paso.',
+  'Pide ayuda antes de necesitarla.',
+  'Tus peores días sobrio son mejores que tus mejores días bebiendo.',
+  'La serenidad no es la ausencia de conflicto, sino la capacidad de manejarlo.',
+  'Perdona, no por ellos, sino por ti.',
+  'La esperanza es el ancla del alma.',
+  'Cambia lo que puedes, acepta lo que no puedes.',
+  'Cada 24 horas es una nueva oportunidad.',
+  'El amor es el motor de la recuperación.',
+  'No tienes que hacerlo todo hoy.',
+  'La paciencia es una virtud en el camino.',
+  'Conecta con otros que entienden.',
+  'La rendición no es derrota, es liberación.',
+  'Haz lo que sabes que es correcto.',
+  'La recovery es un maratón, no una carrera.',
+  'Tu historia puede ser la esperanza de alguien más.',
+  'Permanece presente.',
+  'La gratitud abre puertas.',
+  'Pequeños pasos llevan lejos.',
+  'No compares tus adentros con los afueras de otros.',
+  'Tú no causaste esto, no puedes controlarlo, no puedes curarlo.',
+  'El servicio sana.',
+  'Juntos lo logramos.',
+  'Mantente cerca del teléfono.',
+  'La oración y la meditación son herramientas, úsalas.',
+];
+
+String _todaysQuote() {
+  final dayOfYear = DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+  return _kQuotes[dayOfYear % _kQuotes.length];
+}
+
+class _SobrietyPeriod {
+  final DateTime start;
+  final DateTime end;
+  final int days;
+  _SobrietyPeriod({required this.start, required this.end, required this.days});
+  Map<String, dynamic> toJson() => {'start': start.toIso8601String(), 'end': end.toIso8601String(), 'days': days};
+  factory _SobrietyPeriod.fromJson(Map<String, dynamic> j) => _SobrietyPeriod(
+    start: DateTime.parse(j['start']),
+    end: DateTime.parse(j['end']),
+    days: j['days'],
+  );
+}
 
 class SobrietyCounter extends StatefulWidget {
   final VoidCallback onDateChanged;
@@ -31,6 +104,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   DateTime? sobrietyDate;
   _TimeBreakdown timeBreakdown = _TimeBreakdown(years: 0, months: 0, days: 0, totalDays: 0);
   Timer? _timer;
+  List<_SobrietyPeriod> _history = [];
 
   // Pulso suave del número
   late AnimationController _pulseController;
@@ -105,6 +179,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
     _card3Slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _entryController, curve: const Interval(0.6, 1.0, curve: Curves.easeOut)));
 
     _loadSobrietyDate();
+    _loadHistory();
   }
 
   @override
@@ -141,6 +216,16 @@ class _SobrietyCounterState extends State<SobrietyCounter>
       _entryController.forward();
     }
   }
+
+  Future<void> _loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('sobriety_history');
+    if (raw != null && mounted) {
+      final list = (jsonDecode(raw) as List).map((j) => _SobrietyPeriod.fromJson(j)).toList();
+      setState(() => _history = list);
+    }
+  }
+
 
   void _startTimer() {
     _timer?.cancel();
@@ -189,6 +274,18 @@ class _SobrietyCounterState extends State<SobrietyCounter>
                     padding: EdgeInsets.zero,
                     onPressed: () async {
                       Navigator.pop(ctx);
+                      // Save old period to history
+                      if (sobrietyDate != null) {
+                        final period = _SobrietyPeriod(
+                          start: sobrietyDate!,
+                          end: DateTime.now(),
+                          days: DateTime.now().difference(sobrietyDate!).inDays,
+                        );
+                        final newHistory = [period, ..._history];
+                        setState(() => _history = newHistory);
+                        final prefs2 = await SharedPreferences.getInstance();
+                        await prefs2.setString('sobriety_history', jsonEncode(newHistory.map((p) => p.toJson()).toList()));
+                      }
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setString('sobrietyDate', tempDate.toIso8601String());
                       setState(() => sobrietyDate = tempDate);
@@ -327,7 +424,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
   Widget _buildBody(bool isDark, Color textPrim, Color surfColor, Color borderColor, Color primary) {
     final tb = timeBreakdown;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -369,7 +466,7 @@ class _SobrietyCounterState extends State<SobrietyCounter>
             opacity: _card2Fade,
             child: SlideTransition(
               position: _card2Slide,
-              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary),
+              child: _QuoteCard(isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, primary: primary, quote: _todaysQuote()),
             ),
           ),
           const SizedBox(height: 12),
@@ -380,10 +477,173 @@ class _SobrietyCounterState extends State<SobrietyCounter>
               child: _StartDateCard(date: sobrietyDate!, isDark: isDark, surfColor: surfColor, borderColor: borderColor, textPrim: textPrim, onEdit: () => _setSobrietyDate(context), primary: primary),
             ),
           ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => _showSosModal(context, primary, isDark),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFFEF4444).withOpacity(0.12) : const Color(0xFFEF4444).withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.35), width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.15), shape: BoxShape.circle),
+                        child: const Icon(CupertinoIcons.phone_fill, color: Color(0xFFEF4444), size: 20),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Necesito apoyo ahora',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: const Color(0xFFEF4444), letterSpacing: -0.2, decoration: TextDecoration.none)),
+                            const SizedBox(height: 2),
+                            Text('Contactos, línea A.A. y frases de apoyo',
+                              style: TextStyle(fontSize: 12, color: const Color(0xFFEF4444).withOpacity(0.7), decoration: TextDecoration.none)),
+                          ],
+                        ),
+                      ),
+                      const Icon(CupertinoIcons.chevron_right, color: Color(0xFFEF4444), size: 15),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
+  void _showSosModal(BuildContext context, Color primary, bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('support_contacts');
+    final contacts = raw != null
+      ? (jsonDecode(raw) as List).cast<Map<String, dynamic>>()
+      : <Map<String, dynamic>>[];
+
+    if (!mounted) return;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFBF5),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(margin: const EdgeInsets.symmetric(vertical: 14), width: 36, height: 4,
+              decoration: BoxDecoration(color: isDark ? Colors.white24 : Colors.black12, borderRadius: BorderRadius.circular(2))),
+            Text('Necesito apoyo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.2), width: 0.8),
+              ),
+              child: Column(
+                children: [
+                  _sosPhrase('Respira hondo. Este momento también pasará.', isDark),
+                  const SizedBox(height: 10),
+                  _sosPhrase('Llama antes de tomar la primera copa.', isDark),
+                  const SizedBox(height: 10),
+                  _sosPhrase('No tienes que hacerlo solo/a.', isDark),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => launchUrl(Uri(scheme: 'tel', path: '8002900024')),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: primary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: primary.withOpacity(0.3), width: 0.8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(CupertinoIcons.phone_circle_fill, color: primary, size: 22),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Línea Nacional A.A. México', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+                        Text('800 290 0024 · Gratuita 24/7', style: TextStyle(fontSize: 12, color: primary, decoration: TextDecoration.none)),
+                      ],
+                    )),
+                    Icon(CupertinoIcons.chevron_right, color: primary.withOpacity(0.5), size: 14),
+                  ],
+                ),
+              ),
+            ),
+            if (contacts.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Align(alignment: Alignment.centerLeft,
+                child: Text('Mis contactos de apoyo',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.5,
+                    color: isDark ? Colors.white38 : _kTextSec, decoration: TextDecoration.none))),
+              const SizedBox(height: 10),
+              ...contacts.map((c) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GestureDetector(
+                  onTap: () => launchUrl(Uri(scheme: 'tel', path: c['phone'] as String)),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.9), width: 0.8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(width: 36, height: 36,
+                          decoration: BoxDecoration(color: primary.withOpacity(0.13), shape: BoxShape.circle),
+                          child: Center(child: Text((c['name'] as String)[0].toUpperCase(),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: primary, decoration: TextDecoration.none)))),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(c['name'] as String, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? Colors.white : _kTextPrim, decoration: TextDecoration.none)),
+                            Text(c['phone'] as String, style: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : _kTextSec, decoration: TextDecoration.none)),
+                          ],
+                        )),
+                        Icon(CupertinoIcons.phone_fill, color: primary, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+              )).toList(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sosPhrase(String text, bool isDark) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(CupertinoIcons.checkmark_circle_fill, color: const Color(0xFFEF4444), size: 16),
+      const SizedBox(width: 8),
+      Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : _kTextPrim.withOpacity(0.8), height: 1.4, decoration: TextDecoration.none))),
+    ],
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -613,7 +873,8 @@ class _MiniStatCard extends StatelessWidget {
 class _QuoteCard extends StatelessWidget {
   final bool isDark;
   final Color surfColor, borderColor, textPrim, primary;
-  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary});
+  final String quote;
+  const _QuoteCard({required this.isDark, required this.surfColor, required this.borderColor, required this.textPrim, required this.primary, required this.quote});
 
   @override
   Widget build(BuildContext context) {
@@ -637,7 +898,7 @@ class _QuoteCard extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Text('Un día a la vez', style: TextStyle(fontSize: 17, fontStyle: FontStyle.italic, color: textPrim, fontWeight: FontWeight.w500, letterSpacing: 0.1, decoration: TextDecoration.none)),
+                child: Text(quote, style: TextStyle(fontSize: 17, fontStyle: FontStyle.italic, color: textPrim, fontWeight: FontWeight.w500, letterSpacing: 0.1, decoration: TextDecoration.none)),
               ),
             ],
           ),
