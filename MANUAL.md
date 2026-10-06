@@ -28,12 +28,14 @@ Manual completo de la aplicación: qué hace, cómo está construida, cómo se d
 18. [Almacenamiento de datos y privacidad](#18-almacenamiento-de-datos-y-privacidad)
 19. [Derechos de autor y disclaimers](#19-derechos-de-autor-y-disclaimers)
 20. [Widget de iOS (pendiente)](#20-widget-de-ios-pendiente)
-21. [Desarrollo local](#21-desarrollo-local)
-22. [Publicación en TestFlight](#22-publicación-en-testflight)
-23. [Errores conocidos y soluciones](#23-errores-conocidos-y-soluciones)
-24. [Historia del desarrollo](#24-historia-del-desarrollo)
-25. [Pendientes e ideas futuras](#25-pendientes-e-ideas-futuras)
-26. [Referencias](#26-referencias)
+21. [Herramental de Claude Code](#21-herramental-de-claude-code)
+22. [Graphify y la red neuronal 3D](#22-graphify-y-la-red-neuronal-3d)
+23. [Desarrollo local](#23-desarrollo-local)
+24. [Publicación en TestFlight](#24-publicación-en-testflight)
+25. [Errores conocidos y soluciones](#25-errores-conocidos-y-soluciones)
+26. [Historia del desarrollo](#26-historia-del-desarrollo)
+27. [Pendientes e ideas futuras](#27-pendientes-e-ideas-futuras)
+28. [Referencias](#28-referencias)
 
 ---
 
@@ -84,6 +86,14 @@ Todo funciona **sin cuenta, sin servidor y sin conexión**: los datos viven solo
 ```
 aa-app/
 ├── MANUAL.md                       ← este documento
+├── .claude/settings.json           ← plugins de Claude Code del proyecto
+├── scripts/
+│   └── verificar-herramental.sh    ← revisa que el entorno esté completo
+├── graphify-out/
+│   ├── graph.json                  ← grafo de conocimiento del repo
+│   ├── GRAPH_REPORT.md             ← reporte de Graphify
+│   ├── graph.html                  ← vista 2D que genera Graphify
+│   └── red-neuronal-3d.html        ← visualización 3D interactiva
 └── app/
     ├── pubspec.yaml                ← dependencias, versión, assets
     ├── assets/
@@ -317,7 +327,116 @@ Todo en `SharedPreferences`, local al dispositivo:
 1. Subir el SDK a Dart 3 o escribir la información al App Group con un canal nativo propio.
 2. En Xcode: crear target *Widget Extension* y activar *App Groups* en Runner y en el widget.
 
-## 21. Desarrollo local
+## 21. Herramental de Claude Code
+
+El repositorio trae configurado el mismo entorno de Claude Code que usamos en otros proyectos (instalado el 6 de octubre de 2026).
+
+### 21.1 Plugins (viajan con el repo)
+
+Declarados en `.claude/settings.json`. Cada sesión nueva los vuelve a cargar sola.
+
+| Plugin | Marketplace | Para qué sirve |
+|---|---|---|
+| the-architect | `soyenriquerocha` | Planear proyectos (`/architect`, `/architect-quick`, `/architect-brownfield`, `/architect-next`, `/architect-audit`, `/architect-refresh`) |
+| ui-ux-pro-max | `ui-ux-pro-max-skill` | Diseño de interfaces, sistemas de diseño, marca |
+| superpowers | `claude-plugins-official` | Método de trabajo: lluvia de ideas, planes, TDD, depuración, revisión de código |
+| frontend-design | `claude-plugins-official` | Diseño de frontend |
+| playwright | `claude-plugins-official` | Controlar un navegador para probar páginas |
+| ralph-loop | `claude-plugins-official` | Ciclos de trabajo repetidos (`/ralph-loop`, `/cancel-ralph`) |
+| context7 | `claude-plugins-official` | Documentación actualizada de librerías (útil para Flutter y sus paquetes) |
+| marketing-skills | `marketingskills` | Marketing, copy, CRO |
+| claude-seo-ai | `claude-seo-ai` | Auditoría SEO (pide configurarse con `/plugin configure claude-seo-ai@claude-seo-ai`) |
+| claude-ads | `tododeia-claude-ads` | Campañas de pauta |
+
+> Ojo con los nombres: el marketplace de The Architect se llama `soyenriquerocha` y el de Claude Ads `tododeia-claude-ads`, no como sus repositorios.
+
+### 21.2 Lo que NO viaja con el repo
+
+Vive en la máquina o el contenedor; en un entorno nuevo hay que reinstalarlo:
+
+| Herramienta | Dónde vive | Cómo se instala |
+|---|---|---|
+| 282 agentes de The Agency | `~/.claude/agents/` | `git clone https://github.com/msitarzewski/agency-agents.git /tmp/agency-agents && cd /tmp/agency-agents && ./scripts/install.sh --tool claude-code` |
+| Graphify (CLI y skill) | `~/.local/bin`, `~/.claude/skills/` | `uv tool install graphifyy && graphify install` |
+| Scrapling | Python | `pip install scrapling` |
+| WhatsApp AgentKit | carpeta aparte | `git clone https://github.com/Hainrixz/whatsapp-agentkit.git && cd whatsapp-agentkit && bash start.sh` (necesita `ANTHROPIC_API_KEY` en `.env`) |
+| Auto-CRM | carpeta aparte | `git clone https://github.com/Hainrixz/auto-crm.git && cd auto-crm && npm install && npm run init:seed` |
+
+WhatsApp AgentKit y Auto-CRM son aplicaciones independientes, no plugins, y no forman parte de la app de sobriedad.
+
+### 21.3 Verificar el entorno
+
+```bash
+bash scripts/verificar-herramental.sh
+```
+
+Revisa por nombre cada plugin contra el registro en disco (`~/.claude/plugins/installed_plugins.json`), cuenta los agentes (mínimo 273) y comprueba Graphify y Scrapling. Si falta algo, imprime los comandos exactos para instalarlo. Termina con código `0` si todo está listo, `1` si falta algo y `2` si no pudo leer el estado.
+
+Se puede personalizar sin editarlo:
+
+```bash
+PLUGINS_ESPERADOS="superpowers context7" bash scripts/verificar-herramental.sh
+AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
+```
+
+## 22. Graphify y la red neuronal 3D
+
+[Graphify](https://pypi.org/project/graphifyy/) convierte el repositorio en un grafo de conocimiento: cada clase, función, pantalla, sección del manual y paquete es un nodo, y cada relación (importa, llama, define, navega, contiene) es una conexión.
+
+### 22.1 Estado del grafo (6 de octubre de 2026)
+
+- **951 nodos, 1,279 conexiones, 42 comunidades**, a partir de 60 archivos.
+- 99 % de las relaciones extraídas directo del código; 1 % inferidas.
+- Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (55), `journal_screen.dart` y `daily_readings.dart` (52).
+
+| Zona | Nodos |
+|---|---|
+| App (Flutter, `app/lib/`) | 617 |
+| Paquetes externos | 153 |
+| Escritorio y web (plantillas de Flutter) | 109 |
+| Manual y scripts | 43 |
+| iOS y widget | 24 |
+| Android | 5 |
+
+### 22.2 Archivos
+
+| Archivo | Qué es |
+|---|---|
+| `graphify-out/graph.json` | El grafo completo |
+| `graphify-out/GRAPH_REPORT.md` | Reporte: comunidades, nodos principales, frescura |
+| `graphify-out/graph.html` | Vista 2D que genera Graphify |
+| `graphify-out/red-neuronal-3d.html` | Visualización 3D interactiva tipo red cerebral |
+
+La carpeta `graphify-out/cache/` se ignora en git.
+
+### 22.3 Visualización 3D
+
+Abre `graphify-out/red-neuronal-3d.html` en el navegador (necesita internet para cargar la librería 3D) o la versión publicada: https://claude.ai/artifact/2jd1yjjXMpEfAVmshahV9p
+
+- Arrastra para girar; rueda o pellizco para acercar. Gira sola hasta que la tocas.
+- Pasa el cursor por un nodo para iluminar sus conexiones.
+- Toca un nodo para acercarte y ver su ficha: archivo, comunidad y la lista de conexiones (cada una lleva a ese nodo).
+- Busca por nombre o archivo.
+- Enciende o apaga zonas del cerebro (App, Paquetes, iOS, Android, Escritorio, Manual).
+
+### 22.4 Actualizar el grafo
+
+Después de cambiar código:
+
+```bash
+graphify update .
+```
+
+No usa IA ni cuesta nada. Para regenerar la visualización 3D con el grafo nuevo, pídeselo a Claude (se arma a partir de `graph.json`).
+
+Otros comandos útiles:
+
+```bash
+graphify explain "daily_readings.dart"                 # explica un nodo y sus vecinos
+graphify path "SobrietyCounterApp" "DailyReadings"     # camino más corto entre dos nodos
+```
+
+## 23. Desarrollo local
 
 ```bash
 git clone https://github.com/emilop10/aa-app.git
@@ -330,7 +449,7 @@ flutter run            # o: flutter run --release en iPhone conectado
 
 Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 
-## 22. Publicación en TestFlight
+## 24. Publicación en TestFlight
 
 1. Subir el número de build en `pubspec.yaml` (`1.0.0+6` → `1.0.0+7`).
 2. `flutter pub get` y `open ios/Runner.xcworkspace` (nunca `.xcodeproj`).
@@ -340,7 +459,7 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 6. Organizer → **Distribute App → TestFlight & App Store → Upload**.
 7. En App Store Connect → TestFlight: esperar procesamiento, responder cifrado ("No") y asignar testers.
 
-## 23. Errores conocidos y soluciones
+## 25. Errores conocidos y soluciones
 
 | Error | Causa | Solución |
 |---|---|---|
@@ -353,7 +472,7 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 | 🔥 encima del título | Título en `FlexibleSpaceBar` | Título en `SliverAppBar.title` |
 | Subrayados amarillos en textos | Texto sin `Material` | `TextDecoration.none` |
 
-## 24. Historia del desarrollo
+## 26. Historia del desarrollo
 
 **Abril 2026 — Inicio**
 - Primera versión: contador, reflexiones diarias y menú con imágenes.
@@ -380,9 +499,13 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - Se retiró `home_widget`; widget queda pendiente.
 - Ajustes previos a TestFlight: SOS alcanzable, racha sin encimarse, se quitó "Etapas anteriores".
 
-**Octubre 2026** — Se documenta todo en este manual.
+**6 de octubre 2026 — Documentación y herramental**
+- Se crea este manual.
+- Se instala el entorno de Claude Code: 10 plugins con su `.claude/settings.json`, 282 agentes, Graphify, Scrapling, WhatsApp AgentKit y Auto-CRM.
+- Se agrega `scripts/verificar-herramental.sh`.
+- Se genera el grafo con Graphify y la visualización 3D de la red neuronal del proyecto.
 
-## 25. Pendientes e ideas futuras
+## 27. Pendientes e ideas futuras
 
 - [ ] Subir build 7 a TestFlight y recoger retroalimentación.
 - [ ] Cambiar `CFBundleDisplayName` (hoy dice "App") y el `name` de `pubspec.yaml`.
@@ -391,8 +514,10 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - [ ] Borrar assets que ya no se usan (`images/*_bg.png`, PDFs, fuentes Times) para aligerar la app.
 - [ ] Buscador de reunión cercana / enlaces oficiales.
 - [ ] Pruebas automatizadas básicas en `app/test/`.
+- [ ] Configurar claude-seo-ai (`/plugin configure`).
+- [ ] Correr `graphify update .` después de cada cambio grande y regenerar la vista 3D.
 
-## 26. Referencias
+## 28. Referencias
 
 - Alcohólicos Anónimos (sitio oficial): https://www.aa.org
 - Central Mexicana de Servicios Generales de A.A.: https://www.aa.org.mx
@@ -404,3 +529,8 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - Apple TestFlight: https://developer.apple.com/testflight/
 - Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
 - WidgetKit: https://developer.apple.com/documentation/widgetkit
+- Graphify: https://pypi.org/project/graphifyy/
+- 3d-force-graph (visualización 3D): https://github.com/vasturiano/3d-force-graph
+- The Agency (agentes): https://github.com/msitarzewski/agency-agents
+- Plugins oficiales de Claude Code: https://github.com/anthropics/claude-plugins-official
+- Superpowers: https://github.com/obra/superpowers
