@@ -383,18 +383,18 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 
 [Graphify](https://pypi.org/project/graphifyy/) convierte el repositorio en un grafo de conocimiento: cada clase, función, pantalla, sección del manual y paquete es un nodo, y cada relación (importa, llama, define, navega, contiene) es una conexión.
 
-### 22.1 Estado del grafo (6 de octubre de 2026)
+### 22.1 Estado del grafo (actualizado el 6 de octubre de 2026)
 
-- **951 nodos, 1,279 conexiones, 42 comunidades**, a partir de 60 archivos.
+- **960 nodos, 1,289 conexiones, 40 comunidades**, a partir de 60 archivos.
 - 99 % de las relaciones extraídas directo del código; 1 % inferidas.
-- Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (55), `journal_screen.dart` y `daily_readings.dart` (52).
+- Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (56), `journal_screen.dart` y `daily_readings.dart` (52).
 
 | Zona | Nodos |
 |---|---|
 | App (Flutter, `app/lib/`) | 617 |
 | Paquetes externos | 153 |
 | Escritorio y web (plantillas de Flutter) | 109 |
-| Manual y scripts | 43 |
+| Manual y scripts | 52 |
 | iOS y widget | 24 |
 | Android | 5 |
 
@@ -407,7 +407,7 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 | `graphify-out/graph.html` | Vista 2D que genera Graphify |
 | `graphify-out/red-neuronal-3d.html` | Visualización 3D interactiva tipo red cerebral |
 
-La carpeta `graphify-out/cache/` se ignora en git.
+Se ignoran en git la carpeta `graphify-out/cache/` y los respaldos con fecha (`graphify-out/2026-…/`) que Graphify crea en cada actualización.
 
 ### 22.3 Visualización 3D
 
@@ -504,6 +504,7 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - Se instala el entorno de Claude Code: 10 plugins con su `.claude/settings.json`, 282 agentes, Graphify, Scrapling, WhatsApp AgentKit y Auto-CRM.
 - Se agrega `scripts/verificar-herramental.sh`.
 - Se genera el grafo con Graphify y la visualización 3D de la red neuronal del proyecto.
+- Se integra `main` en la rama de trabajo, se actualiza el grafo con el manual completo y se hace merge a `main`.
 
 ## 27. Pendientes e ideas futuras
 

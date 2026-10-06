@@ -2458,13 +2458,13 @@
       "source_location": "L28"
     },
     {
-      "id": "focusnode",
-      "label": "FocusNode",
+      "id": "dart_convert",
+      "label": "dart:convert",
       "_origin": "ast",
       "community": 10,
       "community_name": "journal_screen.dart",
       "file_type": "code",
-      "norm_label": "focusnode",
+      "norm_label": "dart:convert",
       "source_file": null,
       "source_location": null
     },
@@ -2601,28 +2601,6 @@
       "source_location": "L17"
     },
     {
-      "id": "app_lib_literature_extras_screens_glossaryscreen",
-      "label": "GlossaryScreen",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "literature_extras_screens.dart",
-      "file_type": "code",
-      "norm_label": "glossaryscreen",
-      "source_file": "app/lib/literature_extras_screens.dart",
-      "source_location": "L343"
-    },
-    {
-      "id": "app_lib_literature_extras_screens_glossaryscreenstate",
-      "label": "_GlossaryScreenState",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "literature_extras_screens.dart",
-      "file_type": "code",
-      "norm_label": "_glossaryscreenstate",
-      "source_file": "app/lib/literature_extras_screens.dart",
-      "source_location": "L349"
-    },
-    {
       "id": "app_lib_literature_extras_screens_glossaryterms",
       "label": "_glossaryTerms",
       "_origin": "ast",
@@ -2709,28 +2687,6 @@
       "norm_label": "_ktextprim",
       "source_file": "app/lib/literature_extras_screens.dart",
       "source_location": "L10"
-    },
-    {
-      "id": "app_lib_literature_extras_screens_littextscreen",
-      "label": "LitTextScreen",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "literature_extras_screens.dart",
-      "file_type": "code",
-      "norm_label": "littextscreen",
-      "source_file": "app/lib/literature_extras_screens.dart",
-      "source_location": "L14"
-    },
-    {
-      "id": "app_lib_literature_extras_screens_littextscreenstate",
-      "label": "_LitTextScreenState",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "literature_extras_screens.dart",
-      "file_type": "code",
-      "norm_label": "_littextscreenstate",
-      "source_file": "app/lib/literature_extras_screens.dart",
-      "source_location": "L32"
     },
     {
       "id": "app_lib_literature_extras_screens_loadprefs",
@@ -3227,7 +3183,7 @@
       "node_kind": "heading",
       "norm_label": "10. logros",
       "source_file": "MANUAL.md",
-      "source_location": "L185"
+      "source_location": "L195"
     },
     {
       "id": "manual_11_1_libro_azul",
@@ -3239,7 +3195,7 @@
       "node_kind": "heading",
       "norm_label": "11.1 libro azul",
       "source_file": "MANUAL.md",
-      "source_location": "L219"
+      "source_location": "L229"
     },
     {
       "id": "manual_11_2_12_pasos_y_12_tradiciones",
@@ -3251,7 +3207,7 @@
       "node_kind": "heading",
       "norm_label": "11.2 12 pasos y 12 tradiciones",
       "source_file": "MANUAL.md",
-      "source_location": "L225"
+      "source_location": "L235"
     },
     {
       "id": "manual_11_3_oraciones",
@@ -3263,7 +3219,7 @@
       "node_kind": "heading",
       "norm_label": "11.3 oraciones",
       "source_file": "MANUAL.md",
-      "source_location": "L230"
+      "source_location": "L240"
     },
     {
       "id": "manual_11_4_textos_breves",
@@ -3275,7 +3231,7 @@
       "node_kind": "heading",
       "norm_label": "11.4 textos breves",
       "source_file": "MANUAL.md",
-      "source_location": "L233"
+      "source_location": "L243"
     },
     {
       "id": "manual_11_literatura",
@@ -3287,7 +3243,7 @@
       "node_kind": "heading",
       "norm_label": "11. literatura",
       "source_file": "MANUAL.md",
-      "source_location": "L204"
+      "source_location": "L214"
     },
     {
       "id": "manual_12_reflexiones_diarias",
@@ -3299,7 +3255,7 @@
       "node_kind": "heading",
       "norm_label": "12. reflexiones diarias",
       "source_file": "MANUAL.md",
-      "source_location": "L236"
+      "source_location": "L246"
     },
     {
       "id": "manual_13_escritura_diario_y_gratitud",
@@ -3311,7 +3267,7 @@
       "node_kind": "heading",
       "norm_label": "13. escritura (diario y gratitud)",
       "source_file": "MANUAL.md",
-      "source_location": "L244"
+      "source_location": "L254"
     },
     {
       "id": "manual_14_apoyo_contactos_y_mi_historia",
@@ -3323,7 +3279,7 @@
       "node_kind": "heading",
       "norm_label": "14. apoyo (contactos y mi historia)",
       "source_file": "MANUAL.md",
-      "source_location": "L251"
+      "source_location": "L261"
     },
     {
       "id": "manual_15_ajustes",
@@ -3335,7 +3291,7 @@
       "node_kind": "heading",
       "norm_label": "15. ajustes",
       "source_file": "MANUAL.md",
-      "source_location": "L256"
+      "source_location": "L266"
     },
     {
       "id": "manual_16_notificaciones",
@@ -3347,7 +3303,7 @@
       "node_kind": "heading",
       "norm_label": "16. notificaciones",
       "source_file": "MANUAL.md",
-      "source_location": "L265"
+      "source_location": "L275"
     },
     {
       "id": "manual_17_sistema_de_dise\u00f1o",
@@ -3359,7 +3315,7 @@
       "node_kind": "heading",
       "norm_label": "17. sistema de diseno",
       "source_file": "MANUAL.md",
-      "source_location": "L274"
+      "source_location": "L284"
     },
     {
       "id": "manual_18_almacenamiento_de_datos_y_privacidad",
@@ -3371,7 +3327,7 @@
       "node_kind": "heading",
       "norm_label": "18. almacenamiento de datos y privacidad",
       "source_file": "MANUAL.md",
-      "source_location": "L285"
+      "source_location": "L295"
     },
     {
       "id": "manual_19_derechos_de_autor_y_disclaimers",
@@ -3383,7 +3339,7 @@
       "node_kind": "heading",
       "norm_label": "19. derechos de autor y disclaimers",
       "source_file": "MANUAL.md",
-      "source_location": "L305"
+      "source_location": "L315"
     },
     {
       "id": "manual_1_qu\u00e9_es_la_app",
@@ -3395,7 +3351,7 @@
       "node_kind": "heading",
       "norm_label": "1. que es la app",
       "source_file": "MANUAL.md",
-      "source_location": "L40"
+      "source_location": "L42"
     },
     {
       "id": "manual_20_widget_de_ios_pendiente",
@@ -3407,79 +3363,187 @@
       "node_kind": "heading",
       "norm_label": "20. widget de ios (pendiente)",
       "source_file": "MANUAL.md",
-      "source_location": "L312"
+      "source_location": "L322"
     },
     {
-      "id": "manual_21_desarrollo_local",
-      "label": "21. Desarrollo local",
+      "id": "manual_21_1_plugins_viajan_con_el_repo",
+      "label": "21.1 Plugins (viajan con el repo)",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "21. desarrollo local",
+      "norm_label": "21.1 plugins (viajan con el repo)",
       "source_file": "MANUAL.md",
-      "source_location": "L320"
+      "source_location": "L334"
     },
     {
-      "id": "manual_22_publicaci\u00f3n_en_testflight",
-      "label": "22. Publicaci\u00f3n en TestFlight",
+      "id": "manual_21_2_lo_que_no_viaja_con_el_repo",
+      "label": "21.2 Lo que NO viaja con el repo",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "22. publicacion en testflight",
+      "norm_label": "21.2 lo que no viaja con el repo",
       "source_file": "MANUAL.md",
-      "source_location": "L333"
+      "source_location": "L353"
     },
     {
-      "id": "manual_23_errores_conocidos_y_soluciones",
-      "label": "23. Errores conocidos y soluciones",
+      "id": "manual_21_3_verificar_el_entorno",
+      "label": "21.3 Verificar el entorno",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "23. errores conocidos y soluciones",
+      "norm_label": "21.3 verificar el entorno",
       "source_file": "MANUAL.md",
-      "source_location": "L343"
+      "source_location": "L367"
     },
     {
-      "id": "manual_24_historia_del_desarrollo",
-      "label": "24. Historia del desarrollo",
+      "id": "manual_21_herramental_de_claude_code",
+      "label": "21. Herramental de Claude Code",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "24. historia del desarrollo",
+      "norm_label": "21. herramental de claude code",
       "source_file": "MANUAL.md",
-      "source_location": "L356"
+      "source_location": "L330"
     },
     {
-      "id": "manual_25_pendientes_e_ideas_futuras",
-      "label": "25. Pendientes e ideas futuras",
+      "id": "manual_22_1_estado_del_grafo_6_de_octubre_de_2026",
+      "label": "22.1 Estado del grafo (6 de octubre de 2026)",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "25. pendientes e ideas futuras",
+      "norm_label": "22.1 estado del grafo (6 de octubre de 2026)",
       "source_file": "MANUAL.md",
-      "source_location": "L385"
+      "source_location": "L386"
     },
     {
-      "id": "manual_26_referencias",
-      "label": "26. Referencias",
+      "id": "manual_22_2_archivos",
+      "label": "22.2 Archivos",
       "_origin": "ast",
       "community": 13,
       "community_name": "Manual de la App de Sobriedad (A.A.)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "26. referencias",
+      "norm_label": "22.2 archivos",
       "source_file": "MANUAL.md",
-      "source_location": "L395"
+      "source_location": "L401"
+    },
+    {
+      "id": "manual_22_3_visualizaci\u00f3n_3d",
+      "label": "22.3 Visualizaci\u00f3n 3D",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "22.3 visualizacion 3d",
+      "source_file": "MANUAL.md",
+      "source_location": "L412"
+    },
+    {
+      "id": "manual_22_4_actualizar_el_grafo",
+      "label": "22.4 Actualizar el grafo",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "22.4 actualizar el grafo",
+      "source_file": "MANUAL.md",
+      "source_location": "L422"
+    },
+    {
+      "id": "manual_22_graphify_y_la_red_neuronal_3d",
+      "label": "22. Graphify y la red neuronal 3D",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "22. graphify y la red neuronal 3d",
+      "source_file": "MANUAL.md",
+      "source_location": "L382"
+    },
+    {
+      "id": "manual_23_desarrollo_local",
+      "label": "23. Desarrollo local",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "23. desarrollo local",
+      "source_file": "MANUAL.md",
+      "source_location": "L439"
+    },
+    {
+      "id": "manual_24_publicaci\u00f3n_en_testflight",
+      "label": "24. Publicaci\u00f3n en TestFlight",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "24. publicacion en testflight",
+      "source_file": "MANUAL.md",
+      "source_location": "L452"
+    },
+    {
+      "id": "manual_25_errores_conocidos_y_soluciones",
+      "label": "25. Errores conocidos y soluciones",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "25. errores conocidos y soluciones",
+      "source_file": "MANUAL.md",
+      "source_location": "L462"
+    },
+    {
+      "id": "manual_26_historia_del_desarrollo",
+      "label": "26. Historia del desarrollo",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "26. historia del desarrollo",
+      "source_file": "MANUAL.md",
+      "source_location": "L475"
+    },
+    {
+      "id": "manual_27_pendientes_e_ideas_futuras",
+      "label": "27. Pendientes e ideas futuras",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "27. pendientes e ideas futuras",
+      "source_file": "MANUAL.md",
+      "source_location": "L508"
+    },
+    {
+      "id": "manual_28_referencias",
+      "label": "28. Referencias",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "Manual de la App de Sobriedad (A.A.)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "28. referencias",
+      "source_file": "MANUAL.md",
+      "source_location": "L520"
     },
     {
       "id": "manual_2_principios_y_prop\u00f3sito",
@@ -3491,7 +3555,7 @@
       "node_kind": "heading",
       "norm_label": "2. principios y proposito",
       "source_file": "MANUAL.md",
-      "source_location": "L54"
+      "source_location": "L56"
     },
     {
       "id": "manual_3_stack_tecnol\u00f3gico",
@@ -3503,7 +3567,7 @@
       "node_kind": "heading",
       "norm_label": "3. stack tecnologico",
       "source_file": "MANUAL.md",
-      "source_location": "L62"
+      "source_location": "L64"
     },
     {
       "id": "manual_4_estructura_del_repositorio",
@@ -3515,7 +3579,7 @@
       "node_kind": "heading",
       "norm_label": "4. estructura del repositorio",
       "source_file": "MANUAL.md",
-      "source_location": "L82"
+      "source_location": "L84"
     },
     {
       "id": "manual_6_navegaci\u00f3n_principal",
@@ -3527,7 +3591,7 @@
       "node_kind": "heading",
       "norm_label": "6. navegacion principal",
       "source_file": "MANUAL.md",
-      "source_location": "L140"
+      "source_location": "L150"
     },
     {
       "id": "manual_7_instructivo_inicial_onboarding",
@@ -3539,7 +3603,7 @@
       "node_kind": "heading",
       "norm_label": "7. instructivo inicial (onboarding)",
       "source_file": "MANUAL.md",
-      "source_location": "L155"
+      "source_location": "L165"
     },
     {
       "id": "manual_8_inicio_contador_de_sobriedad",
@@ -3551,7 +3615,7 @@
       "node_kind": "heading",
       "norm_label": "8. inicio \u2014 contador de sobriedad",
       "source_file": "MANUAL.md",
-      "source_location": "L168"
+      "source_location": "L178"
     },
     {
       "id": "manual_9_bot\u00f3n_sos_apoyo_inmediato",
@@ -3563,7 +3627,7 @@
       "node_kind": "heading",
       "norm_label": "9. boton sos / apoyo inmediato",
       "source_file": "MANUAL.md",
-      "source_location": "L177"
+      "source_location": "L187"
     },
     {
       "id": "manual_archivos_de_lib",
@@ -3575,7 +3639,7 @@
       "node_kind": "heading",
       "norm_label": "archivos de `lib/`",
       "source_file": "MANUAL.md",
-      "source_location": "L103"
+      "source_location": "L113"
     },
     {
       "id": "manual_manual_de_la_app_de_sobriedad_a_a",
@@ -3668,6 +3732,28 @@
       "source_location": "L436"
     },
     {
+      "id": "app_lib_gratitude_journal_screen_gratitudejournalscreen",
+      "label": "GratitudeJournalScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "gratitudejournalscreen",
+      "source_file": "app/lib/gratitude_journal_screen.dart",
+      "source_location": "L36"
+    },
+    {
+      "id": "app_lib_gratitude_journal_screen_gratitudejournalscreenstate",
+      "label": "_GratitudeJournalScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_gratitudejournalscreenstate",
+      "source_file": "app/lib/gratitude_journal_screen.dart",
+      "source_location": "L42"
+    },
+    {
       "id": "app_lib_journal_menu_journalmenu",
       "label": "JournalMenu",
       "_origin": "ast",
@@ -3712,6 +3798,28 @@
       "source_location": "L381"
     },
     {
+      "id": "app_lib_journal_screen_journalscreen",
+      "label": "JournalScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "journalscreen",
+      "source_file": "app/lib/journal_screen.dart",
+      "source_location": "L45"
+    },
+    {
+      "id": "app_lib_journal_screen_journalscreenstate",
+      "label": "_JournalScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_journalscreenstate",
+      "source_file": "app/lib/journal_screen.dart",
+      "source_location": "L51"
+    },
+    {
       "id": "app_lib_libro_azul_screen_libroazulscreen",
       "label": "LibroAzulScreen",
       "_origin": "ast",
@@ -3732,6 +3840,50 @@
       "norm_label": "_libroazulscreenstate",
       "source_file": "app/lib/libro_azul_screen.dart",
       "source_location": "L44"
+    },
+    {
+      "id": "app_lib_literature_extras_screens_glossaryscreen",
+      "label": "GlossaryScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "glossaryscreen",
+      "source_file": "app/lib/literature_extras_screens.dart",
+      "source_location": "L343"
+    },
+    {
+      "id": "app_lib_literature_extras_screens_glossaryscreenstate",
+      "label": "_GlossaryScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_glossaryscreenstate",
+      "source_file": "app/lib/literature_extras_screens.dart",
+      "source_location": "L349"
+    },
+    {
+      "id": "app_lib_literature_extras_screens_littextscreen",
+      "label": "LitTextScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "littextscreen",
+      "source_file": "app/lib/literature_extras_screens.dart",
+      "source_location": "L14"
+    },
+    {
+      "id": "app_lib_literature_extras_screens_littextscreenstate",
+      "label": "_LitTextScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_littextscreenstate",
+      "source_file": "app/lib/literature_extras_screens.dart",
+      "source_location": "L32"
     },
     {
       "id": "app_lib_literature_menu_literaturemenu",
@@ -3778,6 +3930,50 @@
       "source_location": "L77"
     },
     {
+      "id": "app_lib_prayers_screen_prayerdetailscreen",
+      "label": "_PrayerDetailScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_prayerdetailscreen",
+      "source_file": "app/lib/prayers_screen.dart",
+      "source_location": "L283"
+    },
+    {
+      "id": "app_lib_prayers_screen_prayerdetailscreenstate",
+      "label": "_PrayerDetailScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_prayerdetailscreenstate",
+      "source_file": "app/lib/prayers_screen.dart",
+      "source_location": "L290"
+    },
+    {
+      "id": "app_lib_prayers_screen_prayersscreen",
+      "label": "PrayersScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "prayersscreen",
+      "source_file": "app/lib/prayers_screen.dart",
+      "source_location": "L106"
+    },
+    {
+      "id": "app_lib_prayers_screen_prayersscreenstate",
+      "label": "_PrayersScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_prayersscreenstate",
+      "source_file": "app/lib/prayers_screen.dart",
+      "source_location": "L112"
+    },
+    {
       "id": "app_lib_settings_screen_settingsscreen",
       "label": "SettingsScreen",
       "_origin": "ast",
@@ -3822,28 +4018,6 @@
       "source_location": "L102"
     },
     {
-      "id": "app_lib_sobriety_counter_sobrietycounterapp",
-      "label": "SobrietyCounterApp",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "sobrietycounterapp",
-      "source_file": "app/lib/sobriety_counter.dart",
-      "source_location": "L16"
-    },
-    {
-      "id": "app_lib_sobriety_counter_sobrietycounterappstate",
-      "label": "_SobrietyCounterAppState",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_sobrietycounterappstate",
-      "source_file": "app/lib/sobriety_counter.dart",
-      "source_location": "L23"
-    },
-    {
       "id": "app_lib_steps_traditions_screen_stepstraditionsscreen",
       "label": "StepsTraditionsScreen",
       "_origin": "ast",
@@ -3864,6 +4038,28 @@
       "norm_label": "_stepstraditionsscreenstate",
       "source_file": "app/lib/steps_traditions_screen.dart",
       "source_location": "L48"
+    },
+    {
+      "id": "app_lib_support_contacts_screen_supportcontactsscreen",
+      "label": "SupportContactsScreen",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "supportcontactsscreen",
+      "source_file": "app/lib/support_contacts_screen.dart",
+      "source_location": "L39"
+    },
+    {
+      "id": "app_lib_support_contacts_screen_supportcontactsscreenstate",
+      "label": "_SupportContactsScreenState",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_supportcontactsscreenstate",
+      "source_file": "app/lib/support_contacts_screen.dart",
+      "source_location": "L45"
     },
     {
       "id": "app_lib_support_screen_mystoryscreen",
@@ -3908,6 +4104,17 @@
       "norm_label": "_supportscreenstate",
       "source_file": "app/lib/support_screen.dart",
       "source_location": "L20"
+    },
+    {
+      "id": "singletickerproviderstatemixin",
+      "label": "SingleTickerProviderStateMixin",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "singletickerproviderstatemixin",
+      "source_file": null,
+      "source_location": null
     },
     {
       "id": "state",
@@ -4106,7 +4313,7 @@
       "node_kind": "heading",
       "norm_label": "5. arranque de la app",
       "source_file": "MANUAL.md",
-      "source_location": "L128"
+      "source_location": "L138"
     },
     {
       "id": "app_lib_prayers_screen",
@@ -4307,28 +4514,6 @@
       "source_location": "L12"
     },
     {
-      "id": "app_lib_prayers_screen_prayerdetailscreen",
-      "label": "_PrayerDetailScreen",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "prayers_screen.dart",
-      "file_type": "code",
-      "norm_label": "_prayerdetailscreen",
-      "source_file": "app/lib/prayers_screen.dart",
-      "source_location": "L283"
-    },
-    {
-      "id": "app_lib_prayers_screen_prayerdetailscreenstate",
-      "label": "_PrayerDetailScreenState",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "prayers_screen.dart",
-      "file_type": "code",
-      "norm_label": "_prayerdetailscreenstate",
-      "source_file": "app/lib/prayers_screen.dart",
-      "source_location": "L290"
-    },
-    {
       "id": "app_lib_prayers_screen_prayers",
       "label": "_prayers",
       "_origin": "ast",
@@ -4338,28 +4523,6 @@
       "norm_label": "_prayers",
       "source_file": "app/lib/prayers_screen.dart",
       "source_location": "L18"
-    },
-    {
-      "id": "app_lib_prayers_screen_prayersscreen",
-      "label": "PrayersScreen",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "prayers_screen.dart",
-      "file_type": "code",
-      "norm_label": "prayersscreen",
-      "source_file": "app/lib/prayers_screen.dart",
-      "source_location": "L106"
-    },
-    {
-      "id": "app_lib_prayers_screen_prayersscreenstate",
-      "label": "_PrayersScreenState",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "prayers_screen.dart",
-      "file_type": "code",
-      "norm_label": "_prayersscreenstate",
-      "source_file": "app/lib/prayers_screen.dart",
-      "source_location": "L112"
     },
     {
       "id": "app_lib_prayers_screen_readingtheme",
@@ -4736,17 +4899,6 @@
       "source_location": null
     },
     {
-      "id": "animationcontroller",
-      "label": "AnimationController",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "onboarding_screen.dart",
-      "file_type": "code",
-      "norm_label": "animationcontroller",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "app_lib_onboarding_screen",
       "label": "onboarding_screen.dart",
       "_origin": "ast",
@@ -5053,6 +5205,72 @@
       "norm_label": "string",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "app_lib_menu_item",
+      "label": "menu_item.dart",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "menu_item.dart",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": null
+    },
+    {
+      "id": "app_lib_menu_item_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": "L16"
+    },
+    {
+      "id": "app_lib_menu_item_imagepath",
+      "label": "imagePath",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "imagepath",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "app_lib_menu_item_menuitem",
+      "label": "MenuItem",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "menuitem",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": "L3"
+    },
+    {
+      "id": "app_lib_menu_item_targetscreen",
+      "label": "targetScreen",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "targetscreen",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "app_lib_menu_item_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "SobrietyEntry",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "app/lib/menu_item.dart",
+      "source_location": "L4"
     },
     {
       "id": "context",
@@ -6135,17 +6353,6 @@
       "source_location": "L30"
     },
     {
-      "id": "color",
-      "label": "Color",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "app_colors.dart",
-      "file_type": "code",
-      "norm_label": "color",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "list",
       "label": "List",
       "_origin": "ast",
@@ -6153,6 +6360,17 @@
       "community_name": "app_colors.dart",
       "file_type": "code",
       "norm_label": "list",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "package_shared_preferences_shared_preferences_dart",
+      "label": "package:shared_preferences/shared_preferences.dart",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "app_colors.dart",
+      "file_type": "code",
+      "norm_label": "package:shared_preferences/shared_preferences.dart",
       "source_file": null,
       "source_location": null
     },
@@ -6186,6 +6404,17 @@
       "community_name": "journal_menu.dart",
       "file_type": "code",
       "norm_label": "animation",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "app_colors_dart",
+      "label": "app_colors.dart",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "journal_menu.dart",
+      "file_type": "code",
+      "norm_label": "app_colors.dart",
       "source_file": null,
       "source_location": null
     },
@@ -6388,13 +6617,13 @@
       "source_location": null
     },
     {
-      "id": "offset",
-      "label": "Offset",
+      "id": "animationcontroller",
+      "label": "AnimationController",
       "_origin": "ast",
-      "community": 22,
-      "community_name": "journal_menu.dart",
+      "community": 23,
+      "community_name": "support_screen.dart",
       "file_type": "code",
-      "norm_label": "offset",
+      "norm_label": "animationcontroller",
       "source_file": null,
       "source_location": null
     },
@@ -6608,6 +6837,17 @@
       "source_location": "L10"
     },
     {
+      "id": "offset",
+      "label": "Offset",
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "support_screen.dart",
+      "file_type": "code",
+      "norm_label": "offset",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "support_contacts_screen_dart",
       "label": "support_contacts_screen.dart",
       "_origin": "ast",
@@ -6626,17 +6866,6 @@
       "community_name": "sobriety_counter.dart",
       "file_type": "code",
       "norm_label": "achievements_screen.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "app_colors_dart",
-      "label": "app_colors.dart",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "sobriety_counter.dart",
-      "file_type": "code",
-      "norm_label": "app_colors.dart",
       "source_file": null,
       "source_location": null
     },
@@ -6738,6 +6967,39 @@
       "norm_label": "_refreshcounterscreens",
       "source_file": "app/lib/sobriety_counter.dart",
       "source_location": "L28"
+    },
+    {
+      "id": "app_lib_sobriety_counter_sobrietycounterapp",
+      "label": "SobrietyCounterApp",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "sobriety_counter.dart",
+      "file_type": "code",
+      "norm_label": "sobrietycounterapp",
+      "source_file": "app/lib/sobriety_counter.dart",
+      "source_location": "L16"
+    },
+    {
+      "id": "app_lib_sobriety_counter_sobrietycounterappstate",
+      "label": "_SobrietyCounterAppState",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "sobriety_counter.dart",
+      "file_type": "code",
+      "norm_label": "_sobrietycounterappstate",
+      "source_file": "app/lib/sobriety_counter.dart",
+      "source_location": "L23"
+    },
+    {
+      "id": "color",
+      "label": "Color",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "sobriety_counter.dart",
+      "file_type": "code",
+      "norm_label": "color",
+      "source_file": null,
+      "source_location": null
     },
     {
       "id": "dart_ui",
@@ -6982,178 +7244,233 @@
       "source_location": ""
     },
     {
-      "id": "app_lib_menu_item",
-      "label": "menu_item.dart",
+      "id": "app_lib_notification_service",
+      "label": "notification_service.dart",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "menu_item.dart",
-      "source_file": "app/lib/menu_item.dart",
+      "norm_label": "notification_service.dart",
+      "source_file": "app/lib/notification_service.dart",
       "source_location": null
     },
     {
-      "id": "app_lib_menu_item_build",
-      "label": "build",
+      "id": "app_lib_notification_service_cancelallnotifications",
+      "label": "cancelAllNotifications",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "build",
-      "source_file": "app/lib/menu_item.dart",
-      "source_location": "L16"
+      "norm_label": "cancelallnotifications",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L112"
     },
     {
-      "id": "app_lib_menu_item_imagepath",
-      "label": "imagePath",
+      "id": "app_lib_notification_service_cancelgratitudenotification",
+      "label": "cancelGratitudeNotification",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "imagepath",
-      "source_file": "app/lib/menu_item.dart",
-      "source_location": "L5"
+      "norm_label": "cancelgratitudenotification",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L108"
     },
     {
-      "id": "app_lib_menu_item_menuitem",
-      "label": "MenuItem",
+      "id": "app_lib_notification_service_configurelocaltimezone",
+      "label": "_configureLocalTimeZone",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "menuitem",
-      "source_file": "app/lib/menu_item.dart",
-      "source_location": "L3"
+      "norm_label": "_configurelocaltimezone",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L48"
     },
     {
-      "id": "app_lib_menu_item_targetscreen",
-      "label": "targetScreen",
+      "id": "app_lib_notification_service_flutterlocalnotificationsplugin",
+      "label": "_flutterLocalNotificationsPlugin",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "targetscreen",
-      "source_file": "app/lib/menu_item.dart",
-      "source_location": "L6"
+      "norm_label": "_flutterlocalnotificationsplugin",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L12"
     },
     {
-      "id": "app_lib_menu_item_title",
-      "label": "title",
+      "id": "app_lib_notification_service_getapplaunchdetails",
+      "label": "getAppLaunchDetails",
       "_origin": "ast",
       "community": 27,
-      "community_name": "menu_item.dart",
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "title",
-      "source_file": "app/lib/menu_item.dart",
-      "source_location": "L4"
+      "norm_label": "getapplaunchdetails",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L117"
     },
     {
-      "id": "app_lib_gratitude_journal_screen_gratitudejournalscreen",
-      "label": "GratitudeJournalScreen",
+      "id": "app_lib_notification_service_init",
+      "label": "init",
       "_origin": "ast",
-      "community": 28,
-      "community_name": "SingleTickerProviderStateMixin",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "gratitudejournalscreen",
-      "source_file": "app/lib/gratitude_journal_screen.dart",
-      "source_location": "L36"
+      "norm_label": "init",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L17"
     },
     {
-      "id": "app_lib_gratitude_journal_screen_gratitudejournalscreenstate",
-      "label": "_GratitudeJournalScreenState",
+      "id": "app_lib_notification_service_instance",
+      "label": "instance",
       "_origin": "ast",
-      "community": 28,
-      "community_name": "SingleTickerProviderStateMixin",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "_gratitudejournalscreenstate",
-      "source_file": "app/lib/gratitude_journal_screen.dart",
-      "source_location": "L42"
+      "norm_label": "instance",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L10"
     },
     {
-      "id": "app_lib_journal_screen_journalscreen",
-      "label": "JournalScreen",
+      "id": "app_lib_notification_service_locallocation",
+      "label": "_localLocation",
       "_origin": "ast",
-      "community": 28,
-      "community_name": "SingleTickerProviderStateMixin",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "journalscreen",
-      "source_file": "app/lib/journal_screen.dart",
-      "source_location": "L45"
+      "norm_label": "_locallocation",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L15"
     },
     {
-      "id": "app_lib_journal_screen_journalscreenstate",
-      "label": "_JournalScreenState",
+      "id": "app_lib_notification_service_nextinstanceoftime",
+      "label": "_nextInstanceOfTime",
       "_origin": "ast",
-      "community": 28,
-      "community_name": "SingleTickerProviderStateMixin",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "_journalscreenstate",
-      "source_file": "app/lib/journal_screen.dart",
-      "source_location": "L51"
+      "norm_label": "_nextinstanceoftime",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L76"
     },
     {
-      "id": "singletickerproviderstatemixin",
-      "label": "SingleTickerProviderStateMixin",
+      "id": "app_lib_notification_service_notificationservice",
+      "label": "NotificationService",
       "_origin": "ast",
-      "community": 28,
-      "community_name": "SingleTickerProviderStateMixin",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "singletickerproviderstatemixin",
+      "norm_label": "notificationservice",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L8"
+    },
+    {
+      "id": "app_lib_notification_service_scheduledailynotification",
+      "label": "scheduleDailyNotification",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "notification_service.dart",
+      "file_type": "code",
+      "norm_label": "scheduledailynotification",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L54"
+    },
+    {
+      "id": "app_lib_notification_service_schedulegratitudenotification",
+      "label": "scheduleGratitudeNotification",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "notification_service.dart",
+      "file_type": "code",
+      "norm_label": "schedulegratitudenotification",
+      "source_file": "app/lib/notification_service.dart",
+      "source_location": "L86"
+    },
+    {
+      "id": "daily_readings_dart",
+      "label": "daily_readings.dart",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "notification_service.dart",
+      "file_type": "code",
+      "norm_label": "daily_readings.dart",
       "source_file": null,
       "source_location": null
     },
     {
-      "id": "app_lib_main_main",
-      "label": "main",
+      "id": "flutterlocalnotificationsplugin",
+      "label": "FlutterLocalNotificationsPlugin",
       "_origin": "ast",
-      "community": 29,
-      "community_name": "MaterialPageRoute",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "main",
-      "source_file": "app/lib/main.dart",
-      "source_location": "L15"
+      "norm_label": "flutterlocalnotificationsplugin",
+      "source_file": null,
+      "source_location": null
     },
     {
-      "id": "app_lib_settings_screen_build",
-      "label": "build",
+      "id": "location",
+      "label": "Location?",
       "_origin": "ast",
-      "community": 29,
-      "community_name": "MaterialPageRoute",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "build",
-      "source_file": "app/lib/settings_screen.dart",
-      "source_location": "L358"
+      "norm_label": "location?",
+      "source_file": null,
+      "source_location": null
     },
     {
-      "id": "app_lib_sobriety_counter_opensettings",
-      "label": "_openSettings",
+      "id": "package_flutter_local_notifications_flutter_local_notifications_dart",
+      "label": "package:flutter_local_notifications/flutter_local_notifications.dart",
       "_origin": "ast",
-      "community": 29,
-      "community_name": "MaterialPageRoute",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "_opensettings",
-      "source_file": "app/lib/sobriety_counter.dart",
-      "source_location": "L35"
+      "norm_label": "package:flutter_local_notifications/flutter_local_notifications.dart",
+      "source_file": null,
+      "source_location": null
     },
     {
-      "id": "app_lib_support_screen_build",
-      "label": "build",
+      "id": "package_flutter_native_timezone_flutter_native_timezone_dart",
+      "label": "package:flutter_native_timezone/flutter_native_timezone.dart",
       "_origin": "ast",
-      "community": 29,
-      "community_name": "MaterialPageRoute",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "build",
-      "source_file": "app/lib/support_screen.dart",
-      "source_location": "L61"
+      "norm_label": "package:flutter_native_timezone/flutter_native_timezone.dart",
+      "source_file": null,
+      "source_location": null
     },
     {
-      "id": "materialpageroute",
-      "label": "MaterialPageRoute",
+      "id": "package_timezone_data_latest_all_dart",
+      "label": "package:timezone/data/latest_all.dart",
       "_origin": "ast",
-      "community": 29,
-      "community_name": "MaterialPageRoute",
+      "community": 27,
+      "community_name": "notification_service.dart",
       "file_type": "code",
-      "norm_label": "materialpageroute",
+      "norm_label": "package:timezone/data/latest_all.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "package_timezone_timezone_dart",
+      "label": "package:timezone/timezone.dart",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "notification_service.dart",
+      "file_type": "code",
+      "norm_label": "package:timezone/timezone.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "static_final_notificationservice",
+      "label": "static final NotificationService",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "notification_service.dart",
+      "file_type": "code",
+      "norm_label": "static final notificationservice",
       "source_file": null,
       "source_location": null
     },
@@ -8158,171 +8475,6 @@
       "source_location": "L44"
     },
     {
-      "id": "app_lib_notification_service",
-      "label": "notification_service.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "notification_service.dart",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": null
-    },
-    {
-      "id": "app_lib_notification_service_cancelallnotifications",
-      "label": "cancelAllNotifications",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "cancelallnotifications",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L112"
-    },
-    {
-      "id": "app_lib_notification_service_cancelgratitudenotification",
-      "label": "cancelGratitudeNotification",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "cancelgratitudenotification",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L108"
-    },
-    {
-      "id": "app_lib_notification_service_configurelocaltimezone",
-      "label": "_configureLocalTimeZone",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "_configurelocaltimezone",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L48"
-    },
-    {
-      "id": "app_lib_notification_service_flutterlocalnotificationsplugin",
-      "label": "_flutterLocalNotificationsPlugin",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "_flutterlocalnotificationsplugin",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L12"
-    },
-    {
-      "id": "app_lib_notification_service_getapplaunchdetails",
-      "label": "getAppLaunchDetails",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "getapplaunchdetails",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L117"
-    },
-    {
-      "id": "app_lib_notification_service_init",
-      "label": "init",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "init",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L17"
-    },
-    {
-      "id": "app_lib_notification_service_instance",
-      "label": "instance",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "instance",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "app_lib_notification_service_locallocation",
-      "label": "_localLocation",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "_locallocation",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L15"
-    },
-    {
-      "id": "app_lib_notification_service_nextinstanceoftime",
-      "label": "_nextInstanceOfTime",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "_nextinstanceoftime",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L76"
-    },
-    {
-      "id": "app_lib_notification_service_notificationservice",
-      "label": "NotificationService",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "notificationservice",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L8"
-    },
-    {
-      "id": "app_lib_notification_service_scheduledailynotification",
-      "label": "scheduleDailyNotification",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "scheduledailynotification",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L54"
-    },
-    {
-      "id": "app_lib_notification_service_schedulegratitudenotification",
-      "label": "scheduleGratitudeNotification",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "schedulegratitudenotification",
-      "source_file": "app/lib/notification_service.dart",
-      "source_location": "L86"
-    },
-    {
-      "id": "daily_readings_dart",
-      "label": "daily_readings.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "daily_readings.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "flutterlocalnotificationsplugin",
-      "label": "FlutterLocalNotificationsPlugin",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "flutterlocalnotificationsplugin",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "globalkey",
       "label": "GlobalKey",
       "_origin": "ast",
@@ -8330,17 +8482,6 @@
       "community_name": "main.dart",
       "file_type": "code",
       "norm_label": "globalkey",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "location",
-      "label": "Location?",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "location?",
       "source_file": null,
       "source_location": null
     },
@@ -8378,28 +8519,6 @@
       "source_location": null
     },
     {
-      "id": "package_flutter_local_notifications_flutter_local_notifications_dart",
-      "label": "package:flutter_local_notifications/flutter_local_notifications.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "package:flutter_local_notifications/flutter_local_notifications.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "package_flutter_native_timezone_flutter_native_timezone_dart",
-      "label": "package:flutter_native_timezone/flutter_native_timezone.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "package:flutter_native_timezone/flutter_native_timezone.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "package_intl_date_symbol_data_local_dart",
       "label": "package:intl/date_symbol_data_local.dart",
       "_origin": "ast",
@@ -8411,39 +8530,6 @@
       "source_location": null
     },
     {
-      "id": "package_shared_preferences_shared_preferences_dart",
-      "label": "package:shared_preferences/shared_preferences.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "package:shared_preferences/shared_preferences.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "package_timezone_data_latest_all_dart",
-      "label": "package:timezone/data/latest_all.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "package:timezone/data/latest_all.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "package_timezone_timezone_dart",
-      "label": "package:timezone/timezone.dart",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "package:timezone/timezone.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "sobriety_counter_dart",
       "label": "sobriety_counter.dart",
       "_origin": "ast",
@@ -8451,17 +8537,6 @@
       "community_name": "main.dart",
       "file_type": "code",
       "norm_label": "sobriety_counter.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "static_final_notificationservice",
-      "label": "static final NotificationService",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "main.dart",
-      "file_type": "code",
-      "norm_label": "static final notificationservice",
       "source_file": null,
       "source_location": null
     },
@@ -8915,28 +8990,6 @@
       "norm_label": "supportcontact",
       "source_file": "app/lib/support_contacts_screen.dart",
       "source_location": "L13"
-    },
-    {
-      "id": "app_lib_support_contacts_screen_supportcontactsscreen",
-      "label": "SupportContactsScreen",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "support_contacts_screen.dart",
-      "file_type": "code",
-      "norm_label": "supportcontactsscreen",
-      "source_file": "app/lib/support_contacts_screen.dart",
-      "source_location": "L39"
-    },
-    {
-      "id": "app_lib_support_contacts_screen_supportcontactsscreenstate",
-      "label": "_SupportContactsScreenState",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "support_contacts_screen.dart",
-      "file_type": "code",
-      "norm_label": "_supportcontactsscreenstate",
-      "source_file": "app/lib/support_contacts_screen.dart",
-      "source_location": "L45"
     },
     {
       "id": "app_lib_support_contacts_screen_tojson",
@@ -9712,6 +9765,17 @@
       "source_location": null
     },
     {
+      "id": "app_lib_main_main",
+      "label": "main",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "settings_screen.dart",
+      "file_type": "code",
+      "norm_label": "main",
+      "source_file": "app/lib/main.dart",
+      "source_location": "L15"
+    },
+    {
       "id": "app_lib_settings_screen",
       "label": "settings_screen.dart",
       "_origin": "ast",
@@ -9743,6 +9807,17 @@
       "norm_label": "_bgbreathcontroller",
       "source_file": "app/lib/settings_screen.dart",
       "source_location": "L35"
+    },
+    {
+      "id": "app_lib_settings_screen_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "settings_screen.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "app/lib/settings_screen.dart",
+      "source_location": "L358"
     },
     {
       "id": "app_lib_settings_screen_card1fade",
@@ -10108,6 +10183,39 @@
       "source_location": "L32"
     },
     {
+      "id": "app_lib_sobriety_counter_opensettings",
+      "label": "_openSettings",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "settings_screen.dart",
+      "file_type": "code",
+      "norm_label": "_opensettings",
+      "source_file": "app/lib/sobriety_counter.dart",
+      "source_location": "L35"
+    },
+    {
+      "id": "app_lib_support_screen_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "settings_screen.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "app/lib/support_screen.dart",
+      "source_location": "L61"
+    },
+    {
+      "id": "materialpageroute",
+      "label": "MaterialPageRoute",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "settings_screen.dart",
+      "file_type": "code",
+      "norm_label": "materialpageroute",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "timeofday",
       "label": "TimeOfDay",
       "_origin": "ast",
@@ -10449,17 +10557,6 @@
       "source_location": "L21"
     },
     {
-      "id": "dart_convert",
-      "label": "dart:convert",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "gratitude_journal_screen.dart",
-      "file_type": "code",
-      "norm_label": "dart:convert",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "datetime",
       "label": "DateTime",
       "_origin": "ast",
@@ -10467,6 +10564,17 @@
       "community_name": "gratitude_journal_screen.dart",
       "file_type": "code",
       "norm_label": "datetime",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "focusnode",
+      "label": "FocusNode",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "gratitude_journal_screen.dart",
+      "file_type": "code",
+      "norm_label": "focusnode",
       "source_file": null,
       "source_location": null
     },
@@ -10495,6 +10603,7 @@
     {
       "id": "dwmapi",
       "label": "dwmapi",
+      "_origin": "semantic",
       "community": 1,
       "community_name": "win32_window.cpp",
       "external": true,
@@ -10506,6 +10615,7 @@
     {
       "id": "generated_plugin_registrant",
       "label": "generated_plugin_registrant",
+      "_origin": "semantic",
       "community": 1,
       "community_name": "win32_window.cpp",
       "external": true,
@@ -10517,6 +10627,7 @@
     {
       "id": "optional",
       "label": "optional",
+      "_origin": "semantic",
       "community": 1,
       "community_name": "win32_window.cpp",
       "external": true,
@@ -10528,6 +10639,7 @@
     {
       "id": "flutter_linux",
       "label": "flutter_linux",
+      "_origin": "semantic",
       "community": 15,
       "community_name": "my_application.cc",
       "external": true,
@@ -10539,6 +10651,7 @@
     {
       "id": "gdkx",
       "label": "gdkx",
+      "_origin": "semantic",
       "community": 15,
       "community_name": "my_application.cc",
       "external": true,
@@ -10550,6 +10663,7 @@
     {
       "id": "gtk",
       "label": "gtk",
+      "_origin": "semantic",
       "community": 15,
       "community_name": "my_application.cc",
       "external": true,
@@ -10561,6 +10675,7 @@
     {
       "id": "url_launcher_plugin",
       "label": "url_launcher_plugin",
+      "_origin": "semantic",
       "community": 15,
       "community_name": "my_application.cc",
       "external": true,
@@ -10572,6 +10687,7 @@
     {
       "id": "dart_project",
       "label": "dart_project",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10583,6 +10699,7 @@
     {
       "id": "flutter_view_controller",
       "label": "flutter_view_controller",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10594,6 +10711,7 @@
     {
       "id": "flutter_windows",
       "label": "flutter_windows",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10605,6 +10723,7 @@
     {
       "id": "functional",
       "label": "functional",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10616,6 +10735,7 @@
     {
       "id": "io",
       "label": "io",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10627,6 +10747,7 @@
     {
       "id": "iostream",
       "label": "iostream",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10638,6 +10759,7 @@
     {
       "id": "memory",
       "label": "memory",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10649,6 +10771,7 @@
     {
       "id": "stdio",
       "label": "stdio",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10660,6 +10783,7 @@
     {
       "id": "string",
       "label": "string",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10671,6 +10795,7 @@
     {
       "id": "windows",
       "label": "windows",
+      "_origin": "semantic",
       "community": 20,
       "community_name": "utils.cpp",
       "external": true,
@@ -10682,6 +10807,7 @@
     {
       "id": "plugin_registry",
       "label": "plugin_registry",
+      "_origin": "semantic",
       "community": 26,
       "community_name": "windows/flutter/generated_plugin_registrant.cc",
       "external": true,
@@ -10693,6 +10819,7 @@
     {
       "id": "share_plus_windows_plugin_c_api",
       "label": "share_plus_windows_plugin_c_api",
+      "_origin": "semantic",
       "community": 26,
       "community_name": "windows/flutter/generated_plugin_registrant.cc",
       "external": true,
@@ -10704,6 +10831,7 @@
     {
       "id": "syncfusion_pdfviewer_windows_plugin",
       "label": "syncfusion_pdfviewer_windows_plugin",
+      "_origin": "semantic",
       "community": 26,
       "community_name": "windows/flutter/generated_plugin_registrant.cc",
       "external": true,
@@ -10715,6 +10843,7 @@
     {
       "id": "url_launcher_windows",
       "label": "url_launcher_windows",
+      "_origin": "semantic",
       "community": 26,
       "community_name": "windows/flutter/generated_plugin_registrant.cc",
       "external": true,
@@ -10726,6 +10855,7 @@
     {
       "id": "generatedpluginregistrant",
       "label": "generatedpluginregistrant",
+      "_origin": "semantic",
       "community": 36,
       "community_name": "Runner-Bridging-Header.h",
       "external": true,
@@ -14095,6 +14225,18 @@
     },
     {
       "source": "app_lib_support_contacts_screen",
+      "target": "string",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "variable_type",
+      "source_file": "app/lib/support_contacts_screen.dart",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_support_contacts_screen",
       "target": "list",
       "relation": "references",
       "_origin": "ast",
@@ -14945,7 +15087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L219",
+      "source_location": "L229",
       "weight": 1.0
     },
     {
@@ -14956,7 +15098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L225",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -14967,7 +15109,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L230",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -14978,7 +15120,84 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L233",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_21_herramental_de_claude_code",
+      "target": "manual_21_1_plugins_viajan_con_el_repo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L334",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_21_herramental_de_claude_code",
+      "target": "manual_21_2_lo_que_no_viaja_con_el_repo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_21_herramental_de_claude_code",
+      "target": "manual_21_3_verificar_el_entorno",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L367",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_22_graphify_y_la_red_neuronal_3d",
+      "target": "manual_22_1_estado_del_grafo_6_de_octubre_de_2026",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L386",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_22_graphify_y_la_red_neuronal_3d",
+      "target": "manual_22_2_archivos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L401",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_22_graphify_y_la_red_neuronal_3d",
+      "target": "manual_22_3_visualizaci\u00f3n_3d",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L412",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_22_graphify_y_la_red_neuronal_3d",
+      "target": "manual_22_4_actualizar_el_grafo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L422",
       "weight": 1.0
     },
     {
@@ -14989,7 +15208,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L103",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -15000,7 +15219,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L128",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -15011,7 +15230,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L140",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -15022,7 +15241,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L155",
+      "source_location": "L165",
       "weight": 1.0
     },
     {
@@ -15033,7 +15252,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L168",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -15044,7 +15263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L177",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -15055,7 +15274,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L185",
+      "source_location": "L195",
       "weight": 1.0
     },
     {
@@ -15066,7 +15285,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L204",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -15077,7 +15296,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L236",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -15088,7 +15307,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L244",
+      "source_location": "L254",
       "weight": 1.0
     },
     {
@@ -15099,7 +15318,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L251",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -15110,7 +15329,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L256",
+      "source_location": "L266",
       "weight": 1.0
     },
     {
@@ -15121,7 +15340,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L265",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -15132,7 +15351,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L274",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -15143,7 +15362,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L285",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -15154,7 +15373,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L305",
+      "source_location": "L315",
       "weight": 1.0
     },
     {
@@ -15165,73 +15384,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L312",
+      "source_location": "L322",
       "weight": 1.0
     },
     {
       "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_21_desarrollo_local",
+      "target": "manual_21_herramental_de_claude_code",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L320",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
       "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_22_publicaci\u00f3n_en_testflight",
+      "target": "manual_22_graphify_y_la_red_neuronal_3d",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L333",
-      "weight": 1.0
-    },
-    {
-      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_23_errores_conocidos_y_soluciones",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "MANUAL.md",
-      "source_location": "L343",
-      "weight": 1.0
-    },
-    {
-      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_24_historia_del_desarrollo",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "MANUAL.md",
-      "source_location": "L356",
-      "weight": 1.0
-    },
-    {
-      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_25_pendientes_e_ideas_futuras",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "MANUAL.md",
-      "source_location": "L385",
-      "weight": 1.0
-    },
-    {
-      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
-      "target": "manual_26_referencias",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "MANUAL.md",
-      "source_location": "L395",
+      "source_location": "L382",
       "weight": 1.0
     },
     {
@@ -15242,7 +15417,73 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L40",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_23_desarrollo_local",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_24_publicaci\u00f3n_en_testflight",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L452",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_25_errores_conocidos_y_soluciones",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L462",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_26_historia_del_desarrollo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L475",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_27_pendientes_e_ideas_futuras",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L508",
+      "weight": 1.0
+    },
+    {
+      "source": "manual_manual_de_la_app_de_sobriedad_a_a",
+      "target": "manual_28_referencias",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MANUAL.md",
+      "source_location": "L520",
       "weight": 1.0
     },
     {
@@ -15253,7 +15494,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L54",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -15264,7 +15505,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -15275,7 +15516,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "MANUAL.md",
-      "source_location": "L82",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -25116,10 +25357,10 @@
       "confidence_score": 0.95,
       "context": "main()",
       "source_file": "MANUAL.md",
-      "source_location": "L130",
+      "source_location": "L140",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ffe5167d9f835e847d26a823d1d26e0cf37d9299"
+  "built_at_commit": "386b1dea916b38e4eda36589577fe129243fa062"
 }
