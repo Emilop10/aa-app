@@ -1,23 +1,23 @@
-# Graph Report - aa-app  (2026-10-06)
+# Graph Report - aa-app  (2026-10-15)
 
 ## Corpus Check
-- 60 files · ~374,921 words
+- 60 files · ~375,148 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 63 file(s) not represented in the graph (top: (none) 11, .plist 8, .xcconfig 8)
 
 ## Summary
-- 960 nodes · 1289 edges · 40 communities (29 shown, 11 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.86)
+- 959 nodes · 1290 edges · 45 communities (33 shown, 12 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `386b1dea`
+- Built from commit: `38700eab`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - sobriety_counter_screen.dart
-- win32_window.cpp
+- FlutterWindow
 - libro_azul_screen.dart
 - achievements_screen.dart
 - main.dart
@@ -44,12 +44,17 @@
 - manifest.json
 - windows/flutter/generated_plugin_registrant.cc
 - notification_service.dart
+- win32_window.cpp
+- Win32Window
 - StatelessWidget
 - package:flutter/material.dart
 - verificar-herramental.sh
 - MainActivity.kt
 - app
 - LaunchImage.imageset/README.md
+- .MessageHandler
+- Point
+- Size
 
 ## God Nodes (most connected - your core abstractions)
 1. `Manual de la App de Sobriedad (A.A.)` - 30 edges
@@ -64,6 +69,8 @@
 10. `wWinMain()` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `26. Historia del desarrollo` --references--> `main()`  [INFERRED]
+  MANUAL.md → app/linux/main.cc
 - `5. Arranque de la app` --references--> `main()`  [INFERRED]
   MANUAL.md → app/linux/main.cc
 - `wWinMain()` --calls--> `CreateAndAttachConsole()`  [INFERRED]
@@ -72,21 +79,19 @@
   app/linux/my_application.cc → app/linux/flutter/generated_plugin_registrant.cc
 - `main()` --calls--> `my_application_new()`  [INFERRED]
   app/linux/main.cc → app/linux/my_application.cc
-- `wWinMain()` --calls--> `GetCommandLineArguments()`  [INFERRED]
-  app/windows/runner/main.cpp → app/windows/runner/utils.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (40 total, 11 thin omitted)
+## Communities (45 total, 12 thin omitted)
 
 ### Community 0 - "sobriety_counter_screen.dart"
 Cohesion: 0.03
 Nodes (67): _bgBreath, _bgBreathController, build, _buildBody, _buildEmptyState, _calculateYearsMonthsDays, _card1Fade, _card1Slide (+59 more)
 
-### Community 1 - "win32_window.cpp"
-Cohesion: 0.05
-Nodes (20): FlutterWindow, flutter_controller_, FlutterWindow::FlutterWindow(), project_, EnableFullDpiSupportIfAvailable(), Point, x, y (+12 more)
+### Community 1 - "FlutterWindow"
+Cohesion: 0.12
+Nodes (4): FlutterWindow, flutter_controller_, FlutterWindow::FlutterWindow(), project_
 
 ### Community 2 - "libro_azul_screen.dart"
 Cohesion: 0.04
@@ -134,15 +139,15 @@ Nodes (27): _bgBreath, _bgBreathController, build, _buildMenuItem, _comoFunciona
 
 ### Community 13 - "Manual de la App de Sobriedad (A.A.)"
 Cohesion: 0.05
-Nodes (41): 10. Logros, 11.1 Libro Azul, 11.2 12 Pasos y 12 Tradiciones, 11.3 Oraciones, 11.4 Textos breves, 11. Literatura, 12. Reflexiones diarias, 13. Escritura (Diario y Gratitud) (+33 more)
+Nodes (40): 10. Logros, 11.1 Libro Azul, 11.2 12 Pasos y 12 Tradiciones, 11.3 Oraciones, 11.4 Textos breves, 11. Literatura, 12. Reflexiones diarias, 13. Escritura (Diario y Gratitud) (+32 more)
 
 ### Community 14 - "State"
 Cohesion: 0.08
 Nodes (40): AchievementsScreen, _AchievementsScreenState, DailyReadings, _DailyReadingsState, _GratitudeEditor, _GratitudeEditorState, GratitudeJournalScreen, _GratitudeJournalScreenState (+32 more)
 
 ### Community 15 - "my_application.cc"
-Cohesion: 0.09
-Nodes (14): fl_register_plugins(), main(), my_application_activate(), my_application_class_init(), my_application_dispose(), my_application_init(), my_application_local_command_line(), my_application_new() (+6 more)
+Cohesion: 0.08
+Nodes (15): fl_register_plugins(), main(), my_application_activate(), my_application_class_init(), my_application_dispose(), my_application_init(), my_application_local_command_line(), my_application_new() (+7 more)
 
 ### Community 16 - "prayers_screen.dart"
 Cohesion: 0.08
@@ -188,6 +193,14 @@ Nodes (10): background_color, description, display, icons, name, orientation, pr
 Cohesion: 0.10
 Nodes (12): cancelAllNotifications, cancelGratitudeNotification, _configureLocalTimeZone, _flutterLocalNotificationsPlugin, getAppLaunchDetails, init, instance, _localLocation (+4 more)
 
+### Community 28 - "win32_window.cpp"
+Cohesion: 0.18
+Nodes (5): Scale(), Win32Window::Win32Window(), WindowClassRegistrar, class_registered_, instance_
+
+### Community 29 - "Win32Window"
+Cohesion: 0.24
+Nodes (4): Win32Window, child_content_, quit_on_close_, window_handle_
+
 ### Community 30 - "StatelessWidget"
 Cohesion: 0.40
 Nodes (4): _HeroCard, _MiniStatCard, _QuoteCard, _StartDateCard
@@ -196,24 +209,32 @@ Nodes (4): _HeroCard, _MiniStatCard, _QuoteCard, _StartDateCard
 Cohesion: 0.83
 Nodes (3): instalar_de(), marketplace_de(), verificar-herramental.sh script
 
+### Community 43 - "Point"
+Cohesion: 0.50
+Nodes (3): Point, x, y
+
+### Community 44 - "Size"
+Cohesion: 0.50
+Nodes (3): Size, height, width
+
 ## Knowledge Gaps
-- **615 isolated node(s):** `WidgetKit`, `SwiftUI`, `.body`, `Milestone`, `_TimeBreakdown` (+610 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 722 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **567 isolated node(s):** `WidgetKit`, `SwiftUI`, `.body`, `Milestone`, `_TimeBreakdown` (+562 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 720 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Win32Window` connect `win32_window.cpp` to `utils.cpp`?**
-  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+- **Why does `Win32Window` connect `Win32Window` to `FlutterWindow`, `.MessageHandler`, `Point`, `Size`, `utils.cpp`, `win32_window.cpp`?**
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **What connects `WidgetKit`, `SwiftUI`, `.body` to the rest of the system?**
-  _615 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _567 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sobriety_counter_screen.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.0273972602739726 - nodes in this community are weakly interconnected._
-- **Why does `FlutterWindow` connect `win32_window.cpp` to `utils.cpp`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Should `win32_window.cpp` be split into smaller, more focused modules?**
-  _Cohesion score 0.05268065268065268 - nodes in this community are weakly interconnected._
+- **Why does `FlutterWindow` connect `FlutterWindow` to `utils.cpp`, `Win32Window`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Should `FlutterWindow` be split into smaller, more focused modules?**
+  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `libro_azul_screen.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03508771929824561 - nodes in this community are weakly interconnected._
 - **Should `achievements_screen.dart` be split into smaller, more focused modules?**
