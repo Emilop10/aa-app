@@ -358,17 +358,21 @@ Vive en la máquina o el contenedor; en un entorno nuevo hay que reinstalarlo:
 |---|---|---|
 | 282 agentes de The Agency | `~/.claude/agents/` | `git clone https://github.com/msitarzewski/agency-agents.git /tmp/agency-agents && cd /tmp/agency-agents && ./scripts/install.sh --tool claude-code` |
 | Graphify (CLI y skill) | `~/.local/bin`, `~/.claude/skills/` | `uv tool install graphifyy && graphify install` |
-| Scrapling | Python | `pip install scrapling` |
+| Scrapling | Python | `python3 -m pip install scrapling` (con `pip` a secas puede instalarse en otro Python) |
 | WhatsApp AgentKit | carpeta aparte | `git clone https://github.com/Hainrixz/whatsapp-agentkit.git && cd whatsapp-agentkit && bash start.sh` (necesita `ANTHROPIC_API_KEY` en `.env`) |
 | Auto-CRM | carpeta aparte | `git clone https://github.com/Hainrixz/auto-crm.git && cd auto-crm && npm install && npm run init:seed` |
 
 WhatsApp AgentKit y Auto-CRM son aplicaciones independientes, no plugins, y no forman parte de la app de sobriedad.
+
+> **Si el entorno se reinicia** (pasó el 15 de octubre de 2026), los plugins siguen declarados en `.claude/settings.json` pero no quedan descargados, y los agentes, Graphify y Scrapling desaparecen. Se resuelve volviendo a correr los comandos de instalación completos y luego `bash scripts/verificar-herramental.sh`.
 
 ### 21.3 Verificar el entorno
 
 ```bash
 bash scripts/verificar-herramental.sh
 ```
+
+> Si después de un reinicio el script dice "No se pudo leer el estado de los plugins" (código `2`), significa que no hay ningún plugin instalado: reinstala todo.
 
 Revisa por nombre cada plugin contra el registro en disco (`~/.claude/plugins/installed_plugins.json`), cuenta los agentes (mínimo 273) y comprueba Graphify y Scrapling. Si falta algo, imprime los comandos exactos para instalarlo. Termina con código `0` si todo está listo, `1` si falta algo y `2` si no pudo leer el estado.
 
@@ -383,16 +387,16 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 
 [Graphify](https://pypi.org/project/graphifyy/) convierte el repositorio en un grafo de conocimiento: cada clase, función, pantalla, sección del manual y paquete es un nodo, y cada relación (importa, llama, define, navega, contiene) es una conexión.
 
-### 22.1 Estado del grafo (actualizado el 6 de octubre de 2026)
+### 22.1 Estado del grafo (actualizado el 15 de octubre de 2026, Graphify 0.9.91)
 
-- **960 nodos, 1,289 conexiones, 40 comunidades**, a partir de 60 archivos.
+- **959 nodos, 1,290 conexiones, 45 comunidades**, a partir de 60 archivos.
 - 99 % de las relaciones extraídas directo del código; 1 % inferidas.
 - Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (56), `journal_screen.dart` y `daily_readings.dart` (52).
 
 | Zona | Nodos |
 |---|---|
 | App (Flutter, `app/lib/`) | 617 |
-| Paquetes externos | 153 |
+| Paquetes externos | 152 |
 | Escritorio y web (plantillas de Flutter) | 109 |
 | Manual y scripts | 52 |
 | iOS y widget | 24 |
@@ -471,6 +475,8 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 | Botón SOS inalcanzable | Poco padding inferior | Padding 120 |
 | 🔥 encima del título | Título en `FlexibleSpaceBar` | Título en `SliverAppBar.title` |
 | Subrayados amarillos en textos | Texto sin `Material` | `TextDecoration.none` |
+| `ModuleNotFoundError: scrapling` tras instalarlo | `pip` y `python3` son Pythons distintos | `python3 -m pip install scrapling` |
+| `verificar-herramental.sh` termina con código 2 | No hay plugins instalados (entorno reiniciado) | Reinstalar todo con los comandos de instalación |
 
 ## 26. Historia del desarrollo
 
@@ -504,7 +510,12 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - Se instala el entorno de Claude Code: 10 plugins con su `.claude/settings.json`, 282 agentes, Graphify, Scrapling, WhatsApp AgentKit y Auto-CRM.
 - Se agrega `scripts/verificar-herramental.sh`.
 - Se genera el grafo con Graphify y la visualización 3D de la red neuronal del proyecto.
-- Se integra `main` en la rama de trabajo, se actualiza el grafo con el manual completo y se hace merge a `main`.
+- Se integra `main` en la rama de trabajo, se actualiza el grafo con el manual completo y se hace merge a `main` (PR #9).
+
+**15 de octubre 2026 — Reinstalación del entorno**
+- El contenedor se reinició y se perdió el herramental; se reinstaló completo y el script de verificación quedó en verde.
+- Scrapling se instala con `python3 -m pip` porque `pip` apuntaba a otro Python.
+- Se regeneró el grafo con Graphify 0.9.91 (959 nodos, 1,290 conexiones, 45 comunidades) y la vista 3D.
 
 ## 27. Pendientes e ideas futuras
 
