@@ -478,6 +478,8 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 | `ModuleNotFoundError: scrapling` tras instalarlo | `pip` y `python3` son Pythons distintos | `python3 -m pip install scrapling` |
 | `verificar-herramental.sh` termina con código 2 | No hay plugins instalados (entorno reiniciado) | Reinstalar todo con los comandos de instalación |
 | Xcode: *The iOS Simulator deployment target is set to 12.0* y *Unable to load contents of file list (Pods)* | Xcode 27 ya no acepta iOS 12 y en un clon nuevo faltan los Pods | Mínimo subido a iOS 15.0 (Podfile y proyecto); correr `flutter run` o `pod install` en `app/ios` |
+| La app se cierra al abrir; el reporte menciona `NoSceneLifecycleAdoption` | iOS 27 exige el ciclo de vida por escenas (UIScene) | `UIApplicationSceneManifest` en `Info.plist` y `SceneDelegate` en `AppDelegate.swift` |
+| Xcode: *Command CodeSign failed* en el simulador | El proyecto estaba en Documentos (sincronizado con iCloud) y los archivos traían atributos extendidos | Mover el proyecto a `~/aa-app`, luego `flutter clean` y `xattr -cr .` |
 
 ## 26. Historia del desarrollo
 
