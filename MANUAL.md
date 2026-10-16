@@ -389,17 +389,17 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 
 ### 22.1 Estado del grafo (actualizado el 15 de octubre de 2026, Graphify 0.9.91)
 
-- **959 nodos, 1,290 conexiones, 45 comunidades**, a partir de 60 archivos.
+- **973 nodos, 1,306 conexiones, 50 comunidades**.
 - 99 % de las relaciones extraídas directo del código; 1 % inferidas.
 - Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (56), `journal_screen.dart` y `daily_readings.dart` (52).
 
 | Zona | Nodos |
 |---|---|
 | App (Flutter, `app/lib/`) | 617 |
-| Paquetes externos | 152 |
+| Paquetes externos | 157 |
 | Escritorio y web (plantillas de Flutter) | 109 |
-| Manual y scripts | 52 |
-| iOS y widget | 24 |
+| Manual y scripts | 58 |
+| iOS y widget | 27 |
 | Android | 5 |
 
 ### 22.2 Archivos
@@ -590,7 +590,7 @@ Conecta el iPhone por cable y corre `flutter run`; si hay varios dispositivos, p
 - Mac nueva con Xcode 27.1 y iOS 27: se instaló Rosetta, el proyecto se movió a `~/aa-app` (fuera de iCloud) y el simulador se usa desde Device Hub.
 - Se subió el mínimo de iOS a 15.0 (PR #11).
 - iOS 27 exige el ciclo de vida por escenas: se agregó `UIApplicationSceneManifest`, un `SceneDelegate` y un `FlutterEngine` propio para registrar los plugins (PR #12 y #13).
-- Se documentó el flujo de trabajo con `flutter run` y *hot reload* (sección 23).
+- Se documentó el flujo de trabajo con `flutter run` y *hot reload* (sección 23) y se regeneró el grafo (973 nodos, 1,306 conexiones, 50 comunidades).
 
 ## 27. Pendientes e ideas futuras
 
