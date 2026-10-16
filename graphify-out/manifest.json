@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "app/ios/Runner/AppDelegate.swift": {
-    "mtime": 1792106108.8109844,
-    "seen": 1792106634.5801318,
-    "ast_hash": "4a5985990085527193721ad7445aa779",
+    "mtime": 1792109883.4276838,
+    "seen": 1792110272.3916454,
+    "ast_hash": "65561779d5968240fd84a793fefdbf0c",
     "semantic_hash": ""
   },
   "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "MANUAL.md": {
-    "mtime": 1792106669.295118,
-    "seen": 1792106671.2763174,
-    "ast_hash": "4a985decbfb1824ed495af157384c6a6",
+    "mtime": 1792110288.766392,
+    "seen": 1792110289.55197,
+    "ast_hash": "d76c1b14d27e7968391cd782e58490c6",
     "semantic_hash": ""
   },
   "app/README.md": {
