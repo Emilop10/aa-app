@@ -477,6 +477,7 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 | Subrayados amarillos en textos | Texto sin `Material` | `TextDecoration.none` |
 | `ModuleNotFoundError: scrapling` tras instalarlo | `pip` y `python3` son Pythons distintos | `python3 -m pip install scrapling` |
 | `verificar-herramental.sh` termina con código 2 | No hay plugins instalados (entorno reiniciado) | Reinstalar todo con los comandos de instalación |
+| Xcode: *The iOS Simulator deployment target is set to 12.0* y *Unable to load contents of file list (Pods)* | Xcode 27 ya no acepta iOS 12 y en un clon nuevo faltan los Pods | Mínimo subido a iOS 15.0 (Podfile y proyecto); correr `flutter run` o `pod install` en `app/ios` |
 
 ## 26. Historia del desarrollo
 
