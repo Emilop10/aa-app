@@ -442,16 +442,81 @@ graphify path "SobrietyCounterApp" "DailyReadings"     # camino más corto entre
 
 ## 23. Desarrollo local
 
+La forma más rápida de trabajar es correr la app desde la terminal con `flutter run` en el simulador. Cada cambio se ve en 1–2 segundos con *hot reload*, sin cerrar la app. Xcode solo se usa para ver el simulador (Device Hub) y para subir a TestFlight.
+
+### 23.1 Entorno probado (octubre 2026)
+
+| Herramienta | Versión |
+|---|---|
+| Mac | Apple Silicon, macOS 27.0.1 |
+| Xcode | 27.1, con la plataforma iOS 27.1 instalada |
+| Flutter | 3.24.3 (stable). No se actualiza por ahora para no romper paquetes viejos como `flutter_native_timezone` |
+| CocoaPods | 1.15.2 |
+| Rosetta 2 | Instalado (`sudo softwareupdate --install-rosetta --agree-to-license`); Flutter lo pide en Macs con chip M |
+| Simulador | iPhone 18 Pro (iOS 27) |
+
+`flutter doctor` puede marcar en amarillo el **Android toolchain**; no importa porque la app es solo para iPhone.
+
+### 23.2 Preparación (solo una vez)
+
 ```bash
-git clone https://github.com/emilop10/aa-app.git
-cd aa-app
-git checkout claude/sharp-meitner-7SiNa
-cd app
+cd ~
+git clone https://github.com/Emilop10/aa-app.git
+cd ~/aa-app/app
 flutter pub get
-flutter run            # o: flutter run --release en iPhone conectado
 ```
 
-Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
+- **El proyecto vive en `~/aa-app`** (la carpeta personal). **No en Documentos ni Escritorio**: iCloud los sincroniza, agrega atributos extendidos a los archivos y la firma falla con *Command CodeSign failed*.
+- **Si GitHub pide contraseña**, usa un *Personal access token* (GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic), permiso **repo**).
+- **Los Pods de iOS** los instala `flutter run` solo la primera vez.
+
+### 23.3 Ver el simulador
+
+En Xcode 27 ya no existe la app *Simulator* por separado (`open -a Simulator` falla y `flutter emulators` no la encuentra).
+
+1. Prende el iPhone, si no está prendido:
+   ```bash
+   xcrun simctl boot "iPhone 18 Pro"
+   ```
+2. En Xcode: **Xcode → Open Developer Tool → Device Hub** → selecciona **iPhone 18 Pro**. Ahí se ve y se usa la pantalla.
+
+### 23.4 Ciclo de trabajo
+
+Se usan **dos terminales**.
+
+**Terminal 1: la app corriendo** (se deja abierta todo el tiempo)
+```bash
+cd ~/aa-app/app
+flutter run
+```
+
+**Terminal 2: bajar los cambios**
+```bash
+cd ~/aa-app
+git pull
+```
+
+Después de cada `git pull`, en la Terminal 1:
+
+| Tecla | Qué hace | Cuándo |
+|---|---|---|
+| `r` | *Hot reload*: actualiza al instante y conserva el estado | Diseño, textos, colores. Es la de casi siempre |
+| `R` | *Hot restart*: reinicia la app en ~3 s | Cuando `r` no muestra el cambio (arranque, datos que se cargan al inicio) |
+| `q` y luego `flutter run` | Recompila completo | Cambios en `pubspec.yaml` (antes `flutter pub get`) o en la carpeta `ios/` |
+
+Si la app queda detrás de la pantalla de inicio, su ícono (hoy se llama "App") está en la segunda página del iPhone, o basta con volver a correr `flutter run`.
+
+### 23.5 iPhone real
+
+Conecta el iPhone por cable y corre `flutter run`; si hay varios dispositivos, pregunta en cuál abrirla. Sirve para probar lo que el simulador no hace bien: notificaciones, llamadas y SMS del botón SOS.
+
+### 23.6 Si algo falla
+
+| Síntoma | Solución |
+|---|---|
+| `git pull` dice que se sobrescribirán `project.pbxproj` u otros archivos de `ios/` | Xcode los modificó al abrir el proyecto: `git checkout -- app/ios` y repetir `git pull` |
+| *Command CodeSign failed* | `flutter clean && xattr -cr . && flutter pub get` y confirmar que el proyecto no está en Documentos |
+| La app se cierra al abrir | Ver la tabla de la [sección 25](#25-errores-conocidos-y-soluciones) |
 
 ## 24. Publicación en TestFlight
 
@@ -520,6 +585,12 @@ Para actualizar: `git pull origin claude/sharp-meitner-7SiNa`.
 - El contenedor se reinició y se perdió el herramental; se reinstaló completo y el script de verificación quedó en verde.
 - Scrapling se instala con `python3 -m pip` porque `pip` apuntaba a otro Python.
 - Se regeneró el grafo con Graphify 0.9.91 (959 nodos, 1,290 conexiones, 45 comunidades) y la vista 3D.
+
+**15 de octubre 2026 — La app vuelve a correr en el simulador**
+- Mac nueva con Xcode 27.1 y iOS 27: se instaló Rosetta, el proyecto se movió a `~/aa-app` (fuera de iCloud) y el simulador se usa desde Device Hub.
+- Se subió el mínimo de iOS a 15.0 (PR #11).
+- iOS 27 exige el ciclo de vida por escenas: se agregó `UIApplicationSceneManifest`, un `SceneDelegate` y un `FlutterEngine` propio para registrar los plugins (PR #12 y #13).
+- Se documentó el flujo de trabajo con `flutter run` y *hot reload* (sección 23).
 
 ## 27. Pendientes e ideas futuras
 
