@@ -2,7 +2,7 @@ name: nombre_de_tu_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+6 # Recuerda incrementar este número para tu próxima subida a TestFlight
+version: 1.0.0+7 # Recuerda incrementar este número para tu próxima subida a TestFlight
 
 environment:
   sdk: ">=2.17.0 <3.0.0"

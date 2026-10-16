@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "MANUAL.md": {
-    "mtime": 1792110288.766392,
-    "seen": 1792110289.55197,
-    "ast_hash": "d76c1b14d27e7968391cd782e58490c6",
+    "mtime": 1792111053.2391043,
+    "seen": 1792111054.09525,
+    "ast_hash": "15ee1fd2cf7966360370037978ac3e78",
     "semantic_hash": ""
   },
   "app/README.md": {
@@ -378,9 +378,9 @@
     "semantic_hash": ""
   },
   "app/pubspec.yaml": {
-    "mtime": 1792106108.8251011,
-    "seen": 1792106634.580211,
-    "ast_hash": "9aa51bcd2fa1cbdea2479b6c7781af2d",
+    "mtime": 1792110951.9072244,
+    "seen": 1792111053.0018713,
+    "ast_hash": "816a9f4207091665d0cac0e2449cbea6",
     "semantic_hash": ""
   },
   "app/web/index.html": {
@@ -717,6 +717,12 @@
     "mtime": 1792106108.8256962,
     "seen": 1792106634.5802813,
     "ast_hash": "301a7604d45b3e739efc881eb04896ea",
+    "semantic_hash": ""
+  },
+  "PENDIENTES.md": {
+    "mtime": 1792111024.171223,
+    "seen": 1792111053.0018609,
+    "ast_hash": "d2f660322c5622e4da35bd3b8e90ad43",
     "semantic_hash": ""
   }
 }

@@ -2,7 +2,7 @@
 
 Manual completo de la aplicación: qué hace, cómo está construida, cómo se desarrolla y publica, y la historia de su creación.
 
-> Repositorio: `emilop10/aa-app` · Carpeta del proyecto Flutter: `app/` · Versión actual: `1.0.0+6`
+> Repositorio: `emilop10/aa-app` · Carpeta del proyecto Flutter: `app/` · Versión actual: `1.0.0+7`
 
 ---
 
@@ -86,6 +86,7 @@ Todo funciona **sin cuenta, sin servidor y sin conexión**: los datos viven solo
 ```
 aa-app/
 ├── MANUAL.md                       ← este documento
+├── PENDIENTES.md                   ← lista de trabajo priorizada
 ├── .claude/settings.json           ← plugins de Claude Code del proyecto
 ├── scripts/
 │   └── verificar-herramental.sh    ← revisa que el entorno esté completo
@@ -389,7 +390,7 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 
 ### 22.1 Estado del grafo (actualizado el 15 de octubre de 2026, Graphify 0.9.91)
 
-- **973 nodos, 1,306 conexiones, 50 comunidades**.
+- **983 nodos, 1,316 conexiones, 54 comunidades**.
 - 99 % de las relaciones extraídas directo del código; 1 % inferidas.
 - Nodos más conectados: `sobriety_counter_screen.dart` (95), `libro_azul_screen.dart` (71), `achievements_screen.dart` (60), `support_contacts_screen.dart` (56), `journal_screen.dart` y `daily_readings.dart` (52).
 
@@ -398,7 +399,7 @@ AGENTES_MINIMOS=0 bash scripts/verificar-herramental.sh
 | App (Flutter, `app/lib/`) | 617 |
 | Paquetes externos | 157 |
 | Escritorio y web (plantillas de Flutter) | 109 |
-| Manual y scripts | 58 |
+| Manual y scripts | 68 |
 | iOS y widget | 27 |
 | Android | 5 |
 
@@ -520,13 +521,34 @@ Conecta el iPhone por cable y corre `flutter run`; si hay varios dispositivos, p
 
 ## 24. Publicación en TestFlight
 
-1. Subir el número de build en `pubspec.yaml` (`1.0.0+6` → `1.0.0+7`).
-2. `flutter pub get` y `open ios/Runner.xcworkspace` (nunca `.xcodeproj`).
-3. En Runner → *Signing & Capabilities*: equipo y firma automática.
-4. Destino: **Any iOS Device (arm64)**.
-5. **Product → Archive**.
-6. Organizer → **Distribute App → TestFlight & App Store → Upload**.
-7. En App Store Connect → TestFlight: esperar procesamiento, responder cifrado ("No") y asignar testers.
+Requisitos: cuenta de Apple Developer con la app ya registrada en App Store Connect con el bundle `com.version2.app`, y Xcode con tu cuenta en **Settings → Apple Accounts**.
+
+1. **Bajar los cambios y revisar el número de build.** Cada subida necesita un número de build mayor que el anterior; es el número después del `+` en `version:` de `app/pubspec.yaml` (build 7 = `1.0.0+7`).
+   ```bash
+   cd ~/aa-app && git pull
+   ```
+2. **Generar el archivo para la tienda.**
+   ```bash
+   cd ~/aa-app/app
+   flutter clean
+   flutter pub get
+   flutter build ipa --release
+   ```
+   Termina con `Built build/ios/archive/Runner.xcarchive`.
+   - Si da error de firma, abre `ios/Runner.xcworkspace`. En **Runner → Signing & Capabilities** elige tu **Team** y activa **Automatically manage signing**, y repite el comando.
+3. **Abrir el archivo en Xcode.**
+   ```bash
+   open build/ios/archive/Runner.xcarchive
+   ```
+   Se abre el **Organizer** con el archivo seleccionado.
+4. **Subirlo:** **Distribute App → App Store Connect / TestFlight → Distribute (Upload)**. Espera a que diga *Uploaded*.
+5. **Activarlo en [App Store Connect](https://appstoreconnect.apple.com) → tu app → TestFlight.**
+   - Espera de 5 a 20 minutos a que el build termine de procesarse.
+   - En *Export Compliance* (cifrado) responde **No**.
+   - Agrégalo a tu grupo de **Internal Testing**.
+6. **Instalar.** En el iPhone, abre la app **TestFlight** e instala o actualiza.
+
+> Después de compilar, Xcode a veces modifica `ios/Runner.xcodeproj/project.pbxproj`. Si luego `git pull` se queja, corre `git checkout -- app/ios` y vuelve a hacer `git pull`.
 
 ## 25. Errores conocidos y soluciones
 
@@ -591,10 +613,13 @@ Conecta el iPhone por cable y corre `flutter run`; si hay varios dispositivos, p
 - Se subió el mínimo de iOS a 15.0 (PR #11).
 - iOS 27 exige el ciclo de vida por escenas: se agregó `UIApplicationSceneManifest`, un `SceneDelegate` y un `FlutterEngine` propio para registrar los plugins (PR #12 y #13).
 - Se documentó el flujo de trabajo con `flutter run` y *hot reload* (sección 23) y se regeneró el grafo (973 nodos, 1,306 conexiones, 50 comunidades).
+- Revisión a fondo con 5 agentes especialistas; los hallazgos quedaron en `PENDIENTES.md`. Se sube el build 7 a TestFlight para uso interno.
 
 ## 27. Pendientes e ideas futuras
 
-- [ ] Subir build 7 a TestFlight y recoger retroalimentación.
+> La lista completa y priorizada está en **[PENDIENTES.md](PENDIENTES.md)**. Sale de la revisión a fondo del 15 de octubre de 2026, hecha por 5 agentes: código, arquitectura, experiencia de usuario, accesibilidad y legal.
+
+- [ ] Subir build 7 a TestFlight (uso interno, sin los arreglos de PENDIENTES.md) y recoger retroalimentación.
 - [ ] Cambiar `CFBundleDisplayName` (hoy dice "App") y el `name` de `pubspec.yaml`.
 - [ ] Activar el widget de iOS.
 - [ ] Respaldo/exportación de diarios (con `share_plus`).
