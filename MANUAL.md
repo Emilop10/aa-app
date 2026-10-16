@@ -541,12 +541,16 @@ Requisitos: cuenta de Apple Developer con la app ya registrada en App Store Conn
    open build/ios/archive/Runner.xcarchive
    ```
    Se abre el **Organizer** con el archivo seleccionado.
-4. **Subirlo:** **Distribute App → App Store Connect / TestFlight → Distribute (Upload)**. Espera a que diga *Uploaded*.
+4. **Subirlo:** **Distribute App → TestFlight Internal Only** (o **App Store Connect**) **→ Distribute**. Espera a que diga *Uploaded*.
+   - Alternativa: arrastrar el `.ipa` de `build/ios/ipa/` a la app **Transporter** (Mac App Store).
+   - Si sale *You do not have required contracts to perform an operation*, hay un acuerdo de Apple sin aceptar. Revisa [developer.apple.com/account](https://developer.apple.com/account) y App Store Connect → **Business**, y confirma que la membresía siga vigente. Después repite **Distribute** sin recompilar.
 5. **Activarlo en [App Store Connect](https://appstoreconnect.apple.com) → tu app → TestFlight.**
    - Espera de 5 a 20 minutos a que el build termine de procesarse.
    - En *Export Compliance* (cifrado) responde **No**.
    - Agrégalo a tu grupo de **Internal Testing**.
 6. **Instalar.** En el iPhone, abre la app **TestFlight** e instala o actualiza.
+
+> El aviso *Launch image is set to the default placeholder* de `flutter build ipa` no impide subir. Solo indica que la pantalla de arranque sigue siendo la de Flutter.
 
 > Después de compilar, Xcode a veces modifica `ios/Runner.xcodeproj/project.pbxproj`. Si luego `git pull` se queja, corre `git checkout -- app/ios` y vuelve a hacer `git pull`.
 
@@ -564,6 +568,7 @@ Requisitos: cuenta de Apple Developer con la app ya registrada en App Store Conn
 | Subrayados amarillos en textos | Texto sin `Material` | `TextDecoration.none` |
 | `ModuleNotFoundError: scrapling` tras instalarlo | `pip` y `python3` son Pythons distintos | `python3 -m pip install scrapling` |
 | `verificar-herramental.sh` termina con código 2 | No hay plugins instalados (entorno reiniciado) | Reinstalar todo con los comandos de instalación |
+| Organizer: *You do not have required contracts to perform an operation* al subir a TestFlight | Hay un acuerdo de Apple Developer o de App Store Connect sin aceptar, o la membresía venció | El titular de la cuenta acepta los acuerdos en developer.apple.com y en App Store Connect → Business, y luego se repite **Distribute** |
 | Xcode: *The iOS Simulator deployment target is set to 12.0* y *Unable to load contents of file list (Pods)* | Xcode 27 ya no acepta iOS 12 y en un clon nuevo faltan los Pods | Mínimo subido a iOS 15.0 (Podfile y proyecto); correr `flutter run` o `pod install` en `app/ios` |
 | La app se cierra al abrir; el reporte menciona `NoSceneLifecycleAdoption` | iOS 27 exige el ciclo de vida por escenas (UIScene) | `UIApplicationSceneManifest` en `Info.plist`; el `AppDelegate` crea el `FlutterEngine` y registra ahí los plugins, y el `SceneDelegate` crea la ventana con ese motor |
 | La app se cierra al abrir; el reporte apunta a `PathProviderPlugin.register(with:)` | Con escenas la ventana no existe al arrancar y Flutter 3.24 no encuentra dónde registrar los plugins | Registrar los plugins en un `FlutterEngine` propio (ver fila anterior) |
@@ -613,13 +618,15 @@ Requisitos: cuenta de Apple Developer con la app ya registrada en App Store Conn
 - Se subió el mínimo de iOS a 15.0 (PR #11).
 - iOS 27 exige el ciclo de vida por escenas: se agregó `UIApplicationSceneManifest`, un `SceneDelegate` y un `FlutterEngine` propio para registrar los plugins (PR #12 y #13).
 - Se documentó el flujo de trabajo con `flutter run` y *hot reload* (sección 23) y se regeneró el grafo (973 nodos, 1,306 conexiones, 50 comunidades).
-- Revisión a fondo con 5 agentes especialistas; los hallazgos quedaron en `PENDIENTES.md`. Se sube el build 7 a TestFlight para uso interno.
+- Revisión a fondo con 5 agentes especialistas; los hallazgos quedaron en `PENDIENTES.md`.
+- **Build 7 (1.0.0+7) subido a TestFlight** para uso interno, sin los arreglos de `PENDIENTES.md`. Se generó con `flutter build ipa --release` (IPA de 29.6 MB) y se subió desde Organizer con *TestFlight Internal Only*, después de aceptar los acuerdos pendientes de Apple.
 
 ## 27. Pendientes e ideas futuras
 
 > La lista completa y priorizada está en **[PENDIENTES.md](PENDIENTES.md)**. Sale de la revisión a fondo del 15 de octubre de 2026, hecha por 5 agentes: código, arquitectura, experiencia de usuario, accesibilidad y legal.
 
-- [ ] Subir build 7 a TestFlight (uso interno, sin los arreglos de PENDIENTES.md) y recoger retroalimentación.
+- [x] Subir build 7 a TestFlight (uso interno, sin los arreglos de PENDIENTES.md).
+- [ ] Probar el build 7 en un iPhone real y recoger retroalimentación.
 - [ ] Cambiar `CFBundleDisplayName` (hoy dice "App") y el `name` de `pubspec.yaml`.
 - [ ] Activar el widget de iOS.
 - [ ] Respaldo/exportación de diarios (con `share_plus`).
