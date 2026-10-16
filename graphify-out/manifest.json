@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "MANUAL.md": {
-    "mtime": 1792111053.2391043,
-    "seen": 1792111054.09525,
-    "ast_hash": "15ee1fd2cf7966360370037978ac3e78",
+    "mtime": 1792122741.7917242,
+    "seen": 1792122746.1479235,
+    "ast_hash": "b73263309ab447f323305d0787801944",
     "semantic_hash": ""
   },
   "app/README.md": {
@@ -720,9 +720,9 @@
     "semantic_hash": ""
   },
   "PENDIENTES.md": {
-    "mtime": 1792111024.171223,
-    "seen": 1792111053.0018609,
-    "ast_hash": "d2f660322c5622e4da35bd3b8e90ad43",
+    "mtime": 1792122741.7923272,
+    "seen": 1792122746.1479259,
+    "ast_hash": "054f8494ad48d6584cdf61d07f875d72",
     "semantic_hash": ""
   }
 }

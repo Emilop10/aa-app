@@ -3,7 +3,7 @@
 Lista de trabajo después de la revisión a fondo del 15 de octubre de 2026. La revisión la hicieron 5 agentes especialistas (código, arquitectura móvil, experiencia de usuario, accesibilidad y cumplimiento legal) y se verificó contra el código.
 
 - **Cómo usar este archivo:** marca `[x]` lo que se termine. Cada punto dice dónde está el problema y cómo se arregla.
-- **Estado actual:** la app corre en el simulador con iOS 27 y se va a subir a TestFlight (build 7) para uso interno **sin estos arreglos**.
+- **Estado actual:** la app corre en el simulador con iOS 27 y el **build 7 ya está en TestFlight** para uso interno, **sin estos arreglos**.
 - **Prioridades:** 🔴 urgente antes de publicar · 🟠 importante · 🟡 accesibilidad · 🔵 técnico y publicación · 💡 ideas nuevas.
 
 ---
@@ -150,6 +150,8 @@ La app no cumple WCAG 2.2 AA. En todo `lib/` no se usa ni una vez `Semantics`, `
 
 ## Fase 5: técnico y publicación en la App Store
 
+- [ ] 🔵 **Pantalla de arranque (launch screen).** Sigue siendo la de Flutter por defecto; `flutter build ipa` lo avisa. Hay que diseñar una con el logo y los colores de la app en `ios/Runner/Assets.xcassets/LaunchImage.imageset` / `LaunchScreen.storyboard`.
+- [ ] 🟠 **Probar el build 7 en un iPhone real.** Revisar que la app abra (arreglo de UIScene para iOS 27), que lleguen las notificaciones, que al tocarlas se abra la reflexión y que el botón SOS llame.
 - [ ] 🔴 **Nombre y bundle ID definitivos.** Hoy `CFBundleDisplayName` es "App", `pubspec` se llama `nombre_de_tu_app` y el bundle es `com.version2.app`. El bundle **no se puede cambiar después de publicar** en la App Store. Usar un nombre de 12 caracteres o menos y sin "AA".
 - [ ] 🔴 **URL de política o aviso de privacidad.** La pide Apple aunque la app no recoja datos (regla 5.1.1). En la etiqueta de privacidad, marcar "Data Not Collected".
 - [ ] 🔴 **`PrivacyInfo.xcprivacy` en Runner.** Debe llevar `NSPrivacyTracking=false` y `NSPrivacyAccessedAPICategoryUserDefaults` con `CA92.1`. Revisar el Privacy Report del Archive.
